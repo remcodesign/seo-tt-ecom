@@ -1,5 +1,7 @@
 # !important always do
 
+## General
+
 - always use the 'Laravel Boost' tool to get more context of the project - and get better ways to do the request, examples:
   - best way to implement a specific funtion/method/concept
   - for creating migration

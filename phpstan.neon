@@ -9,4 +9,4 @@ parameters:
         - database/
         - routes/
 
-    level: 5
+    level: 8
