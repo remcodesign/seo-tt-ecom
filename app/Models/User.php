@@ -32,6 +32,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
@@ -40,4 +41,5 @@ class User extends Authenticatable
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
-    }}
+    }
+}

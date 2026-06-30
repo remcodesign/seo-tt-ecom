@@ -24,7 +24,7 @@ class PostFactory extends Factory
         return [
             'user_id' => User::factory(),
             'title' => $title,
-            'slug' => Str::slug($title) . '-' . fake()->unique()->numberBetween(1000, 9999),
+            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(1000, 9999),
             'published_on' => fake()->dateTimeBetween('-1 years', 'now'),
         ];
     }
