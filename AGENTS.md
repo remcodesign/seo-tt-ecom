@@ -1,14 +1,3 @@
-# !important always do
-
-## General
-
-- always use the 'Laravel Boost' tool to get more context of the project - and get better ways to do the request, examples:
-  - best way to implement a specific funtion/method/concept
-  - for creating migration
-
-- follow / imitate the current code standard found in the files
-- after finishing the request >> run the command `ddev composer format` - to check for possible errors and fix them
-
 <laravel-boost-guidelines>
 === foundation rules ===
 
