@@ -74,14 +74,14 @@
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
 
-        "lint": "vendor/bin/pint",
-        "refactor": "vendor/bin/rector process",
+        "pint": "vendor/bin/pint",
+        "rector": "vendor/bin/rector process",
         "stan": "vendor/bin/phpstan analyse",
         "pest": "vendor/bin/pest",
-        "check": [
+        "format": [
             "@php artisan config:clear --ansi",
-            "@lint",
-            "@refactor",
+            "@pint",
+            "@rector",
             "@stan",
             "@pest"
         ]

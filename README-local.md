@@ -4,6 +4,7 @@ ddev composer create-project laravel/laravel
 
 ddev launch
 
+ddev describe
 
 # install packages
 
@@ -17,3 +18,7 @@ ddev composer require rector/rector --dev
 composer require rector/rector-laravel --dev
 
 ddev composer require laravel/boost --dev
+
+# laravel boost
+
+php artisan boost:install
