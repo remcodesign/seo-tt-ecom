@@ -36,7 +36,7 @@ we need the next methods:
 - create
 - update
 - delete
-- query (with pagination, with comments, prevent n+1)
+- query (with pagination, with comments, with user id+name, prevent n+1)
 
 important only the creator can update/delete
 
@@ -49,6 +49,6 @@ we need the next methods:
 - create
 - update
 - delete
-- query (with pagination, with posts, prevent n+1)
+- query (with pagination, with posts, with user id+name, prevent n+1)
 
 important only the creator can update/delete

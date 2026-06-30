@@ -30,6 +30,10 @@ When creating or modifying Eloquent models, you must write comprehensive Pest te
 
 Every model file must be accompanied by a Pest test file covering these three distinct `describe()` categories. You must implement at least the **absolute minimum** requirements listed below:
 
+also consult the `.github/skills/pest-testing/SKILL.md` for additional guidance on Pest testing best practices.
+
+> model tests
+
 #### 1. Configuration & Data Integrity
 *Focus: Model hydration and serialization.*
 - **[MINIMAL] Factory Validation:** Assert that the model's factory generates valid data, instantiates the correct class, and successfully persists to the database.
@@ -46,3 +50,35 @@ Every model file must be accompanied by a Pest test file covering these three di
 *Focus: Ensuring the database enforces constraints independently of application logic.*
 - **[MINIMAL] Strict Foreign Keys:** Ensure database-level constraints work as intended. Assert that a `QueryException` is thrown when trying to save a model without its mandatory foreign parent relation (e.g., a child record cannot exist as an orphan without its parent ID).
 - **Cascade Operations:** Assert that `cascadeOnDelete()` parameters function correctly by deleting a parent model and verifying the automatic removal of child records from the database.
+
+> service tests
+
+#### 1. Happy Path — Creation
+*Focus: Verify the service correctly creates the resource and returns the expected model.*
+- **[MINIMAL] Successful Creation:** Assert that `create()` returns the correct model instance, persists to the database, and sets the correct attributes (including auto-generated values like slugs).
+- **[MINIMAL] Ownership/Link:** Verify the created resource is correctly associated with the authenticated user or parent model (e.g., `$post->user_id` matches the creator).
+
+#### 2. Happy Path — Update & Delete
+*Focus: Verify mutation methods work correctly for authorized users.*
+- **[MINIMAL] Update Success:** Assert that `update()` modifies the intended attributes in the database without unintended side effects.
+- **[MINIMAL] Delete Success:** Assert that `delete()` removes the record from the database.
+- **Partial Updates:** Verify that updating a subset of attributes leaves the rest untouched (e.g., updating only `body` should not change `title` or `slug`).
+
+#### 3. Authorization Guardrails (Unhappy Path)
+*Focus: Ensure that only the resource owner can update or delete.*
+- **[MINIMAL] Non-Creator Update Rejected:** Assert that a user who is not the creator receives an `AuthorizationException` (or `403`).
+- **[MINIMAL] Non-Creator Delete Rejected:** Assert that a user who is not the creator cannot delete the resource.
+- **Edge Cases:** Test with `null` or unauthenticated users where applicable.
+
+#### 4. Side-Effects & Business Logic
+*Focus: Test any automatic behavior or derived values produced by the service.*
+- **[MINIMAL] Auto-Generated Values:** If the service generates values (e.g., slugs, timestamps), assert the output matches expectations in both creation and update scenarios.
+- **Uniqueness / Collision Handling:** When the same title/text produces a collision, verify the service resolves it deterministically (numeric suffixes, random fallback, etc.) without throwing or silently overwriting.
+- **State Transitions:** If the method has side effects (e.g., cache clearing, logging, notifications), verify they occur.
+
+#### 5. Query & Pagination
+*Focus: Verify data retrieval methods respect parameters and prevent N+1.*
+- **[MINIMAL] Pagination:** Assert that paginated queries return the correct page size, total count, and paginator instance type.
+- **[MINIMAL] Eager Loading:** Verify that relations are pre-loaded on the returned models to prevent N+1 queries (use `relationLoaded()`).
+- **Filtering / Optional Includes:** If the query accepts parameters like `withComments`, test both enabled and disabled states.
+
