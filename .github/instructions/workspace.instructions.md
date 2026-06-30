@@ -16,7 +16,7 @@ Use these guidelines when writing or reviewing code in this workspace:
 - Use Pest for tests and verify changes with the workspace test runner when appropriate.
 
 ## Model & Factory Testing Standards
-When creating or modifying Eloquent models, you must write comprehensive Pest tests to verify the database and hydration layer before moving to services or controllers. 
+When creating or modifying Eloquent models, you must write comprehensive Pest tests to verify the database and hydration layer before moving to services or controllers.
 
 ### Execution Style
 - Write tests using **Pest PHP** functional syntax (`it()`, `expect()`).

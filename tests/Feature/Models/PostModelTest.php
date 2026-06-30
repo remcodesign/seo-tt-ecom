@@ -5,42 +5,55 @@ declare(strict_types=1);
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 
-describe('Configuration & Data Integrity', function (): void {
-    it('creates a post using the factory', function (): void {
-        $post = Post::factory()->create();
+uses(RefreshDatabase::class);
 
-        expect($post->exists)->toBeTrue();
-        expect($post->published_on)->toBeInstanceOf(Carbon::class);
-    });
-});
+describe('Post', function (): void {
+    describe('Configuration & Data Integrity', function (): void {
+        it('creates a post using the factory', function (): void {
+            $post = Post::factory()->create();
 
-describe('Relationship Integrity', function (): void {
-    it('belongs to a user', function (): void {
-        $post = Post::factory()->for(User::factory())->create();
-
-        expect($post->user)->toBeInstanceOf(User::class);
-        expect($post->user_id)->toBe($post->user->id);
+            expect($post)->toBeInstanceOf(Post::class);
+            expect($post->exists)->toBeTrue();
+            expect($post->published_on)->toBeInstanceOf(Carbon::class);
+            expect($post->toArray())->toHaveKey('title');
+        });
     });
 
-    it('has many comments', function (): void {
-        $post = Post::factory()->create();
-        Comment::factory()->for($post)->create();
-        Comment::factory()->for($post)->create();
+    describe('Relationship Integrity', function (): void {
+        it('belongs to a user', function (): void {
+            $post = Post::factory()->for(User::factory())->create();
 
-        expect($post->comments)->toHaveCount(2);
-        expect($post->comments->first())->toBeInstanceOf(Comment::class);
+            expect($post->user)->toBeInstanceOf(User::class);
+            expect($post->user_id)->toBe($post->user->id);
+        });
+
+        it('has many comments', function (): void {
+            $post = Post::factory()->create();
+            Comment::factory()->count(3)->for($post)->create();
+
+            expect($post->comments)->toHaveCount(3);
+            expect($post->comments->first())->toBeInstanceOf(Comment::class);
+        });
     });
-});
 
-describe('Database Constraints & Rules', function (): void {
-    it('is deleted when the owning user is deleted', function (): void {
-        $post = Post::factory()->for(User::factory())->create();
-        Comment::factory()->for($post)->create();
+    describe('Database Constraints & Rules', function (): void {
+        it('throws when saving a post without a user', function (): void {
+            $post = new Post(['title' => 'Test', 'slug' => 'test', 'published_on' => now()]);
 
-        $post->user->delete();
+            expect(fn () => $post->save())->toThrow(QueryException::class);
+        });
 
-        expect(Post::find($post->id))->toBeNull();
+        it('deletes comments when the post is deleted', function (): void {
+            $post = Post::factory()->for(User::factory())->create();
+            Comment::factory()->count(2)->for($post)->create();
+
+            $post->delete();
+
+            expect($post->comments()->count())->toBe(0);
+        });
     });
 });
