@@ -19,6 +19,7 @@ describe('Post', function (): void {
             expect($post)->toBeInstanceOf(Post::class);
             expect($post->exists)->toBeTrue();
             expect($post->published_on)->toBeInstanceOf(Carbon::class);
+            expect($post->body)->toBeString();
             expect($post->toArray())->toHaveKey('title');
         });
     });
@@ -42,7 +43,7 @@ describe('Post', function (): void {
 
     describe('Database Constraints & Rules', function (): void {
         it('throws when saving a post without a user', function (): void {
-            $post = new Post(['title' => 'Test', 'slug' => 'test', 'published_on' => now()]);
+            $post = new Post(['title' => 'Test', 'body' => 'Body text', 'slug' => 'test', 'published_on' => now()]);
 
             expect(fn () => $post->save())->toThrow(QueryException::class);
         });

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['user_id', 'title', 'slug', 'published_on'])]
+#[Fillable(['user_id', 'title', 'body', 'slug', 'published_on'])]
 class Post extends Model
 {
     /**

@@ -49,7 +49,7 @@ describe('User', function (): void {
     });
 
     describe('Database Constraints & Rules', function (): void {
-        it('deletes related posts and comments when the user is deleted', function (): void {
+        it('deletes related entities when the user is deleted', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
             $comment = Comment::factory()->for($user)->for($post)->create();

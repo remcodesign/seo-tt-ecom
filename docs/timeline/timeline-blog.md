@@ -26,3 +26,29 @@ user_id, title (varchar), slug (varchar), published_on (datetime)
 ```txt
 post_id, user_id, comment (text)
 ```
+
+## create blog post service
+
+create a `app/Services/Blog/PostService.php` , in relation to `app/Models/Post.php`
+
+we need the next methods:
+
+- create
+- update
+- delete
+- query (with pagination, with comments, prevent n+1)
+
+important only the creator can update/delete
+
+## create blog post comment service
+
+create a `app/Services/Blog/PostCommentService.php` , in relation to `app/Models/Comment.php`
+
+we need the next methods:
+
+- create
+- update
+- delete
+- query (with pagination, with posts, prevent n+1)
+
+important only the creator can update/delete

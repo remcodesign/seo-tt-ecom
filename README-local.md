@@ -1,3 +1,7 @@
+# common
+
+## ddev
+
 ddev start
 
 ddev composer create-project laravel/laravel
@@ -6,7 +10,7 @@ ddev launch
 
 ddev describe
 
-# install packages
+## install packages
 
 ddev composer require pestphp/pest --dev
 ddev composer require pestphp/pest-plugin-browser --dev
@@ -19,6 +23,13 @@ composer require rector/rector-laravel --dev
 
 ddev composer require laravel/boost --dev
 
-# laravel boost
+## laravel boost
 
 php artisan boost:install
+php artisan boost:update
+
+## artisan
+
+### refresh db
+
+ddev php artisan migrate:refresh
