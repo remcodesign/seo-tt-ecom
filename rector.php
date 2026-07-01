@@ -16,19 +16,19 @@ return RectorConfig::configure()
         __DIR__.'/tests',
     ])
 
-    // 1. Upgrade automatisch naar je huidige PHP-versie (PHP 8.3 / 8.4)
+    // 1. Upgrade automatically to the current PHP version (PHP 8.4)
     ->withPhpSets()
 
-    // 2. Koppel Laravel specifieke refactoring en Composer-gebaseerde regels
+    // 2. Match Laravel specific refactoring and Composer-based rules
     ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(laravel: true)
 
-    // 3. Draai alle stabiele kwaliteits- en moderniseringsknoppen open naar 100%
+    // 3. All refactoring rules are enabled
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
         codingStyle: true,
-        typeDeclarations: true, // Dit dekt type coverage al volledig af!
+        typeDeclarations: true,
         privatization: true,
         instanceOf: true,
         earlyReturn: true

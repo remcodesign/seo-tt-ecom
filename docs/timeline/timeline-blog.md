@@ -15,7 +15,7 @@ we have the model `app/Models/User.php`
 - a post belongs to a user
 
 ```txt
-user_id, title (varchar), slug (varchar), published_on (datetime)
+user_id, title (varchar), slug (varchar), published_on (datetime), body (text)
 ```
 
 > comment
@@ -27,7 +27,7 @@ user_id, title (varchar), slug (varchar), published_on (datetime)
 post_id, user_id, comment (text)
 ```
 
-## create blog post service
+## create blog post service + tests
 
 create a `app/Services/Blog/PostService.php` , in relation to `app/Models/Post.php`
 
@@ -40,9 +40,9 @@ we need the next methods:
 
 important only the creator can update/delete
 
-## create blog post comment service
+## create blog post comment service + tests
 
-create a `app/Services/Blog/PostCommentService.php` , in relation to `app/Models/Comment.php`
+create a `app/Services/Blog/CommentService.php` , in relation to `app/Models/Comment.php`
 
 we need the next methods:
 

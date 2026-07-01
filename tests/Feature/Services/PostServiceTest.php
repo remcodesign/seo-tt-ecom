@@ -147,8 +147,8 @@ describe('PostService', function (): void {
             expect($result->first()->relationLoaded('user'))->toBeTrue();
         });
 
-        it('eager-loads comments with user name when withComments is true', function (): void {
-            $user = User::factory()->create(['name' => 'Jane Doe']);
+        it('eager-loads comments when withComments is true', function (): void {
+            $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
             Comment::factory()->count(2)->for($post)->for($user)->create();
             $service = app(PostService::class);
@@ -161,8 +161,22 @@ describe('PostService', function (): void {
 
             $comment = $loadedPost->comments->first();
             expect($comment->relationLoaded('user'))->toBeTrue();
-            // Verify the user name is available for display in a comments list
-            expect($comment->user->name)->toBe('Jane Doe');
+        });
+
+        it('loads only comment user id and name when withComments is true', function (): void {
+            $user = User::factory()->create(['name' => 'Jane Doe']);
+            $post = Post::factory()->for($user)->create();
+            Comment::factory()->count(2)->for($post)->for($user)->create();
+            $service = app(PostService::class);
+
+            $result = $service->query(withComments: true, perPage: 15);
+
+            $comment = $result->first()->comments->first();
+
+            expect($comment->user->toArray())->toBe([
+                'id' => $user->id,
+                'name' => 'Jane Doe',
+            ]);
         });
     });
 });
