@@ -29,6 +29,13 @@ describe('Post', function (): void {
             expect($post->body)->toBeNull();
             expect($post->fresh()->body)->toBeNull();
         });
+
+        it('allows published_on to be null', function (): void {
+            $post = Post::factory()->create(['published_on' => null]);
+
+            expect($post->published_on)->toBeNull();
+            expect($post->fresh()->published_on)->toBeNull();
+        });
     });
 
     describe('Relationship Integrity', function (): void {

@@ -62,7 +62,7 @@ class CommentService
     public function query(?int $postId = null, int $perPage = 15): LengthAwarePaginator
     {
         $query = Comment::query()
-            ->with(['post', 'user:id,name'])
+            ->withPostAndUserName()
             ->latest();
 
         if ($postId !== null) {

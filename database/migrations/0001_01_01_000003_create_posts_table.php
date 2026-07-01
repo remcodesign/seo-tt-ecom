@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('body')->nullable();
             $table->string('slug')->unique();
-            $table->dateTime('published_on');
+            $table->dateTime('published_on')->nullable();
             $table->timestamps();
 
             $table->index(['user_id', 'published_on']);

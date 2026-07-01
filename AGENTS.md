@@ -1,3 +1,5 @@
+# check this main instuction file: `.github/instructions/workspace.instructions.md`
+
 <laravel-boost-guidelines>
 === foundation rules ===
 

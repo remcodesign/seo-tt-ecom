@@ -11,6 +11,7 @@
         "laravel/tinker": "^3.0"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.5",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.10",
         "laravel/boost": "^2.4",
@@ -23,8 +24,7 @@
         "pestphp/pest-plugin-browser": "^4.3",
         "pestphp/pest-plugin-laravel": "^4.1",
         "phpunit/phpunit": "^12.5.12",
-        "rector/rector": "^2.5",
-        "rector/rector-laravel": "^2.5"
+        "rector/rector": "^2.5"
     },
     "autoload": {
         "psr-4": {
@@ -76,13 +76,14 @@
 
         "pint": "vendor/bin/pint",
         "rector": "vendor/bin/rector process",
-        "stan": "vendor/bin/phpstan analyse",
+        "phpstan": "vendor/bin/phpstan analyse",
+        "stan": "@phpstan",
         "pest": "vendor/bin/pest",
         "format": [
             "@php artisan config:clear --ansi",
             "@pint",
             "@rector",
-            "@stan",
+            "@phpstan",
             "@pest"
         ]
     },

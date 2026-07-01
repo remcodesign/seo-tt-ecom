@@ -124,10 +124,26 @@ class PostService
 
         if ($withComments) {
             $query->with(['comments' => function ($query): void {
-                $query->with('user:id,name');
+                $query->withUserName();
             }]);
         }
 
         return $query->latest('published_on')->paginate($perPage);
+    }
+
+    /**
+     * Load the requested post with related data to prevent N+1.
+     */
+    public function find(Post $post, bool $withComments = false): Post
+    {
+        $relations = ['user'];
+
+        if ($withComments) {
+            $relations['comments'] = function ($query): void {
+                $query->withUserName();
+            };
+        }
+
+        return $post->load($relations);
     }
 }
