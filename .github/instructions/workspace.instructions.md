@@ -53,6 +53,12 @@ also consult the `.github/skills/pest-testing/SKILL.md` for additional guidance 
 
 > service tests
 
+#### Service-layer scope
+*Focus: test service behavior, not low-level model schema.*
+- Prefer testing nullable fields, casting, hydration, and basic persistence at the model layer. If a service only passes values through to Eloquent without transforming them or adding side effects, avoid duplicating those low-level assertions in service tests.
+- Thin pass-through services should not re-test model serialization or persistence details that are already covered by the model layer.
+- Use service tests for business contracts, authorization, derived values, side effects, and any case where `null` or other input values change the service's behavior.
+
 #### 1. Happy Path — Creation
 *Focus: Verify the service correctly creates the resource and returns the expected model.*
 - **[MINIMAL] Successful Creation:** Assert that `create()` returns the correct model instance, persists to the database, and sets the correct attributes (including auto-generated values like slugs).

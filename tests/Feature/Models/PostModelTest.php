@@ -22,6 +22,13 @@ describe('Post', function (): void {
             expect($post->body)->toBeString();
             expect($post->toArray())->toHaveKey('title');
         });
+
+        it('allows the body to be null', function (): void {
+            $post = Post::factory()->create(['body' => null]);
+
+            expect($post->body)->toBeNull();
+            expect($post->fresh()->body)->toBeNull();
+        });
     });
 
     describe('Relationship Integrity', function (): void {
