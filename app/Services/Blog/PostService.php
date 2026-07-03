@@ -10,7 +10,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 
-class PostService
+readonly class PostService
 {
     /**
      * Create a new post for the given user.
@@ -65,13 +65,16 @@ class PostService
      *
      * Tries `{-1}`, `{-2}`, `{-3}` first, then falls back to a 6-digit random
      * number. Throws if a collision still occurs.
+     *
+     * @param  Post|null  $post  The current post being updated, or null if creating a new post.
      */
-    private function generateUniqueSlug(string $title, ?Post $current = null): string
+    private function generateUniqueSlug(string $title, ?Post $post = null): string
     {
         $slug = Str::slug($title);
         $base = $slug;
 
-        if (! $this->slugExists($slug, $current)) {
+        // If the slug doesn't exist, return it immediately
+        if (! $this->slugExists($slug, $post)) {
             return $slug;
         }
 
@@ -79,7 +82,7 @@ class PostService
         for ($counter = 1; $counter <= 3; $counter++) {
             $slug = sprintf('%s-%d', $base, $counter);
 
-            if (! $this->slugExists($slug, $current)) {
+            if (! $this->slugExists($slug, $post)) {
                 return $slug;
             }
         }
@@ -87,7 +90,7 @@ class PostService
         // Fallback: append a 6-digit random number
         $slug = sprintf('%s-%d', $base, random_int(100_000, 999_999));
 
-        if ($this->slugExists($slug, $current)) {
+        if ($this->slugExists($slug, $post)) {
             throw new \RuntimeException(sprintf(
                 'Unable to generate a unique slug for title "%s" after multiple attempts. Choose a more unique title.',
                 $title,
@@ -100,14 +103,17 @@ class PostService
     /**
      * Check whether the given slug already exists in the database,
      * optionally excluding a specific post from the check.
+     *
+     * @param  Post|null  $post  The current post being updated, or null if creating a new post.
      */
-    private function slugExists(string $slug, ?Post $current = null): bool
+    private function slugExists(string $slug, ?Post $post = null): bool
     {
         $query = Post::where('slug', $slug);
 
         // If a current post is provided, exclude it from the uniqueness check
-        if ($current instanceof Post) {
-            $query->where('id', '!=', $current->id);
+        if ($post instanceof Post) {
+            // false here means the current post is the only one with this slug, so it's not a collision
+            $query->where('id', '!=', $post->id);
         }
 
         return $query->exists();
@@ -120,15 +126,15 @@ class PostService
      */
     public function query(bool $withComments = false, int $perPage = 15): LengthAwarePaginator
     {
-        $query = Post::query()->with('user');
+        $builder = Post::query()->with('user');
 
         if ($withComments) {
-            $query->with(['comments' => function ($query): void {
+            $builder->with(['comments' => function ($query): void {
                 $query->withUserName();
             }]);
         }
 
-        return $query->latest('published_on')->paginate($perPage);
+        return $builder->latest('published_on')->paginate($perPage);
     }
 
     /**

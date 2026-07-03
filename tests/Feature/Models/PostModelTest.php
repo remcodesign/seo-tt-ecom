@@ -5,9 +5,9 @@ declare(strict_types=1);
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 
@@ -18,7 +18,7 @@ describe('Post', function (): void {
 
             expect($post)->toBeInstanceOf(Post::class);
             expect($post->exists)->toBeTrue();
-            expect($post->published_on)->toBeInstanceOf(Carbon::class);
+            expect($post->published_on)->toBeInstanceOf(CarbonImmutable::class);
             expect($post->body)->toBeString();
             expect($post->toArray())->toHaveKey('title');
         });

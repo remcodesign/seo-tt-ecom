@@ -16,9 +16,9 @@ describe('PostService', function (): void {
     describe('create', function (): void {
         it('creates a post with auto-generated slug from title', function (): void {
             $user = User::factory()->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $post = $service->create($user, [
+            $post = $postService->create($user, [
                 'title' => 'My New Post',
                 'body' => 'Post body content',
                 'published_on' => now(),
@@ -34,17 +34,17 @@ describe('PostService', function (): void {
 
         it('generates a unique slug when title collides', function (): void {
             $user = User::factory()->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $first = $service->create($user, [
+            $post = $postService->create($user, [
                 'title' => 'My Post',
                 'body' => 'Body',
                 'published_on' => now(),
             ]);
 
-            expect($first->slug)->toBe('my-post');
+            expect($post->slug)->toBe('my-post');
 
-            $second = $service->create($user, [
+            $second = $postService->create($user, [
                 'title' => 'My Post',
                 'body' => 'Another body',
                 'published_on' => now(),
@@ -55,11 +55,11 @@ describe('PostService', function (): void {
 
         it('falls back to a random slug after 3 numeric collisions', function (): void {
             $user = User::factory()->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
             // Create 5 posts with the same title to exhaust -1, -2, -3 and reach the random fallback
             for ($i = 0; $i < 5; $i++) {
-                $post = $service->create($user, [
+                $post = $postService->create($user, [
                     'title' => 'Collision Test',
                     'body' => 'Body '.$i,
                     'published_on' => now(),
@@ -79,9 +79,9 @@ describe('PostService', function (): void {
         it('updates a post when the authenticated user is the creator', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create(['title' => 'Original']);
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $result = $service->update($user, $post, ['title' => 'Updated']);
+            $result = $postService->update($user, $post, ['title' => 'Updated']);
 
             expect($result->title)->toBe('Updated');
             expect($result->slug)->toBe('updated');
@@ -93,9 +93,9 @@ describe('PostService', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create(['title' => 'Original']);
             $originalSlug = $post->slug;
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $service->update($user, $post, ['body' => 'Only body update']);
+            $postService->update($user, $post, ['body' => 'Only body update']);
 
             expect($post->fresh()->slug)->toBe($originalSlug);
         });
@@ -104,9 +104,9 @@ describe('PostService', function (): void {
             $creator = User::factory()->create();
             $other = User::factory()->create();
             $post = Post::factory()->for($creator)->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            expect(fn () => $service->update($other, $post, ['title' => 'Hacked']))
+            expect(fn () => $postService->update($other, $post, ['title' => 'Hacked']))
                 ->toThrow(AuthorizationException::class, 'You are not the owner of this post.');
         });
     });
@@ -115,9 +115,9 @@ describe('PostService', function (): void {
         it('deletes a post when the authenticated user is the creator', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $service->delete($user, $post);
+            $postService->delete($user, $post);
 
             expect(Post::find($post->id))->toBeNull();
         });
@@ -126,9 +126,9 @@ describe('PostService', function (): void {
             $creator = User::factory()->create();
             $other = User::factory()->create();
             $post = Post::factory()->for($creator)->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            expect(fn () => $service->delete($other, $post))
+            expect(fn () => $postService->delete($other, $post))
                 ->toThrow(AuthorizationException::class, 'You are not the owner of this post.');
         });
     });
@@ -136,26 +136,26 @@ describe('PostService', function (): void {
     describe('query', function (): void {
         it('returns paginated posts with user eager-loaded', function (): void {
             Post::factory()->count(5)->for(User::factory())->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $result = $service->query(perPage: 3);
+            $lengthAwarePaginator = $postService->query(perPage: 3);
 
-            expect($result)->toBeInstanceOf(LengthAwarePaginator::class)
-                ->and($result->total())->toBe(5)
-                ->and($result->perPage())->toBe(3)
-                ->and($result->items())->toHaveCount(3);
-            expect($result->first()->relationLoaded('user'))->toBeTrue();
+            expect($lengthAwarePaginator)->toBeInstanceOf(LengthAwarePaginator::class)
+                ->and($lengthAwarePaginator->total())->toBe(5)
+                ->and($lengthAwarePaginator->perPage())->toBe(3)
+                ->and($lengthAwarePaginator->items())->toHaveCount(3);
+            expect($lengthAwarePaginator->first()->relationLoaded('user'))->toBeTrue();
         });
 
         it('eager-loads comments when withComments is true', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
             Comment::factory()->count(2)->for($post)->for($user)->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $result = $service->query(withComments: true, perPage: 15);
+            $lengthAwarePaginator = $postService->query(withComments: true, perPage: 15);
 
-            $loadedPost = $result->first();
+            $loadedPost = $lengthAwarePaginator->first();
             expect($loadedPost->relationLoaded('comments'))->toBeTrue();
             expect($loadedPost->comments)->toHaveCount(2);
 
@@ -167,11 +167,11 @@ describe('PostService', function (): void {
             $user = User::factory()->create(['name' => 'Jane Doe']);
             $post = Post::factory()->for($user)->create();
             Comment::factory()->count(2)->for($post)->for($user)->create();
-            $service = app(PostService::class);
+            $postService = app(PostService::class);
 
-            $result = $service->query(withComments: true, perPage: 15);
+            $lengthAwarePaginator = $postService->query(withComments: true, perPage: 15);
 
-            $comment = $result->first()->comments->first();
+            $comment = $lengthAwarePaginator->first()->comments->first();
 
             expect($comment->user->toArray())->toBe([
                 'id' => $user->id,

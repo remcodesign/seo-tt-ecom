@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class CommentService
+readonly class CommentService
 {
     /**
      * Create a new comment on the given post by the given user.

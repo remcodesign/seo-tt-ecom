@@ -28,7 +28,8 @@ class Post extends Model
     protected function casts(): array
     {
         return [
-            'published_on' => 'datetime',
+            // Laravel 10.0+ supports `immutable_datetime` for CarbonImmutable support
+            'published_on' => 'immutable_datetime',
         ];
     }
 

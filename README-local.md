@@ -10,6 +10,11 @@ ddev launch
 
 ddev describe
 
+> Steps : Install and Trust the Local CA (mkcert)
+mkcert -install
+ddev poweroff
+ddev start
+
 ## install packages
 
 ddev composer require pestphp/pest --dev
@@ -28,8 +33,13 @@ ddev composer require laravel/boost --dev
 php artisan boost:install
 php artisan boost:update
 
+## formatters
+
+ddev composer format
+
 ## artisan
 
 ### refresh db
 
-ddev php artisan migrate:refresh
+ddev artisan migrate
+ddev artisan migrate:refresh

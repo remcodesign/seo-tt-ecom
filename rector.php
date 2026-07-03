@@ -3,15 +3,14 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use RectorLaravel\Rector\Class_\AddExtendsAnnotationToModelFactoriesRector;
+use RectorLaravel\Rector\ClassMethod\AddGenericReturnTypeToRelationsRector;
 use RectorLaravel\Set\LaravelSetProvider;
 
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/app',
-        // __DIR__ . '/bootstrap',
-        // __DIR__ . '/config',
-        // __DIR__ . '/public',
-        // __DIR__ . '/resources',
+        // __DIR__.  '/database',
         __DIR__.'/routes',
         __DIR__.'/tests',
     ])
@@ -21,7 +20,14 @@ return RectorConfig::configure()
 
     // 2. Match Laravel specific refactoring and Composer-based rules
     ->withSetProviders(LaravelSetProvider::class)
-    ->withComposerBased(laravel: true)
+    ->withComposerBased(
+        laravel: true,
+        phpunit: true
+    )
+    ->withAttributesSets(
+        phpunit: true,
+        all: true
+    )
 
     // 3. All refactoring rules are enabled
     ->withPreparedSets(
@@ -31,5 +37,13 @@ return RectorConfig::configure()
         typeDeclarations: true,
         privatization: true,
         instanceOf: true,
-        earlyReturn: true
-    );
+        earlyReturn: true,
+        carbon: true,
+        naming: true,
+    )
+
+    // 4. Add specific rules for this project
+    ->withRules([
+        AddGenericReturnTypeToRelationsRector::class,
+        AddExtendsAnnotationToModelFactoriesRector::class,
+    ]);

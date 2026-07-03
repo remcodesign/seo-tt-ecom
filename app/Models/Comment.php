@@ -38,22 +38,22 @@ class Comment extends Model
     /**
      * Scope the query to include the comment user id and name only.
      *
-     * @param  Builder<Comment>  $query
+     * @param  Builder<Comment>  $builder
      * @return Builder<Comment>
      */
-    public function scopeWithUserName(Builder $query): Builder
+    public function scopeWithUserName(Builder $builder): Builder
     {
-        return $query->with('user:id,name');
+        return $builder->with('user:id,name');
     }
 
     /**
      * Scope the query to include the comment post and user id/name.
      *
-     * @param  Builder<Comment>  $query
+     * @param  Builder<Comment>  $builder
      * @return Builder<Comment>
      */
-    public function scopeWithPostAndUserName(Builder $query): Builder
+    public function scopeWithPostAndUserName(Builder $builder): Builder
     {
-        return $query->with(['post', 'user:id,name']);
+        return $builder->with(['post', 'user:id,name']);
     }
 }

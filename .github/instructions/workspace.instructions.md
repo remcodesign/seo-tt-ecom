@@ -90,9 +90,69 @@ also consult the `.github/skills/pest-testing/SKILL.md` for additional guidance 
 - **[MINIMAL] Eager Loading:** Verify that relations are pre-loaded on the returned models to prevent N+1 queries (use `relationLoaded()`).
 - **Filtering / Optional Includes:** If the query accepts parameters like `withComments`, test both enabled and disabled states.
 
-> controllers / HTTP / API .. feature tests
+> controllers / HTTP / API / feature tests
 
-### ...
+Feature tests for API controllers should verify the full HTTP lifecycle — request, auth, validation, response shape — without duplicating service-layer assertions.
+
+### 1. Happy Path Per Action
+- **[MINIMAL] index:** Assert `assertSuccessful()`, that the JSON structure contains `data` (with expected keys), `meta`, and `links` for paginated responses.
+- **[MINIMAL] show:** Assert `assertSuccessful()`, that the response contains the expected resource identifier and attribute structure.
+- **[MINIMAL] store:** Assert `assertCreated()`, that the response contains the created resource attributes, and the database has the expected record.
+- **[MINIMAL] update:** Assert `assertSuccessful()`, that the response reflects the changed attributes, and `$model->fresh()` confirms persistence.
+- **[MINIMAL] destroy:** Assert `assertNoContent()`, and that the model is removed from the database (`Model::find($id)` returns null).
+
+### 2. Unauthenticated Guardrails
+- **[MINIMAL] One per route group:** For endpoints grouped under a shared `auth:sanctum` middleware, **one** `assertUnauthorized()` test (e.g. on `index`) is sufficient. The middleware protects the entire group, so per-action duplicates add noise without new signal.
+- If a future controller lives in a *different* group or outside the middleware, add a single unauthenticated test there too.
+- Use `$this->getJson()`, `$this->postJson()`, `$this->putJson()`, `$this->deleteJson()` — do NOT use `post()` or `get()` for API tests (those go through `web` middleware).
+
+### 3. Authentication Strategy
+- Use `Sanctum::actingAs(User::factory()->create())` to simulate an authenticated user. This avoids multi-step login sequences and keeps tests fast.
+- For ownership guardrails, create two users (owner + other) and verify `assertForbidden()` on update/destroy by the non-owner.
+
+### 4. Validation Errors
+- Use `postJson()` with missing/invalid data and assert `assertUnprocessable()` + `assertJsonValidationErrors(['field'])`.
+- Test required fields, format validation, and duplicate-unique constraints at the HTTP layer.
+
+### 5. Example Structure
+Refer to `tests/Feature/Api/Blog/PostControllerTest.php` — each CRUD action gets its own `describe()` block, with happy path and unauthenticated tests grouped together.
+
+---
+
+## Blueprint: Auth / Sanctum API Endpoints
+
+This application uses **Laravel Sanctum** for API authentication with custom endpoints (no Fortify).
+
+### Sanctum Routes (in `routes/api.php`)
+
+| Method | URI | Purpose | Auth |
+|--------|-----|---------|------|
+| `POST` | `/api/users` | Register a new user | None |
+| `POST` | `/api/sanctum/token` | Issue a Sanctum API token | None |
+| `DELETE` | `/api/sanctum/tokens/current` | Revoke current token | `auth:sanctum` |
+
+### Registration (`POST /api/users`)
+
+- Uses `RegisterUserController` (invokable) that delegates to `UserService`.
+- Expects `name`, `email`, `password`, `password_confirmation` — validated via `Illuminate\Validation\Rule`.
+- Returns `201` with `{"message": "...", "user": {"id", "name", "email"}}`.
+- Validation errors return standard 422 JSON with field-level error messages.
+
+### Token Creation (`POST /api/sanctum/token`)
+
+- Uses `CreateTokenController` (invokable) — validates email/password, returns `{"token": "..."}`.
+- Invalid credentials return 422 with a generic error message (no user enumeration).
+
+### Token Revocation (`DELETE /api/sanctum/tokens/current`)
+
+- Uses `RevokeTokenController` (invokable) — deletes the current bearer token.
+- Requires `auth:sanctum` middleware. Returns `{"message": "Token revoked."}` on success.
+
+### Stateful API Configuration
+
+- `bootstrap/app.php`: `$middleware->statefulApi()` enables SPA-style cookie auth.
+- `config/sanctum.php`: `SANCTUM_STATEFUL_DOMAINS` env var lists allowed origins.
+- The exception handler uses `shouldRenderJsonWhen(fn ($request) => $request->is('api/*'))` to always return JSON for API routes.
 
 ---
 
@@ -100,10 +160,12 @@ also consult the `.github/skills/pest-testing/SKILL.md` for additional guidance 
 *Focus: keep controllers thin and delegate real work to services.*
 - Controllers should assemble validated input, authorize the request, and hand execution off to service methods.
 - Avoid business logic, query construction, or repeated eager-loading setup in controllers.
+- Prefer invokable controllers for single-action endpoints (e.g., `RegisterUserController`, `CreateTokenController`).
 
 ---
 
 ## Blueprint: Service Layer
 - Services should encapsulate business logic, query construction, and any side effects.
 - Service queries should reuse model scopes for shared query logic, for example `withPostAndUserName()` instead of repeating the same eager-load configuration.
+- Default to readonly properties and constructor injection for dependencies. Use `readonly class` where possible (PHP 8.4+).
 

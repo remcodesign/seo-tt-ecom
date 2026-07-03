@@ -17,9 +17,9 @@ describe('CommentService', function (): void {
         it('creates a comment on a post for the given user', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            $comment = $service->create($user, $post, [
+            $comment = $commentService->create($user, $post, [
                 'comment' => 'Great post!',
             ]);
 
@@ -36,9 +36,9 @@ describe('CommentService', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
             $comment = Comment::factory()->for($post)->for($user)->create(['comment' => 'Original']);
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            $result = $service->update($user, $comment, ['comment' => 'Updated!']);
+            $result = $commentService->update($user, $comment, ['comment' => 'Updated!']);
 
             expect($result->comment)->toBe('Updated!');
             expect($comment->fresh()->comment)->toBe('Updated!');
@@ -49,9 +49,9 @@ describe('CommentService', function (): void {
             $other = User::factory()->create();
             $post = Post::factory()->for($creator)->create();
             $comment = Comment::factory()->for($post)->for($creator)->create();
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            expect(fn () => $service->update($other, $comment, ['comment' => 'Hacked']))
+            expect(fn () => $commentService->update($other, $comment, ['comment' => 'Hacked']))
                 ->toThrow(AuthorizationException::class, 'You are not the owner of this comment.');
         });
     });
@@ -61,9 +61,9 @@ describe('CommentService', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
             $comment = Comment::factory()->for($post)->for($user)->create();
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            $service->delete($user, $comment);
+            $commentService->delete($user, $comment);
 
             expect(Comment::find($comment->id))->toBeNull();
         });
@@ -73,9 +73,9 @@ describe('CommentService', function (): void {
             $other = User::factory()->create();
             $post = Post::factory()->for($creator)->create();
             $comment = Comment::factory()->for($post)->for($creator)->create();
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            expect(fn () => $service->delete($other, $comment))
+            expect(fn () => $commentService->delete($other, $comment))
                 ->toThrow(AuthorizationException::class, 'You are not the owner of this comment.');
         });
     });
@@ -85,16 +85,16 @@ describe('CommentService', function (): void {
             Post::factory()->count(3)->for(User::factory())->create()->each(function (Post $post): void {
                 Comment::factory()->count(2)->for($post)->for(User::factory())->create();
             });
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            $result = $service->query(perPage: 4);
+            $lengthAwarePaginator = $commentService->query(perPage: 4);
 
-            expect($result)->toBeInstanceOf(LengthAwarePaginator::class)
-                ->and($result->total())->toBe(6)
-                ->and($result->perPage())->toBe(4)
-                ->and($result->items())->toHaveCount(4);
+            expect($lengthAwarePaginator)->toBeInstanceOf(LengthAwarePaginator::class)
+                ->and($lengthAwarePaginator->total())->toBe(6)
+                ->and($lengthAwarePaginator->perPage())->toBe(4)
+                ->and($lengthAwarePaginator->items())->toHaveCount(4);
 
-            $loaded = $result->first();
+            $loaded = $lengthAwarePaginator->first();
             expect($loaded->relationLoaded('post'))->toBeTrue();
             expect($loaded->relationLoaded('user'))->toBeTrue();
         });
@@ -105,12 +105,12 @@ describe('CommentService', function (): void {
             $postB = Post::factory()->for($user)->create();
             Comment::factory()->count(3)->for($postA)->for($user)->create();
             Comment::factory()->count(2)->for($postB)->for($user)->create();
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            $result = $service->query(postId: $postA->id, perPage: 15);
+            $lengthAwarePaginator = $commentService->query(postId: $postA->id, perPage: 15);
 
-            expect($result->total())->toBe(3);
-            foreach ($result->items() as $comment) {
+            expect($lengthAwarePaginator->total())->toBe(3);
+            foreach ($lengthAwarePaginator->items() as $comment) {
                 expect($comment->post_id)->toBe($postA->id);
             }
         });
@@ -119,11 +119,11 @@ describe('CommentService', function (): void {
             $user = User::factory()->create(['name' => 'Commenter Name']);
             $post = Post::factory()->for($user)->create();
             Comment::factory()->for($post)->for($user)->create();
-            $service = app(CommentService::class);
+            $commentService = app(CommentService::class);
 
-            $result = $service->query(perPage: 15);
+            $lengthAwarePaginator = $commentService->query(perPage: 15);
 
-            $comment = $result->first();
+            $comment = $lengthAwarePaginator->first();
             expect($comment->user->toArray())->toBe([
                 'id' => $user->id,
                 'name' => 'Commenter Name',
