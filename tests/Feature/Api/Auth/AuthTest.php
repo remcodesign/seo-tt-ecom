@@ -64,7 +64,7 @@ describe('Auth (API)', function (): void {
             $token = $response->json('token');
 
             // Use the token to access a protected endpoint
-            $this->getJson('/api/posts', [
+            $this->getJson('/api/blog/posts', [
                 'Authorization' => 'Bearer '.$token,
             ])->assertSuccessful();
         });

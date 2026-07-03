@@ -15,7 +15,7 @@ describe('PostController (API)', function (): void {
             Sanctum::actingAs(User::factory()->create());
             Post::factory()->count(5)->for(User::factory())->create();
 
-            $response = $this->getJson('/api/posts');
+            $response = $this->getJson('/api/blog/posts');
 
             $response->assertSuccessful()
                 ->assertJsonStructure(['data', 'meta', 'links'])
@@ -23,7 +23,7 @@ describe('PostController (API)', function (): void {
         });
 
         it('rejects unauthenticated requests', function (): void {
-            $this->getJson('/api/posts')->assertUnauthorized();
+            $this->getJson('/api/blog/posts')->assertUnauthorized();
         });
     });
 
@@ -32,7 +32,7 @@ describe('PostController (API)', function (): void {
             Sanctum::actingAs(User::factory()->create());
             $post = Post::factory()->for(User::factory())->create();
 
-            $response = $this->getJson('/api/posts/'.$post->id);
+            $response = $this->getJson('/api/blog/posts/'.$post->id);
 
             $response->assertSuccessful()
                 ->assertJsonStructure(['data', 'data' => ['id', 'title', 'body', 'slug']]);
@@ -43,7 +43,7 @@ describe('PostController (API)', function (): void {
         it('creates a new post for an authenticated user', function (): void {
             Sanctum::actingAs($user = User::factory()->create());
 
-            $response = $this->postJson('/api/posts', [
+            $response = $this->postJson('/api/blog/posts', [
                 'title' => 'My New Post',
                 'body' => 'This is the body content.',
                 'published_on' => now()->toDateTimeString(),
@@ -59,7 +59,7 @@ describe('PostController (API)', function (): void {
         });
 
         it('rejects unauthenticated requests for store', function (): void {
-            $this->postJson('/api/posts', [
+            $this->postJson('/api/blog/posts', [
                 'title' => 'My Post',
             ])->assertUnauthorized();
         });
@@ -67,7 +67,7 @@ describe('PostController (API)', function (): void {
         it('fails validation when title is missing', function (): void {
             Sanctum::actingAs(User::factory()->create());
 
-            $this->postJson('/api/posts', ['body' => 'No title'])
+            $this->postJson('/api/blog/posts', ['body' => 'No title'])
                 ->assertUnprocessable()
                 ->assertJsonValidationErrors(['title']);
         });
@@ -78,7 +78,7 @@ describe('PostController (API)', function (): void {
             Sanctum::actingAs($user = User::factory()->create());
             $post = Post::factory()->for($user)->create(['title' => 'Original Title']);
 
-            $response = $this->putJson('/api/posts/'.$post->id, [
+            $response = $this->putJson('/api/blog/posts/'.$post->id, [
                 'title' => 'Updated Title',
             ]);
 
@@ -96,7 +96,7 @@ describe('PostController (API)', function (): void {
 
             Sanctum::actingAs($other);
 
-            $this->putJson('/api/posts/'.$post->id, ['title' => 'Hacked'])
+            $this->putJson('/api/blog/posts/'.$post->id, ['title' => 'Hacked'])
                 ->assertForbidden();
         });
 
@@ -107,7 +107,7 @@ describe('PostController (API)', function (): void {
             Sanctum::actingAs($user = User::factory()->create());
             $post = Post::factory()->for($user)->create();
 
-            $this->deleteJson('/api/posts/'.$post->id)
+            $this->deleteJson('/api/blog/posts/'.$post->id)
                 ->assertNoContent();
 
             expect(Post::find($post->id))->toBeNull();
@@ -120,7 +120,7 @@ describe('PostController (API)', function (): void {
 
             Sanctum::actingAs($other);
 
-            $this->deleteJson('/api/posts/'.$post->id)
+            $this->deleteJson('/api/blog/posts/'.$post->id)
                 ->assertForbidden();
         });
     });

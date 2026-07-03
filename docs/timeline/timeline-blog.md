@@ -54,7 +54,9 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## TODO - prepent `blog` before `post` classes/routes
+## DONE - prepent `blog` before `post` classes/routes
+
+-------------
 
 ## TODO - goto phpstan level 9 and use `spatie/laravel-data`
 

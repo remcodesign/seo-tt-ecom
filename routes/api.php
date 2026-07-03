@@ -13,5 +13,8 @@ Route::post('/users', RegisterUserController::class);
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::delete('/sanctum/tokens/current', RevokeTokenController::class);
-    Route::apiResource('posts', PostController::class);
+
+    Route::prefix('blog')->group(function (): void {
+        Route::apiResource('posts', PostController::class);
+    });
 });
