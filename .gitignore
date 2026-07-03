@@ -29,3 +29,7 @@ Thumbs.db
 # Custom rules below
 docs/private/
 docs/private.md
+
+# test coverage
+clover.xml
+public/coverage

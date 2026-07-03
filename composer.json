@@ -3,7 +3,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.3",
@@ -74,18 +77,20 @@
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
-
         "pint": "vendor/bin/pint",
         "rector": "vendor/bin/rector process",
         "phpstan": "vendor/bin/phpstan analyse",
         "stan": "@phpstan",
         "pest": "vendor/bin/pest",
+        "coverage": [
+            "XDEBUG_MODE=coverage vendor/bin/pest --coverage-html public/coverage --coverage-clover clover.xml"
+        ],
         "format": [
             "@php artisan config:clear --ansi",
             "@pint",
             "@rector",
             "@phpstan",
-            "@pest"
+            "@coverage"
         ]
     },
     "extra": {

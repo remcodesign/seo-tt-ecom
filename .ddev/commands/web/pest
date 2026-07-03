@@ -1,0 +1,10 @@
+#!/bin/bash
+# Description: Draai Pest tests met automatische coverage support binnen DDEV
+# Usage: ddev pest [arguments]
+
+# Als het argument "coverage" in het commando voorkomt, dwing dan de juiste Xdebug mode af
+if [[ "$*" == *"--coverage"* ]]; then
+    export XDEBUG_MODE=coverage
+fi
+
+php vendor/bin/pest "$@"
