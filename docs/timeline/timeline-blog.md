@@ -38,7 +38,9 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## TODO - fixed ddev db port
+## DONE - fixed ddev db port
+
+-------------
 
 ## TODO - `app/Http/Controllers/Api/Blog/PostController.php` using `Auth::user()` instead of the request object
 
