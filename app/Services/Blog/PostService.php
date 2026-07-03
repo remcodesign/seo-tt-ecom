@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Blog;
 
-use App\Models\Post;
+use App\Models\Blog\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

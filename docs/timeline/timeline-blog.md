@@ -50,7 +50,9 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## TODO - prepent `blog` before `post / comments` tables
+## DONE - prepent `blog` before `post / comments` tables
+
+-------------
 
 ## TODO - prepent `blog` before `post` classes/routes
 

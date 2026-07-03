@@ -2,17 +2,34 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Blog;
 
-use Database\Factories\PostFactory;
+use App\Models\User;
+use Carbon\CarbonImmutable;
+use Database\Factories\Blog\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $title
+ * @property string|null $body
+ * @property string $slug
+ * @property CarbonImmutable|null $published_on
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $user
+ * @property-read Collection<int, Comment> $comments
+ */
 #[Fillable(['user_id', 'title', 'body', 'slug', 'published_on'])]
-class Post extends Model
+#[Table(name: 'blog_posts')]
+class Post extends BlogRootModel
 {
     /**
      * @use HasFactory<PostFactory>
@@ -46,6 +63,6 @@ class Post extends Model
      */
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'post_id', 'id');
     }
 }

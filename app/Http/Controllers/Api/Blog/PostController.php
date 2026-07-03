@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Api\Blog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Blog\StorePostRequest;
 use App\Http\Requests\Api\Blog\UpdatePostRequest;
-use App\Models\Post;
+use App\Models\Blog\Post;
 use App\Models\User;
 use App\Services\Blog\PostService;
 use Illuminate\Http\JsonResponse;

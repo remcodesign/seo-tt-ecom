@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Models\Comment;
-use App\Models\Post;
+use App\Models\Blog\Comment;
+use App\Models\Blog\Post;
 use App\Models\User;
 use App\Services\Blog\CommentService;
 use Illuminate\Auth\Access\AuthorizationException;

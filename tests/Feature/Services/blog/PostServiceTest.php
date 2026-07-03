@@ -11,8 +11,8 @@ namespace App\Services\Blog {
 
 namespace {
 
-    use App\Models\Comment;
-    use App\Models\Post;
+    use App\Models\Blog\Comment;
+    use App\Models\Blog\Post;
     use App\Models\User;
     use App\Services\Blog\PostService;
     use Illuminate\Auth\Access\AuthorizationException;
