@@ -11,9 +11,9 @@ use App\Models\Post;
 use App\Models\User;
 use App\Services\Blog\PostService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -36,7 +36,7 @@ class PostController extends Controller
     public function store(StorePostRequest $storePostRequest): JsonResponse
     {
         /** @var User $user */
-        $user = $storePostRequest->user();
+        $user = Auth::user();
 
         $post = $this->postService->create($user, $storePostRequest->validated());
 
@@ -46,17 +46,17 @@ class PostController extends Controller
     public function update(UpdatePostRequest $updatePostRequest, Post $post): JsonResponse
     {
         /** @var User $user */
-        $user = $updatePostRequest->user();
+        $user = Auth::user();
 
         $post = $this->postService->update($user, $post, $updatePostRequest->validated());
 
         return response()->json($post);
     }
 
-    public function destroy(Request $request, Post $post): JsonResponse
+    public function destroy(Post $post): JsonResponse
     {
         /** @var User $user */
-        $user = $request->user();
+        $user = Auth::user();
 
         $this->postService->delete($user, $post);
 

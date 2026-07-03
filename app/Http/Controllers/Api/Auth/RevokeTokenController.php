@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Auth;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 readonly class RevokeTokenController
 {
     /**
      * Revoke the current Sanctum API token.
      */
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(): JsonResponse
     {
-        $request->user()?->currentAccessToken()?->delete();
+        Auth::user()?->currentAccessToken()?->delete();
 
         return response()->json(['message' => 'Token revoked.'], 200);
     }

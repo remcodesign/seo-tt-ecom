@@ -42,23 +42,19 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## TODO - `app/Http/Controllers/Api/Blog/PostController.php` using `Auth::user()` instead of the request object
+## DONE - `app/Http/Controllers/Api/Blog/PostController.php` using `Auth::user()` instead of the request object
 
-- change some of the methods to full public, this for tests and routes
-  - index and show need to be full public
-    - change this in the api.php routes file
-  - all modify routes (not pure get routes) stay on the current sanctum groups
-    - change tests, move the index http401 to the create test `tests/Feature/Api/Blog/PostControllerTest.php`
-
-## TODO - goto phpstan level 9 and use `spatie/laravel-data`
-
-docs/private/todo/dto-plus-phpstan-level9.md
+-------------
 
 ## TODO - adding code coverage check
 
 ## TODO - prepent `blog` before `post / comments` tables
 
 ## TODO - prepent `blog` before `post` classes/routes
+
+## TODO - goto phpstan level 9 and use `spatie/laravel-data`
+
+docs/private/todo/dto-plus-phpstan-level9.md
 
 ## TODO - adding comments controller + tests
 
