@@ -46,7 +46,9 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## TODO - adding code coverage check
+## DONE - adding code coverage check
+
+-------------
 
 ## TODO - prepent `blog` before `post / comments` tables
 
