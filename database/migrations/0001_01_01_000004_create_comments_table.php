@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('post_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->text('comment');
-            $table->timestamps();
+        Schema::create('comments', function (Blueprint $blueprint): void {
+            $blueprint->id();
+            $blueprint->foreignId('post_id')->constrained()->cascadeOnDelete();
+            $blueprint->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $blueprint->text('comment');
+            $blueprint->timestamps();
 
-            $table->index(['post_id', 'user_id']);
+            $blueprint->index(['post_id', 'user_id']);
         });
     }
 

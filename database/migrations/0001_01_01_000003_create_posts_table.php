@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('title');
-            $table->text('body')->nullable();
-            $table->string('slug')->unique();
-            $table->dateTime('published_on')->nullable();
-            $table->timestamps();
+        Schema::create('posts', function (Blueprint $blueprint): void {
+            $blueprint->id();
+            $blueprint->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $blueprint->string('title');
+            $blueprint->text('body')->nullable();
+            $blueprint->string('slug')->unique();
+            $blueprint->dateTime('published_on')->nullable();
+            $blueprint->timestamps();
 
-            $table->index(['user_id', 'published_on']);
+            $blueprint->index(['user_id', 'published_on']);
         });
     }
 
