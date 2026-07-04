@@ -174,6 +174,16 @@ This application uses **Laravel Sanctum** for API authentication with custom end
 - Keep DTO classes tiny: public constructor properties only, no business logic, no array fallback helpers, and no sprawling static factories.
 - Controllers must stay thin: accept a single typed DTO, delegate persistence to the service, and return a typed response or resource.
 - Services should be strict: `create(RegisterData $registerData)` means no `array` input, no optional array mapping, and stronger PHPStan level-9 compatibility.
+- Prefer strict `spatie/laravel-data` DTOs over raw arrays for validated input. This avoids `array<string,mixed>` service signatures and reduces the long docblocks PHPStan level 9 otherwise forces around untyped payloads.
+- When mapping optional DTO properties into an Eloquent payload, prefer the compact `array_filter` pattern over repeated `if` statements. This is a general service-side mapping technique, not just for post updates.
+  - Example:
+    ```php
+    $data = array_filter([
+        'title' => $dto->title,
+        'body' => $dto->body,
+        'published_on' => $dto->published_on,
+    ], static fn (?string $value): bool => $value !== null);
+    ```
 - Use `spatie/laravel-data` to validate request payloads automatically and keep validation rules inside the DTO class when possible.
 - When converting any controller to Spatie Data style (new or refactored):
   - Accept request DTOs such as `StoreResourceData` / `UpdateResourceData` in controller methods.

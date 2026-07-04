@@ -11,6 +11,8 @@ namespace App\Services\Blog {
 
 namespace {
 
+    use App\Data\Blog\StorePostData;
+    use App\Data\Blog\UpdatePostData;
     use App\Models\Blog\Comment;
     use App\Models\Blog\Post;
     use App\Models\User;
@@ -27,11 +29,11 @@ namespace {
                 $user = User::factory()->create();
                 $postService = app(PostService::class);
 
-                $post = $postService->create($user, [
-                    'title' => 'My New Post',
-                    'body' => 'Post body content',
-                    'published_on' => now(),
-                ]);
+                $post = $postService->create($user, new StorePostData(
+                    title: 'My New Post',
+                    body: 'Post body content',
+                    published_on: now()->toDateString(),
+                ));
 
                 expect($post)->toBeInstanceOf(Post::class)
                     ->and($post->exists)->toBeTrue()
@@ -45,19 +47,19 @@ namespace {
                 $user = User::factory()->create();
                 $postService = app(PostService::class);
 
-                $post = $postService->create($user, [
-                    'title' => 'My Post',
-                    'body' => 'Body',
-                    'published_on' => now(),
-                ]);
+                $post = $postService->create($user, new StorePostData(
+                    title: 'My Post',
+                    body: 'Body',
+                    published_on: now()->toDateString(),
+                ));
 
                 expect($post->slug)->toBe('my-post');
 
-                $second = $postService->create($user, [
-                    'title' => 'My Post',
-                    'body' => 'Another body',
-                    'published_on' => now(),
-                ]);
+                $second = $postService->create($user, new StorePostData(
+                    title: 'My Post',
+                    body: 'Another body',
+                    published_on: now()->toDateString(),
+                ));
 
                 expect($second->slug)->toBe('my-post-1');
             });
@@ -68,11 +70,11 @@ namespace {
 
                 // Create 5 posts with the same title to exhaust -1, -2, -3 and reach the random fallback
                 for ($i = 0; $i < 5; $i++) {
-                    $post = $postService->create($user, [
-                        'title' => 'Collision Test',
-                        'body' => 'Body '.$i,
-                        'published_on' => now(),
-                    ]);
+                    $post = $postService->create($user, new StorePostData(
+                        title: 'Collision Test',
+                        body: 'Body '.$i,
+                        published_on: now()->toDateString(),
+                    ));
 
                     if ($i < 4) {
                         expect($post->slug)->toBe($i === 0 ? 'collision-test' : sprintf('collision-test-%d', $i));
@@ -91,18 +93,18 @@ namespace {
                 Post::factory()->for($user)->create(['title' => 'Collision Test', 'slug' => 'collision-test-123456']);
 
                 for ($i = 0; $i < 4; $i++) {
-                    $postService->create($user, [
-                        'title' => 'Collision Test',
-                        'body' => 'Body '.$i,
-                        'published_on' => now(),
-                    ]);
+                    $postService->create($user, new StorePostData(
+                        title: 'Collision Test',
+                        body: 'Body '.$i,
+                        published_on: now()->toDateString(),
+                    ));
                 }
 
-                expect(fn () => $postService->create($user, [
-                    'title' => 'Collision Test',
-                    'body' => 'Final body',
-                    'published_on' => now(),
-                ]))->toThrow(RuntimeException::class, 'Unable to generate a unique slug for title "Collision Test" after multiple attempts. Choose a more unique title.');
+                expect(fn () => $postService->create($user, new StorePostData(
+                    title: 'Collision Test',
+                    body: 'Final body',
+                    published_on: now()->toDateString(),
+                )))->toThrow(RuntimeException::class, 'Unable to generate a unique slug for title "Collision Test" after multiple attempts. Choose a more unique title.');
             });
         });
 
@@ -112,7 +114,9 @@ namespace {
                 $post = Post::factory()->for($user)->create(['title' => 'Original']);
                 $postService = app(PostService::class);
 
-                $result = $postService->update($user, $post, ['title' => 'Updated']);
+                $result = $postService->update($user, $post, new UpdatePostData(
+                    title: 'Updated',
+                ));
 
                 expect($result->title)->toBe('Updated');
                 expect($result->slug)->toBe('updated');
@@ -126,7 +130,9 @@ namespace {
                 $originalSlug = $post->slug;
                 $postService = app(PostService::class);
 
-                $postService->update($user, $post, ['body' => 'Only body update']);
+                $postService->update($user, $post, new UpdatePostData(
+                    body: 'Only body update',
+                ));
 
                 expect($post->fresh()->slug)->toBe($originalSlug);
             });
@@ -137,7 +143,9 @@ namespace {
                 $post = Post::factory()->for($creator)->create();
                 $postService = app(PostService::class);
 
-                expect(fn () => $postService->update($other, $post, ['title' => 'Hacked']))
+                expect(fn () => $postService->update($other, $post, new UpdatePostData(
+                    title: 'Hacked',
+                )))
                     ->toThrow(AuthorizationException::class, 'You are not the owner of this post.');
             });
         });

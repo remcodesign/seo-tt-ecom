@@ -40,7 +40,7 @@ class PostController
         /** @var User $user */
         $user = Auth::user();
 
-        $post = $this->postService->create($user, $storePostData->toArray());
+        $post = $this->postService->create($user, $storePostData);
 
         return PostData::from($post);
     }
@@ -50,7 +50,7 @@ class PostController
         /** @var User $user */
         $user = Auth::user();
 
-        $post = $this->postService->update($user, $post, $updatePostData->toArray());
+        $post = $this->postService->update($user, $post, $updatePostData);
 
         return PostData::from($post);
     }

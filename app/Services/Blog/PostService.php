@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Blog;
 
+use App\Data\Blog\StorePostData;
+use App\Data\Blog\UpdatePostData;
 use App\Models\Blog\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -12,31 +14,28 @@ use Illuminate\Support\Str;
 
 readonly class PostService
 {
-    /**
-     * Create a new post for the given user.
-     *
-     * @param  array<string, mixed>  $data
-     */
-    public function create(User $user, array $data): Post
+    public function create(User $user, StorePostData $storePostData): Post
     {
-        $data['slug'] = $this->generateUniqueSlug($data['title']);
+        $data = $storePostData->toArray();
+        $data['slug'] = $this->generateUniqueSlug($storePostData->title);
 
         return $user->posts()->create($data);
     }
 
-    /**
-     * Update the given post.
-     *
-     * @param  array<string, mixed>  $data
-     */
-    public function update(User $user, Post $post, array $data): Post
+    public function update(User $user, Post $post, UpdatePostData $updatePostData): Post
     {
         if ($user->isNot($post->user)) {
             throw new AuthorizationException('You are not the owner of this post.');
         }
 
-        if (isset($data['title']) && $data['title'] !== $post->title) {
-            $data['slug'] = $this->generateUniqueSlug($data['title'], $post);
+        $data = array_filter([
+            'title' => $updatePostData->title,
+            'body' => $updatePostData->body,
+            'published_on' => $updatePostData->published_on,
+        ], static fn (?string $value): bool => $value !== null);
+
+        if ($updatePostData->title !== null && $updatePostData->title !== $post->title) {
+            $data['slug'] = $this->generateUniqueSlug($updatePostData->title, $post);
             // TODO: If slug changes and old URLs were shared externally, consider
             // adding a redirects table to map old slugs → new slugs (301 redirects).
         }
