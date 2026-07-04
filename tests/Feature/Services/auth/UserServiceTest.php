@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Data\Auth\RegisterData;
 use App\Models\User;
 use App\Services\Auth\UserService;
 use Illuminate\Database\QueryException;
@@ -15,11 +16,11 @@ describe('UserService', function (): void {
         it('creates a user and hashes the password', function (): void {
             $userService = app(UserService::class);
 
-            $user = $userService->create([
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-                'password' => 'super-secret',
-            ]);
+            $user = $userService->create(new RegisterData(
+                name: 'Test User',
+                email: 'test@example.com',
+                password: 'super-secret',
+            ));
 
             expect($user)->toBeInstanceOf(User::class)
                 ->and($user->exists)->toBeTrue()
@@ -34,11 +35,11 @@ describe('UserService', function (): void {
         it('persists the returned user instance to the database', function (): void {
             $userService = app(UserService::class);
 
-            $user = $userService->create([
-                'name' => 'Another User',
-                'email' => 'another@example.com',
-                'password' => 'password123',
-            ]);
+            $user = $userService->create(new RegisterData(
+                name: 'Another User',
+                email: 'another@example.com',
+                password: 'password123',
+            ));
 
             expect(User::find($user->id))->not->toBeNull()
                 ->and(User::find($user->id)->email)->toBe('another@example.com');
@@ -47,26 +48,18 @@ describe('UserService', function (): void {
         it('throws an exception when the email is already taken', function (): void {
             $userService = app(UserService::class);
 
-            $userService->create([
-                'name' => 'Existing User',
-                'email' => 'duplicate@example.com',
-                'password' => 'password123',
-            ]);
+            $userService->create(new RegisterData(
+                name: 'Existing User',
+                email: 'duplicate@example.com',
+                password: 'password123',
+            ));
 
-            expect(fn () => $userService->create([
-                'name' => 'Another User',
-                'email' => 'duplicate@example.com',
-                'password' => 'password123',
-            ]))->toThrow(QueryException::class);
+            expect(fn () => $userService->create(new RegisterData(
+                name: 'Another User',
+                email: 'duplicate@example.com',
+                password: 'password123',
+            )))->toThrow(QueryException::class);
         });
 
-        it('throws an exception when the required name field is missing', function (): void {
-            $userService = app(UserService::class);
-
-            expect(fn () => $userService->create([
-                'email' => 'missing-name@example.com',
-                'password' => 'password123',
-            ]))->toThrow(ErrorException::class);
-        });
     });
 });

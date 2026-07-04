@@ -12,7 +12,9 @@
         "php": "^8.3",
         "laravel/framework": "^13.8",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "spatie/laravel-data": "^4.23",
+        "spatie/laravel-typescript-transformer": "^3.3"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.5",
@@ -83,13 +85,15 @@
         "stan": "@phpstan",
         "pest": "vendor/bin/pest",
         "coverage": [
-            "XDEBUG_MODE=coverage vendor/bin/pest --coverage-html public/coverage --coverage-clover clover.xml"
+            "XDEBUG_MODE=coverage vendor/bin/pest --compact --parallel --coverage-html public/coverage --coverage-clover clover.xml"
         ],
+        "typescript": "@php artisan typescript:transform",
         "format": [
             "@php artisan config:clear --ansi",
             "@pint",
             "@rector",
             "@phpstan",
+            "@typescript",
             "@coverage"
         ]
     },

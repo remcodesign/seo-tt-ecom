@@ -27,16 +27,12 @@ ddev composer require pestphp/pest-plugin-laravel --dev
 ddev composer require larastan/larastan --dev
 
 ddev composer require rector/rector --dev
-composer require rector/rector-laravel --dev
+ddev composer require rector/rector-laravel --dev
 
 ddev composer require laravel/boost --dev
-```
 
-## laravel boost
-
-```bash
-php artisan boost:install
-php artisan boost:update
+ddev composer require spatie/laravel-data
+ddev composer require spatie/laravel-typescript-transformer
 ```
 
 ## formatters
@@ -54,10 +50,35 @@ ddev artisan migrate
 ddev artisan migrate:refresh
 ```
 
+### Spatie Data :: Generate Typescript
+
+```bash
+# first time
+php artisan typescript:install
+
+php artisan typescript:transform
+```
+
+### laravel boost
+
+```bash
+php artisan boost:install
+php artisan boost:update
+```
+
 ## xdebug + code coverage
 
 ```bash
 ddev xdebug on
 ddev pest --coverage-html public/coverage
 ddev composer coverage
+```
+
+## testing
+
+specific test
+
+```bash
+ddev pest tests/Feature/Api/Auth/UserTest.php
+ddev pest tests/Feature/Api/Auth/UserTest.php --filter="it_registers_a_user_successfully"
 ```

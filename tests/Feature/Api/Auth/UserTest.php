@@ -18,13 +18,11 @@ describe('User (API)', function (): void {
             ]);
 
             $response->assertCreated()
-                ->assertJsonStructure(['message', 'user' => ['id', 'name', 'email']])
+                ->assertJsonStructure(['id', 'name', 'email'])
                 ->assertJson([
-                    'message' => 'User registered successfully.',
-                    'user' => [
-                        'name' => 'Jane Doe',
-                        'email' => 'jane@example.com',
-                    ],
+                    'id' => 1,
+                    'name' => 'Jane Doe',
+                    'email' => 'jane@example.com',
                 ]);
 
             $this->assertDatabaseHas('users', [

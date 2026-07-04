@@ -169,3 +169,20 @@ This application uses **Laravel Sanctum** for API authentication with custom end
 - Service queries should reuse model scopes for shared query logic, for example `withPostAndUserName()` instead of repeating the same eager-load configuration.
 - Default to readonly properties and constructor injection for dependencies. Use `readonly class` where possible (PHP 8.4+).
 
+## DTO / Service Style
+- Prefer narrow request DTOs for API input in all controllers. Services should accept typed DTOs, not arrays, whenever the DTO is already validated.
+- Keep DTO classes tiny: public constructor properties only, no business logic, no array fallback helpers, and no sprawling static factories.
+- Controllers must stay thin: accept a single typed DTO, delegate persistence to the service, and return a typed response or resource.
+- Services should be strict: `create(RegisterData $registerData)` means no `array` input, no optional array mapping, and stronger PHPStan level-9 compatibility.
+- Use `spatie/laravel-data` to validate request payloads automatically and keep validation rules inside the DTO class when possible.
+- For TypeScript generation on DTOs, import `Spatie\TypeScriptTransformer\Attributes\TypeScript` and use `php artisan typescript:transform`.
+  - Add `#[TypeScript]` above the DTO class to generate TypeScript interfaces for frontend use.
+- For example, the following files are now using DTOs and TypeScript generation:
+  ```
+  app/Data/Auth/RegisterData.php
+  app/Http/Controllers/Api/Auth/RegisterUserController.php
+  app/Services/Auth/UserService.php
+  app/Data/Auth/UserData.php
+  ```
+
+---

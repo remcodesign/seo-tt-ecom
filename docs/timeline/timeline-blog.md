@@ -58,9 +58,9 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## TODO - goto phpstan level 9 and use `spatie/laravel-data`
+## DONE PARTIALY - NOW UPGRADE OTHER FILES - goto phpstan level 9 and use `spatie/laravel-data`
 
-docs/private/todo/dto-plus-phpstan-level9.md
+docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 ## TODO - adding comments controller + tests
 
