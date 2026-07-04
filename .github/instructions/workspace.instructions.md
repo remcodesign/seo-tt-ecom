@@ -175,9 +175,18 @@ This application uses **Laravel Sanctum** for API authentication with custom end
 - Controllers must stay thin: accept a single typed DTO, delegate persistence to the service, and return a typed response or resource.
 - Services should be strict: `create(RegisterData $registerData)` means no `array` input, no optional array mapping, and stronger PHPStan level-9 compatibility.
 - Use `spatie/laravel-data` to validate request payloads automatically and keep validation rules inside the DTO class when possible.
+- When converting any controller to Spatie Data style (new or refactored):
+  - Accept request DTOs such as `StoreResourceData` / `UpdateResourceData` in controller methods.
+  - Delegate persistence to a service and return response DTOs via `ResourceData::from($model)` or paginated results via `ResourceData::collect($paginator, PaginatedDataCollection::class)`.
+  - Keep controllers thin: no query building, validation, or business logic should live in the controller.
+  - Prefer `final class` data objects with constructor-promoted public properties only.
+- For Carbon/CarbonImmutable date properties in data DTOs, prefer global mapping instead of per-property TypeScript overrides:
+  - In `config/data.php`, add Carbon transformers to use `DateTimeInterfaceTransformer` for both `Carbon::class` and `CarbonImmutable::class`.
+  - In `app/Providers/TypeScriptTransformerServiceProvider.php`, use `replaceType(Carbon::class, 'string')` and `replaceType(CarbonImmutable::class, 'string')` so generated TypeScript does not try to resolve Carbon references.
+  - Then use `#[WithCast(DateTimeInterfaceCast::class)] public ?CarbonImmutable $published_on` in data objects without `TypeScriptType('string')` on every property.
 - For TypeScript generation on DTOs, import `Spatie\TypeScriptTransformer\Attributes\TypeScript` and use `php artisan typescript:transform`.
   - Add `#[TypeScript]` above the DTO class to generate TypeScript interfaces for frontend use.
-- For example, the following files are now using DTOs and TypeScript generation:
+- Example application of this pattern:
   ```
   app/Data/Auth/RegisterData.php
   app/Http/Controllers/Api/Auth/RegisterUserController.php

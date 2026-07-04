@@ -35,7 +35,7 @@ describe('PostController (API)', function (): void {
             $response = $this->getJson('/api/blog/posts/'.$post->id);
 
             $response->assertSuccessful()
-                ->assertJsonStructure(['data', 'data' => ['id', 'title', 'body', 'slug']]);
+                ->assertJsonStructure(['id', 'title', 'body', 'slug']);
         });
     });
 

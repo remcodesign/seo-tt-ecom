@@ -85,6 +85,7 @@
         "stan": "@phpstan",
         "pest": "vendor/bin/pest",
         "coverage": [
+            "@php -r \"is_dir('public/coverage') && system('rm -rf public/coverage');\"",
             "XDEBUG_MODE=coverage vendor/bin/pest --compact --parallel --coverage-html public/coverage --coverage-clover clover.xml"
         ],
         "typescript": "@php artisan typescript:transform",

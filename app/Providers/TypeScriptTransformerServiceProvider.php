@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerApplicationServiceProvider as BaseTypeScriptTransformerServiceProvider;
 use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\Transformers\AttributedClassTransformer;
@@ -18,6 +20,14 @@ class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServ
         $config
             ->transformer(AttributedClassTransformer::class)
             ->transformer(EnumTransformer::class)
+            ->replaceType(
+                Carbon::class,
+                'string'
+            )
+            ->replaceType(
+                CarbonImmutable::class,
+                'string'
+            )
             ->transformDirectories(app_path())
             ->writer(new GlobalNamespaceWriter('generated.d.ts'))
             ->formatter(PrettierFormatter::class);
