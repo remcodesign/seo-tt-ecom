@@ -3,205 +3,139 @@ description: Project-specific workspace instructions for Laravel application cod
 applyTo: '**/*'
 ---
 
-Use these guidelines when writing or reviewing code in this workspace:
+## Project Context
 
-- This is a Laravel 13 application on PHP 8.4. Prefer Laravel conventions and the existing app structure.
-- Use Laravel Boost tools and application tooling when available for inspection, migrations, and package/version context. 
-- After changing PHP code, run `ddev composer format` to apply Pint/Rector and verify static analysis with PHPStan/Larastan.
-- Maintain `phpstan` compatibility at the configured level, including generic relation return annotations. Prefer concise relation docblocks such as `@return HasMany<Post, $this>`.
-- When creating models, migrations, or factories, keep `app/Models`, `database/migrations`, and `database/factories` aligned with current repository conventions.
-- Prefer `php artisan make:*` scaffolding patterns only when they fit the existing project styles and toolset.
-- Read current file contents before editing because files may change between requests.
-- Do not add new dependencies unless explicitly requested.
-- Use Pest for tests and verify changes with the workspace test runner when appropriate.
+- **Stack:** Laravel 13 on PHP 8.4. Follow Laravel conventions and existing app structure.
+- **Testing:** Pest PHP 4. Verify changes with `php artisan test --compact`.
+- **Formatting:** Run `ddev composer format` after PHP changes (Pint + Rector).
+- **Static analysis:** Maintain configured PHPStan level, including generic relation docblocks (`@return HasMany<Post, $this>`).
+- **Dependencies:** Do not add new ones unless explicitly requested.
+- **Scaffolding:** Prefer `php artisan make:*` when it fits project conventions.
+- **Alignment:** Keep `app/Models`, `database/migrations`, `database/factories` consistent.
 
 ---
 
-## Model & Factory Testing Standards
-When creating or modifying Eloquent models, you must write comprehensive Pest tests to verify the database and hydration layer before moving to services or controllers.
+## Architecture Patterns
 
-### Execution Style
-- Write tests using **Pest PHP** functional syntax (`it()`, `expect()`).
-- Group tests for the same model logically using `describe('ModelName', function () { ... })` blocks for structure and scannability.
-- Place integration/database-interacting tests inside `tests/Feature/Models/` and pure isolated logic in `tests/Unit/`.
-- Always include `uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);` at the top of files interacting with the schema.
+### Controllers
+- Keep thin: assemble validated input, authorize, delegate to services.
+- No business logic, query construction, or repeated eager-loading setup.
+- Prefer invokable controllers for single-action endpoints.
 
----
+### Service Layer
+- Encapsulate business logic, queries, and side effects.
+- Reuse model scopes for shared query logic (e.g., `withPostAndUserName()`).
+- Default to readonly properties and constructor injection. Use `readonly class` (PHP 8.4+).
 
-## Blueprint: Strict Minimal Required Test Scope
-
-Every model file must be accompanied by a Pest test file covering these three distinct `describe()` categories. You must implement at least the **absolute minimum** requirements listed below:
-
-also consult the `.github/skills/pest-testing/SKILL.md` for additional guidance on Pest testing best practices.
-
-> model tests
-
-### 1. Configuration & Data Integrity
-*Focus: Model hydration and serialization.*
-- **[MINIMAL] Factory Validation:** Assert that the model's factory generates valid data, instantiates the correct class, and successfully persists to the database.
-- **[MINIMAL] Cast Verification:** Explicitly test custom/critical attribute casting (e.g., datetimes, booleans, arrays, enums). This is the most vital configuration to test as errors break the hydration layer.
-- **Mass Assignment & Security:** Verify `fillable` guardrails and `hidden` attributes (ensuring sensitive fields do not leak during serialization like `toArray()` or `toJson()`).
-
-### 2. Relationship Integrity (Happy Path)
-*Focus: Eloquent relationship execution and hydration.*
-- **[MINIMAL] BelongsTo:** Assert that a child model correctly returns an instance of its parent model, matching the exact keys.
-- **[MINIMAL] HasMany / Many-to-Many:** If a model can own multiple child records, test the relationship by creating multiple entities (e.g., count of 3) and assert the collection count and instance type match.
-- **Pivots:** Verify intermediate table connections, including custom pivot table attributes or specialized pivot casting if applicable.
-
-### 3. Database Constraints & Rules (Unhappy Path)
-*Focus: Ensuring the database enforces constraints independently of application logic.*
-- **[MINIMAL] Strict Foreign Keys:** Ensure database-level constraints work as intended. Assert that a `QueryException` is thrown when trying to save a model without its mandatory foreign parent relation (e.g., a child record cannot exist as an orphan without its parent ID).
-- **Cascade Operations:** Assert that `cascadeOnDelete()` parameters function correctly by deleting a parent model and verifying the automatic removal of child records from the database.
-
-> service tests
-
-### Service-layer scope
-*Focus: test service behavior, not low-level model schema.*
-- Prefer testing nullable fields, casting, hydration, and basic persistence at the model layer. If a service only passes values through to Eloquent without transforming them or adding side effects, avoid duplicating those low-level assertions in service tests.
-- Thin pass-through services should not re-test model serialization or persistence details that are already covered by the model layer.
-- Use service tests for business contracts, authorization, derived values, side effects, and any case where `null` or other input values change the service's behavior.
-
-### 1. Happy Path — Creation
-*Focus: Verify the service correctly creates the resource and returns the expected model.*
-- **[MINIMAL] Successful Creation:** Assert that `create()` returns the correct model instance, persists to the database, and sets the correct attributes (including auto-generated values like slugs).
-- **[MINIMAL] Ownership/Link:** Verify the created resource is correctly associated with the authenticated user or parent model (e.g., `$post->user_id` matches the creator).
-
-### 2. Happy Path — Update & Delete
-*Focus: Verify mutation methods work correctly for authorized users.*
-- **[MINIMAL] Update Success:** Assert that `update()` modifies the intended attributes in the database without unintended side effects.
-- **[MINIMAL] Delete Success:** Assert that `delete()` removes the record from the database.
-- **Partial Updates:** Verify that updating a subset of attributes leaves the rest untouched (e.g., updating only `body` should not change `title` or `slug`).
-
-### 3. Authorization Guardrails (Unhappy Path)
-*Focus: Ensure that only the resource owner can update or delete.*
-- **[MINIMAL] Non-Creator Update Rejected:** Assert that a user who is not the creator receives an `AuthorizationException` (or `403`).
-- **[MINIMAL] Non-Creator Delete Rejected:** Assert that a user who is not the creator cannot delete the resource.
-- **Edge Cases:** Test with `null` or unauthenticated users where applicable.
-
-### 4. Side-Effects & Business Logic
-*Focus: Test any automatic behavior or derived values produced by the service.*
-- **[MINIMAL] Auto-Generated Values:** If the service generates values (e.g., slugs, timestamps), assert the output matches expectations in both creation and update scenarios.
-- **Uniqueness / Collision Handling:** When the same title/text produces a collision, verify the service resolves it deterministically (numeric suffixes, random fallback, etc.) without throwing or silently overwriting.
-- **State Transitions:** If the method has side effects (e.g., cache clearing, logging, notifications), verify they occur.
-
-#### 5. Query & Pagination
-*Focus: Verify data retrieval methods respect parameters and prevent N+1.*
-- **[MINIMAL] Pagination:** Assert that paginated queries return the correct page size, total count, and paginator instance type.
-- **[MINIMAL] Eager Loading:** Verify that relations are pre-loaded on the returned models to prevent N+1 queries (use `relationLoaded()`).
-- **Filtering / Optional Includes:** If the query accepts parameters like `withComments`, test both enabled and disabled states.
-
-> controllers / HTTP / API / feature tests
-
-Feature tests for API controllers should verify the full HTTP lifecycle — request, auth, validation, response shape — without duplicating service-layer assertions.
-
-### 1. Happy Path Per Action
-- **[MINIMAL] index:** Assert `assertSuccessful()`, that the JSON structure contains `data` (with expected keys), `meta`, and `links` for paginated responses.
-- **[MINIMAL] show:** Assert `assertSuccessful()`, that the response contains the expected resource identifier and attribute structure.
-- **[MINIMAL] store:** Assert `assertCreated()`, that the response contains the created resource attributes, and the database has the expected record.
-- **[MINIMAL] update:** Assert `assertSuccessful()`, that the response reflects the changed attributes, and `$model->fresh()` confirms persistence.
-- **[MINIMAL] destroy:** Assert `assertNoContent()`, and that the model is removed from the database (`Model::find($id)` returns null).
-
-### 2. Unauthenticated Guardrails
-- **[MINIMAL] One per route group:** For endpoints grouped under a shared `auth:sanctum` middleware, **one** `assertUnauthorized()` test (e.g. on `index`) is sufficient. The middleware protects the entire group, so per-action duplicates add noise without new signal.
-- If a future controller lives in a *different* group or outside the middleware, add a single unauthenticated test there too.
-- Use `$this->getJson()`, `$this->postJson()`, `$this->putJson()`, `$this->deleteJson()` — do NOT use `post()` or `get()` for API tests (those go through `web` middleware).
-
-### 3. Authentication Strategy
-- Use `Sanctum::actingAs(User::factory()->create())` to simulate an authenticated user. This avoids multi-step login sequences and keeps tests fast.
-- For ownership guardrails, create two users (owner + other) and verify `assertForbidden()` on update/destroy by the non-owner.
-
-### 4. Validation Errors
-- Use `postJson()` with missing/invalid data and assert `assertUnprocessable()` + `assertJsonValidationErrors(['field'])`.
-- Test required fields, format validation, and duplicate-unique constraints at the HTTP layer.
-
-### 5. Example Structure
-Refer to `tests/Feature/Api/Blog/PostControllerTest.php` — each CRUD action gets its own `describe()` block, with happy path and unauthenticated tests grouped together.
+### DTO Style (Spatie Laravel Data)
+- Accept typed DTOs in services — no `array<string, mixed>` signatures.
+- Keep DTOs tiny: constructor-promoted public properties only, no business logic.
+- Use `#[WithCast(DateTimeInterfaceCast::class)]` for Carbon dates with global mapping in `config/data.php`.
+- Replace Carbon types in generated TypeScript via `TypeScriptTransformerServiceProvider`.
+- Map optional DTO properties to Eloquent payloads with compact `array_filter`:
+  ```php
+  $data = array_filter([
+      'title' => $dto->title,
+      'body' => $dto->body,
+      'published_on' => $dto->published_on,
+  ], static fn (?string $value): bool => $value !== null);
+  ```
+- Add `#[TypeScript]` above DTO classes for frontend type generation (`php artisan typescript:transform`).
+- Reference pattern: `app/Data/Auth/RegisterData.php` → `RegisterUserController` → `UserService` → `UserData`.
 
 ---
 
-## Blueprint: Auth / Sanctum API Endpoints
+## Sanctum API Auth
 
-This application uses **Laravel Sanctum** for API authentication with custom endpoints (no Fortify).
-
-### Sanctum Routes (in `routes/api.php`)
+Custom endpoints (no Fortify). Routes in `routes/api.php`:
 
 | Method | URI | Purpose | Auth |
 |--------|-----|---------|------|
-| `POST` | `/api/users` | Register a new user | None |
-| `POST` | `/api/sanctum/token` | Issue a Sanctum API token | None |
-| `DELETE` | `/api/sanctum/tokens/current` | Revoke current token | `auth:sanctum` |
+| `POST` | `/api/users` | Register | None |
+| `POST` | `/api/sanctum/token` | Issue token | None |
+| `DELETE` | `/api/sanctum/tokens/current` | Revoke token | `auth:sanctum` |
 
-### Registration (`POST /api/users`)
-
-- Uses `RegisterUserController` (invokable) that delegates to `UserService`.
-- Expects `name`, `email`, `password`, `password_confirmation` — validated via `Illuminate\Validation\Rule`.
-- Returns `201` with `{"message": "...", "user": {"id", "name", "email"}}`.
-- Validation errors return standard 422 JSON with field-level error messages.
-
-### Token Creation (`POST /api/sanctum/token`)
-
-- Uses `CreateTokenController` (invokable) — validates email/password, returns `{"token": "..."}`.
-- Invalid credentials return 422 with a generic error message (no user enumeration).
-
-### Token Revocation (`DELETE /api/sanctum/tokens/current`)
-
-- Uses `RevokeTokenController` (invokable) — deletes the current bearer token.
-- Requires `auth:sanctum` middleware. Returns `{"message": "Token revoked."}` on success.
-
-### Stateful API Configuration
-
-- `bootstrap/app.php`: `$middleware->statefulApi()` enables SPA-style cookie auth.
-- `config/sanctum.php`: `SANCTUM_STATEFUL_DOMAINS` env var lists allowed origins.
-- The exception handler uses `shouldRenderJsonWhen(fn ($request) => $request->is('api/*'))` to always return JSON for API routes.
+- **Registration** (`RegisterUserController` → `UserService`): expects `name`, `email`, `password`, `password_confirmation`. Returns `201` with `{message, user}`.
+- **Token creation** (`CreateTokenController`): validates email/password, returns `{token}`. Invalid credentials → 422 (no user enumeration).
+- **Token revocation** (`RevokeTokenController`): deletes current bearer token. Returns `{message: "Token revoked."}`.
+- **Config:** `bootstrap/app.php` uses `$middleware->statefulApi()`. Exception handler renders JSON for `api/*` routes.
 
 ---
 
-## Blueprint: Controllers
-*Focus: keep controllers thin and delegate real work to services.*
-- Controllers should assemble validated input, authorize the request, and hand execution off to service methods.
-- Avoid business logic, query construction, or repeated eager-loading setup in controllers.
-- Prefer invokable controllers for single-action endpoints (e.g., `RegisterUserController`, `CreateTokenController`).
+## Testing Standards
 
----
+Also consult `.github/skills/pest-testing/SKILL.md` for additional guidance.
 
-## Blueprint: Service Layer
-- Services should encapsulate business logic, query construction, and any side effects.
-- Service queries should reuse model scopes for shared query logic, for example `withPostAndUserName()` instead of repeating the same eager-load configuration.
-- Default to readonly properties and constructor injection for dependencies. Use `readonly class` where possible (PHP 8.4+).
+### General Conventions
+- Use Pest syntax (`it()`, `expect()`) with `describe()` blocks for structure.
+- Integration/database tests go in `tests/Feature/Models/`; isolated logic in `tests/Unit/`.
+- Include `uses(RefreshDatabase::class)` in files interacting with the schema.
 
-## DTO / Service Style
-- Prefer narrow request DTOs for API input in all controllers. Services should accept typed DTOs, not arrays, whenever the DTO is already validated.
-- Keep DTO classes tiny: public constructor properties only, no business logic, no array fallback helpers, and no sprawling static factories.
-- Controllers must stay thin: accept a single typed DTO, delegate persistence to the service, and return a typed response or resource.
-- Services should be strict: `create(RegisterData $registerData)` means no `array` input, no optional array mapping, and stronger PHPStan level-9 compatibility.
-- Prefer strict `spatie/laravel-data` DTOs over raw arrays for validated input. This avoids `array<string,mixed>` service signatures and reduces the long docblocks PHPStan level 9 otherwise forces around untyped payloads.
-- When mapping optional DTO properties into an Eloquent payload, prefer the compact `array_filter` pattern over repeated `if` statements. This is a general service-side mapping technique, not just for post updates.
-  - Example:
-    ```php
-    $data = array_filter([
-        'title' => $dto->title,
-        'body' => $dto->body,
-        'published_on' => $dto->published_on,
-    ], static fn (?string $value): bool => $value !== null);
-    ```
-- Use `spatie/laravel-data` to validate request payloads automatically and keep validation rules inside the DTO class when possible.
-- When converting any controller to Spatie Data style (new or refactored):
-  - Accept request DTOs such as `StoreResourceData` / `UpdateResourceData` in controller methods.
-  - Delegate persistence to a service and return response DTOs via `ResourceData::from($model)` or paginated results via `ResourceData::collect($paginator, PaginatedDataCollection::class)`.
-  - Keep controllers thin: no query building, validation, or business logic should live in the controller.
-  - Prefer `final class` data objects with constructor-promoted public properties only.
-- For Carbon/CarbonImmutable date properties in data DTOs, prefer global mapping instead of per-property TypeScript overrides:
-  - In `config/data.php`, add Carbon transformers to use `DateTimeInterfaceTransformer` for both `Carbon::class` and `CarbonImmutable::class`.
-  - In `app/Providers/TypeScriptTransformerServiceProvider.php`, use `replaceType(Carbon::class, 'string')` and `replaceType(CarbonImmutable::class, 'string')` so generated TypeScript does not try to resolve Carbon references.
-  - Then use `#[WithCast(DateTimeInterfaceCast::class)] public ?CarbonImmutable $published_on` in data objects without `TypeScriptType('string')` on every property.
-- For TypeScript generation on DTOs, import `Spatie\TypeScriptTransformer\Attributes\TypeScript` and use `php artisan typescript:transform`.
-  - Add `#[TypeScript]` above the DTO class to generate TypeScript interfaces for frontend use.
-- Example application of this pattern:
-  ```
-  app/Data/Auth/RegisterData.php
-  app/Http/Controllers/Api/Auth/RegisterUserController.php
-  app/Services/Auth/UserService.php
-  app/Data/Auth/UserData.php
-  ```
+### Model Tests — Three Required `describe()` Blocks
 
----
+**1. Configuration & Data Integrity**
+- **[MINIMAL]** Factory: valid data, correct class, persists to DB.
+- **[MINIMAL]** Casts: test custom/critical casting (datetimes, booleans, arrays, enums).
+- Mass assignment: verify `fillable` guardrails and `hidden` fields don't leak in `toArray()`/`toJson()`.
+
+**2. Relationship Integrity (Happy Path)**
+- **[MINIMAL]** `BelongsTo`: child returns parent with matching keys.
+- **[MINIMAL]** `HasMany`/many-to-many: create multiple children, assert count + instance type.
+- Pivots: verify intermediate table connections and custom pivot attributes.
+
+**3. Database Constraints (Unhappy Path)**
+- **[MINIMAL]** Foreign keys: assert `QueryException` when saving without mandatory parent.
+- Cascade: delete parent, verify child records auto-removed.
+
+### Service Tests — Four Required `describe()` Blocks
+
+Scope: test business behavior, not model schema. Avoid duplicating low-level assertions from model tests.
+
+**1. Happy Path — Creation**
+- **[MINIMAL]** Successful creation: correct instance, persisted, correct attributes.
+- **[MINIMAL]** Ownership: resource linked to authenticated user/parent.
+
+**2. Happy Path — Update & Delete**
+- **[MINIMAL]** Update: modifies intended attributes without side effects.
+- **[MINIMAL]** Delete: removes record from DB.
+- Partial updates: subset of attributes leaves rest untouched.
+
+**3. Authorization Guardrails (Unhappy Path)**
+- **[MINIMAL]** Non-creator update rejected (`AuthorizationException` / 403).
+- **[MINIMAL]** Non-creator delete rejected.
+- Edge cases: `null` or unauthenticated users.
+
+**4. Side Effects & Business Logic**
+- **[MINIMAL]** Auto-generated values (slugs, timestamps) match expectations.
+- Collision handling: deterministic resolution without silent overwrites.
+- State transitions: cache clearing, logging, notifications.
+
+**5. Query & Pagination**
+- **[MINIMAL]** Pagination: correct page size, total count, paginator type.
+- **[MINIMAL]** Eager loading: use `relationLoaded()` to verify N+1 prevention.
+- Filtering / optional includes: test enabled and disabled states.
+
+### API Controller Tests
+
+Verify the full HTTP lifecycle without duplicating service-layer assertions.
+
+**Happy Path Per Action**
+- `index`: `assertSuccessful()`, JSON has `data`, `meta`, `links`.
+- `show`: `assertSuccessful()`, contains resource ID and attribute structure.
+- `store`: `assertCreated()`, response has resource attributes, DB has record.
+- `update`: `assertSuccessful()`, fresh model confirms persistence.
+- `destroy`: `assertNoContent()`, `Model::find($id)` is null.
+
+**Unauthenticated Guardrails**
+- **[MINIMAL]** One `assertUnauthorized()` test per `auth:sanctum` route group (e.g., on `index`) is sufficient.
+- Use `$this->getJson()`, `$this->postJson()`, `$this->putJson()`, `$this->deleteJson()` — not `post()`/`get()`.
+
+**Authentication Strategy**
+- `Sanctum::actingAs(User::factory()->create())` for authenticated requests.
+- For ownership checks: create two users (owner + other), assert `assertForbidden()` on non-owner update/destroy.
+
+**Validation Errors**
+- `postJson()` with missing/invalid data → `assertUnprocessable()` + `assertJsonValidationErrors(['field'])`.
+- Test required fields, format validation, unique constraints.
+
+**Reference:** `tests/Feature/Api/Blog/PostControllerTest.php` — each CRUD action in its own `describe()` block.
