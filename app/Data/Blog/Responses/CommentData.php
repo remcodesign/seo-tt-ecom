@@ -16,7 +16,7 @@ final class CommentData extends Data
         public int $post_id,
         public int $user_id,
         public string $comment,
-        public ?PostData $post = null,
+        public ?PostForCommentData $post = null,
         public ?UserData $user = null,
     ) {}
 }

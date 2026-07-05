@@ -57,6 +57,7 @@ trait HasOptionalIncludes
      */
     protected function applyIncludes(Data $data, array $includes): void
     {
+        // If there are any includes, apply them to the data object
         if ($includes !== []) {
             $data->include(...$includes);
         }

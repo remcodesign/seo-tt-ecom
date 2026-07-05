@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api\Blog;
 use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\UpdateCommentData;
 use App\Data\Blog\Responses\CommentData;
-use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -18,8 +17,6 @@ use Spatie\LaravelData\PaginatedDataCollection;
 
 readonly class CommentController
 {
-    use HasOptionalIncludes;
-
     public function __construct(private CommentService $commentService) {}
 
     private function user(): User
@@ -28,14 +25,6 @@ readonly class CommentController
         assert($user instanceof User);
 
         return $user;
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function allowedIncludes(): array
-    {
-        return ['post', 'post.user', 'user'];
     }
 
     /**
@@ -66,22 +55,14 @@ readonly class CommentController
         $post = Post::findOrFail($storeCommentData->post_id);
         $comment = $this->commentService->create($this->user(), $post, $storeCommentData);
 
-        [$comment, $includes] = $this->resolveOptionalIncludes($comment);
-        $commentData = CommentData::from($comment);
-        $this->applyIncludes($commentData, $includes);
-
-        return $commentData;
+        return CommentData::from($comment);
     }
 
     public function update(UpdateCommentData $updateCommentData, Comment $comment): CommentData
     {
         $comment = $this->commentService->update($this->user(), $comment, $updateCommentData);
 
-        [$comment, $includes] = $this->resolveOptionalIncludes($comment);
-        $commentData = CommentData::from($comment);
-        $this->applyIncludes($commentData, $includes);
-
-        return $commentData;
+        return CommentData::from($comment);
     }
 
     public function destroy(Comment $comment): JsonResponse

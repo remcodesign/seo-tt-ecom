@@ -109,37 +109,6 @@ describe('CommentController (API)', function (): void {
                 ]);
         });
 
-        it('includes post and user relations on store when requested', function (): void {
-            Sanctum::actingAs($user = User::factory()->create());
-            $post = Post::factory()->for($user)->create();
-
-            $response = $this->postJson('/api/blog/comments?include=post.user,user', [
-                'post_id' => $post->id,
-                'comment' => 'Great post!',
-            ]);
-
-            $response->assertCreated()
-                ->assertJsonStructure([
-                    'id',
-                    'post_id',
-                    'user_id',
-                    'comment',
-                    'post' => [
-                        'id',
-                        'title',
-                        'user' => ['id', 'name', 'email'],
-                    ],
-                    'user' => ['id', 'name', 'email'],
-                ])
-                ->assertJson([
-                    'post_id' => $post->id,
-                    'user_id' => $user->id,
-                    'comment' => 'Great post!',
-                    'post' => ['id' => $post->id],
-                    'user' => ['id' => $user->id],
-                ]);
-        });
-
         it('rejects unauthenticated requests for store', function (): void {
             $post = Post::factory()->for(User::factory())->create();
 
@@ -169,30 +138,6 @@ describe('CommentController (API)', function (): void {
 
             $response->assertSuccessful()
                 ->assertJson(['comment' => 'Updated!']);
-            expect($comment->fresh()->comment)->toBe('Updated!');
-        });
-
-        it('includes the post and user relations on update when requested', function (): void {
-            $user = User::factory()->create();
-            Sanctum::actingAs($user);
-            $comment = Comment::factory()->for(Post::factory()->for($user))->for($user)->create(['comment' => 'Original']);
-
-            $response = $this->putJson('/api/blog/comments/'.$comment->id.'?include=post.user,user', ['comment' => 'Updated!']);
-
-            $response->assertSuccessful()
-                ->assertJsonStructure([
-                    'id',
-                    'post_id',
-                    'user_id',
-                    'comment',
-                    'post' => [
-                        'id',
-                        'title',
-                        'user' => ['id', 'name', 'email'],
-                    ],
-                    'user' => ['id', 'name', 'email'],
-                ])
-                ->assertJson(['user' => ['id' => $user->id]]);
             expect($comment->fresh()->comment)->toBe('Updated!');
         });
 

@@ -53,13 +53,15 @@ readonly class CommentService
 
     /**
      * Query comments with pagination, optional post filter, and eager-loaded
-     * relations to prevent N+1.
+     * relations to prevent N+1. Post relation is constrained to exclude
+     * content-heavy fields (body, etc.) via the withoutContentFields scope.
      *
      * @return LengthAwarePaginator<int, Comment>
      */
     public function query(?int $postId = null, int $perPage = 15): LengthAwarePaginator
     {
         $builder = Comment::query()
+            ->with(['post' => fn ($query) => $query->withoutContentFields()])
             ->with(['post.user', 'user'])
             ->latest();
 
@@ -72,6 +74,7 @@ readonly class CommentService
 
     public function find(Comment $comment): Comment
     {
-        return $comment->load(['post.user', 'user']);
+        return $comment->load(['post' => fn ($query) => $query->withoutContentFields()])
+            ->load(['post.user', 'user']);
     }
 }

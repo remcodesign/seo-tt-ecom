@@ -9,6 +9,7 @@ use Carbon\CarbonImmutable;
 use Database\Factories\Blog\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read User $user
  * @property-read Collection<int, Comment> $comments
+ *
+ * @method static Builder<static> withoutContentFields()
  */
 #[Fillable(['user_id', 'title', 'body', 'slug', 'published_on'])]
 #[Table(name: 'blog_posts')]
@@ -64,5 +67,17 @@ class Post extends BlogRootModel
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Scope to exclude content-heavy columns (body, future images, etc.)
+     * when only lightweight post data is needed (e.g. in comment listings).
+     *
+     * @param  Builder<Post>  $builder
+     * @return Builder<Post>
+     */
+    public function scopeWithoutContentFields(Builder $builder): Builder
+    {
+        return $builder->select(['id', 'user_id', 'title', 'slug', 'published_on', 'created_at', 'updated_at']);
     }
 }

@@ -49,7 +49,7 @@ declare namespace App {
                     post_id: number;
                     user_id: number;
                     comment: string;
-                    post: App.Data.Blog.Responses.PostData | null;
+                    post: App.Data.Blog.Responses.PostForCommentData | null;
                     user: App.Data.Auth.UserData | null;
                 };
                 export type PostData = {
@@ -57,6 +57,14 @@ declare namespace App {
                     user_id: number;
                     title: string;
                     body: string | null;
+                    slug: string;
+                    published_on: string | null;
+                    user: App.Data.Auth.UserData | null;
+                };
+                export type PostForCommentData = {
+                    id: number;
+                    user_id: number;
+                    title: string;
                     slug: string;
                     published_on: string | null;
                     user: App.Data.Auth.UserData | null;

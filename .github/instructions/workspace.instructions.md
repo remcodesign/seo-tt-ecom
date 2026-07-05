@@ -57,6 +57,39 @@ applyTo: '**/*'
 - Reuse model scopes for shared query logic (e.g., `withPostAndUserName()`).
 - Default to readonly properties and constructor injection. Use `readonly class` (PHP 8.4+).
 
+### Content-Field Scope (`withoutContentFields`)
+
+When a model has content-heavy columns (`body`, image blobs, etc.) that are irrelevant in certain contexts (e.g., a `Post` model listed inside a `Comment` response), use a dedicated scope to exclude them:
+
+```php
+/**
+ * @param  Builder<Post>  $builder
+ * @return Builder<Post>
+ */
+public function scopeWithoutContentFields(Builder $builder): Builder
+{
+    return $builder->select(['id', 'user_id', 'title', 'slug', 'published_on', 'created_at', 'updated_at']);
+}
+```
+
+- **Where to define:** On the parent model (e.g., `Post`) as a local scope.
+- **When to use:** In eager-load constraints on the **child side** — any relation that returns the parent model in a list/detail endpoint that doesn't need the full parent payload.
+- **How to use in services:**
+
+  ```php
+  // In a service query method (builder scope)
+  Comment::query()
+      ->with(['post' => fn ($query) => $query->withoutContentFields()])
+      ->with(['post.user', 'user']);
+
+  // In a service find method (load scope)
+  $comment->load(['post' => fn ($query) => $query->withoutContentFields()])
+      ->load(['post.user', 'user']);
+  ```
+
+- **Benefit:** New content-heavy fields only need adding to the scope's `select()` in one place — all consumers automatically exclude them.
+- **Reference:** `app/Models/Blog/Post::scopeWithoutContentFields()`, `app/Services/Blog/CommentService`. Also pair with a lightweight DTO (e.g., `PostCommentData`) that omits the same fields from serialization.
+
 ### DTO Style (Spatie Laravel Data)
 - Accept typed DTOs in services — no `array<string, mixed>` signatures.
 - Keep DTOs tiny: constructor-promoted public properties only, no business logic.
