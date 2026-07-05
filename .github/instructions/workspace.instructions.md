@@ -7,7 +7,7 @@ applyTo: '**/*'
 
 - **Stack:** Laravel 13 on PHP 8.4. Follow Laravel conventions and existing app structure.
 - **Testing:** Pest PHP 4. Verify changes with `php artisan test --compact`.
-- **Formatting:** Run `ddev composer format` after PHP changes (Pint + Rector).
+- **Formatting:** Run `ddev composer format-basic` after PHP changes (Pint + Rector).
 - **Static analysis:** Maintain configured PHPStan level, including generic relation docblocks (`@return HasMany<Post, $this>`).
 - **Dependencies:** Do not add new ones unless explicitly requested.
 - **Scaffolding:** Prefer `php artisan make:*` when it fits project conventions.
@@ -21,6 +21,15 @@ applyTo: '**/*'
 - Keep thin: assemble validated input, authorize, delegate to services.
 - No business logic, query construction, or repeated eager-loading setup.
 - Prefer invokable controllers for single-action endpoints.
+- Use `app/Http/Controllers/Api/Traits/HasOptionalIncludes.php` for optional response expansion.
+  - Add `use HasOptionalIncludes;` to the controller and implement `protected function allowedIncludes(): array`.
+  - Most often use this trait in `store()` and `update()` methods for minimal default JSON output.
+  - In `store()` / `update()`:
+    - create/update the model via the service
+    - call `$includes = $this->requestIncludedRelations();`
+    - call `$model = $this->loadIncludes($model, $includes);`
+    - return `$this->applyIncludes(DataClass::from($model), $includes);`
+  - Allowed relations are explicit and only loaded when requested, e.g. `?include=user` or `?include=post.user,user`.
 
 ### Service Layer
 - Encapsulate business logic, queries, and side effects.
@@ -41,6 +50,15 @@ applyTo: '**/*'
   ], static fn (?string $value): bool => $value !== null);
   ```
 - Add `#[TypeScript]` above DTO classes for frontend type generation (`php artisan typescript:transform`).
+- Use nullable DTO properties for optional relations and response expansions. Keep default response payloads minimal by defining optional relation fields with default `null`, for example:
+  ```php
+  public function __construct(
+      public int $id,
+      public int $user_id,
+      public ?UserData $user = null,
+  ) {}
+  ```
+  This lets controllers return the full model by default and only include extra relation data when requested via `?include=`.
 - Reference pattern: `app/Data/Auth/RegisterData.php` → `RegisterUserController` → `UserService` → `UserData`.
 
 ---

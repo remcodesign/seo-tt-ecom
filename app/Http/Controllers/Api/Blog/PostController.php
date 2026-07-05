@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Blog;
 use App\Data\Blog\Requests\StorePostData;
 use App\Data\Blog\Requests\UpdatePostData;
 use App\Data\Blog\Responses\PostData;
+use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 use App\Models\Blog\Post;
 use App\Models\User;
 use App\Services\Blog\PostService;
@@ -16,7 +17,14 @@ use Spatie\LaravelData\PaginatedDataCollection;
 
 readonly class PostController
 {
+    use HasOptionalIncludes;
+
     public function __construct(private PostService $postService) {}
+
+    protected function allowedIncludes(): array
+    {
+        return ['user'];
+    }
 
     /**
      * @return PaginatedDataCollection<int, PostData>
@@ -42,9 +50,12 @@ readonly class PostController
         $user = Auth::user();
 
         $post = $this->postService->create($user, $storePostData);
-        $post->load('user');
 
-        return PostData::from($post);
+        $includes = $this->requestIncludedRelations();
+
+        $post = $this->loadIncludes($post, $includes);
+
+        return $this->applyIncludes(PostData::from($post), $includes);
     }
 
     public function update(UpdatePostData $updatePostData, Post $post): PostData
@@ -53,9 +64,12 @@ readonly class PostController
         $user = Auth::user();
 
         $post = $this->postService->update($user, $post, $updatePostData);
-        $post->load('user');
 
-        return PostData::from($post);
+        $includes = $this->requestIncludedRelations();
+
+        $post = $this->loadIncludes($post, $includes);
+
+        return $this->applyIncludes(PostData::from($post), $includes);
     }
 
     public function destroy(Post $post): JsonResponse

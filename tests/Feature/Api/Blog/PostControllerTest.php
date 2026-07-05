@@ -78,14 +78,33 @@ describe('PostController (API)', function (): void {
                     'body',
                     'slug',
                     'user_id',
-                    'user' => ['id', 'name', 'email'],
                 ])
                 ->assertJson([
                     'title' => 'My New Post',
                     'body' => 'This is the body content.',
                     'user_id' => $user->id,
-                    'user' => ['id' => $user->id],
                 ]);
+        });
+
+        it('includes user relation on store when requested', function (): void {
+            Sanctum::actingAs($user = User::factory()->create());
+
+            $response = $this->postJson('/api/blog/posts?include=user', [
+                'title' => 'My New Post',
+                'body' => 'This is the body content.',
+                'published_on' => now()->toDateTimeString(),
+            ]);
+
+            $response->assertCreated()
+                ->assertJsonStructure([
+                    'id',
+                    'title',
+                    'body',
+                    'slug',
+                    'user_id',
+                    'user' => ['id', 'name', 'email'],
+                ])
+                ->assertJson(['user' => ['id' => $user->id]]);
         });
 
         it('rejects unauthenticated requests for store', function (): void {
@@ -115,8 +134,28 @@ describe('PostController (API)', function (): void {
             $response->assertSuccessful()
                 ->assertJson([
                     'title' => 'Updated Title',
-                    'user' => ['id' => $user->id],
                 ]);
+            expect($post->fresh()->title)->toBe('Updated Title');
+        });
+
+        it('includes user relation on update when requested', function (): void {
+            Sanctum::actingAs($user = User::factory()->create());
+            $post = Post::factory()->for($user)->create(['title' => 'Original Title']);
+
+            $response = $this->putJson('/api/blog/posts/'.$post->id.'?include=user', [
+                'title' => 'Updated Title',
+            ]);
+
+            $response->assertSuccessful()
+                ->assertJsonStructure([
+                    'id',
+                    'title',
+                    'body',
+                    'slug',
+                    'user_id',
+                    'user' => ['id', 'name', 'email'],
+                ])
+                ->assertJson(['user' => ['id' => $user->id]]);
             expect($post->fresh()->title)->toBe('Updated Title');
         });
 

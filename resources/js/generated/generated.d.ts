@@ -49,8 +49,8 @@ declare namespace App {
                     post_id: number;
                     user_id: number;
                     comment: string;
-                    post: App.Data.Blog.Responses.PostData;
-                    user: App.Data.Auth.UserData;
+                    post: App.Data.Blog.Responses.PostData | null;
+                    user: App.Data.Auth.UserData | null;
                 };
                 export type PostData = {
                     id: number;
@@ -59,7 +59,7 @@ declare namespace App {
                     body: string | null;
                     slug: string;
                     published_on: string | null;
-                    user: App.Data.Auth.UserData;
+                    user: App.Data.Auth.UserData | null;
                 };
             }
         }

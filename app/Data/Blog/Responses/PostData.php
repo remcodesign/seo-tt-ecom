@@ -22,7 +22,7 @@ final class PostData extends Data
         public string $slug,
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $published_on,
-        public UserData $user,
+        public ?UserData $user = null,
         // todo also add comments relation here, but that would require a new PostWithCommentsData class that doesn't include the post relation to avoid circular references
     ) {}
 

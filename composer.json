@@ -89,6 +89,14 @@
             "XDEBUG_MODE=coverage vendor/bin/pest --compact --parallel --coverage-html public/coverage --coverage-clover clover.xml"
         ],
         "typescript": "@php artisan typescript:transform",
+        "format-basic": [
+            "@php artisan config:clear --ansi",
+            "@pint",
+            "@rector",
+            "@phpstan",
+            "@typescript",
+            "@pest"
+        ],
         "format": [
             "@php artisan config:clear --ansi",
             "@pint",

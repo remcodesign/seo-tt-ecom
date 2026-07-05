@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Blog;
 use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\UpdateCommentData;
 use App\Data\Blog\Responses\CommentData;
+use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -17,7 +18,14 @@ use Spatie\LaravelData\PaginatedDataCollection;
 
 readonly class CommentController
 {
+    use HasOptionalIncludes;
+
     public function __construct(private CommentService $commentService) {}
+
+    protected function allowedIncludes(): array
+    {
+        return ['post', 'post.user', 'user'];
+    }
 
     /**
      * @return PaginatedDataCollection<int, CommentData>
@@ -49,9 +57,12 @@ readonly class CommentController
 
         $post = Post::findOrFail($storeCommentData->post_id);
         $comment = $this->commentService->create($user, $post, $storeCommentData);
-        $comment->load(['post.user', 'user']);
 
-        return CommentData::from($comment);
+        $includes = $this->requestIncludedRelations();
+
+        $comment = $this->loadIncludes($comment, $includes);
+
+        return $this->applyIncludes(CommentData::from($comment), $includes);
     }
 
     public function update(UpdateCommentData $updateCommentData, Comment $comment): CommentData
@@ -60,9 +71,12 @@ readonly class CommentController
         $user = Auth::user();
 
         $comment = $this->commentService->update($user, $comment, $updateCommentData);
-        $comment->loadMissing(['post.user', 'user']);
 
-        return CommentData::from($comment);
+        $includes = $this->requestIncludedRelations();
+
+        $comment = $this->loadIncludes($comment, $includes);
+
+        return $this->applyIncludes(CommentData::from($comment), $includes);
     }
 
     public function destroy(Comment $comment): JsonResponse
