@@ -60,6 +60,7 @@ declare namespace App {
                     slug: string;
                     published_on: string | null;
                     user: App.Data.Auth.UserData | null;
+                    comments: App.Data.Blog.Responses.CommentData[] | null;
                 };
                 export type PostForCommentData = {
                     id: number;

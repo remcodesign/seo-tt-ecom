@@ -42,8 +42,7 @@ readonly class PostController
      */
     public function index(): PaginatedDataCollection
     {
-        // todo add comments count to the response, but that would require a new PostWithCommentsCountData class that doesn't include the comments relation to avoid circular references
-        $lengthAwarePaginator = $this->postService->query(perPage: 15);
+        $lengthAwarePaginator = $this->postService->query(withComments: false, perPage: 15);
 
         return PostData::collect($lengthAwarePaginator, PaginatedDataCollection::class);
     }

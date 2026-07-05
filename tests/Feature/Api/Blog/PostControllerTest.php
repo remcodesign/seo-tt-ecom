@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -46,6 +47,7 @@ describe('PostController (API)', function (): void {
         it('returns a single post for an authenticated user', function (): void {
             Sanctum::actingAs(User::factory()->create());
             $post = Post::factory()->for(User::factory())->create();
+            $comment = Comment::factory()->for($post)->for(User::factory())->create();
 
             $response = $this->getJson('/api/blog/posts/'.$post->id);
 
@@ -57,7 +59,17 @@ describe('PostController (API)', function (): void {
                     'slug',
                     'user_id',
                     'user' => ['id', 'name', 'email'],
-                ]);
+                    'comments' => [
+                        '*' => [
+                            'id',
+                            'post_id',
+                            'user_id',
+                            'comment',
+                            'user' => ['id', 'name', 'email'],
+                        ],
+                    ],
+                ])
+                ->assertJsonPath('comments.0.id', $comment->id);
         });
     });
 
