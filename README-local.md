@@ -1,23 +1,6 @@
 # common
 
-## ddev
-
-```bash
-ddev start
-
-ddev composer create-project laravel/laravel
-
-ddev launch
-
-ddev describe
-```
-
-> Steps : Install and Trust the Local CA (mkcert)
-mkcert -install
-ddev poweroff
-ddev start
-
-## install packages
+## > install packages
 
 ```bash
 ddev composer require pestphp/pest --dev
@@ -35,13 +18,53 @@ ddev composer require spatie/laravel-data
 ddev composer require spatie/laravel-typescript-transformer
 ```
 
+## > ddev
+
+```bash
+ddev start
+
+ddev composer create-project laravel/laravel
+
+ddev launch
+
+ddev describe
+```
+
+> Steps : Install and Trust the Local CA (mkcert)
+
+```
+mkcert -install
+ddev poweroff
+ddev start
+```
+
+> DDEV conflicts
+
+```
+ddev stop -a
+ddev start
+ddev stop xxx
+
+# router_http_port: "8080"
+# router_https_port: "8443"
+host_db_port: "54330"
+```
+
+## xdebug + code coverage
+
+```bash
+ddev xdebug on
+ddev pest --coverage-html public/coverage
+ddev composer coverage
+```
+
 ## formatters
 
 ```bash
 ddev composer format
 ```
 
-## artisan
+## > artisan
 
 ### refresh db
 
@@ -66,15 +89,7 @@ php artisan boost:install
 php artisan boost:update
 ```
 
-## xdebug + code coverage
-
-```bash
-ddev xdebug on
-ddev pest --coverage-html public/coverage
-ddev composer coverage
-```
-
-## testing
+## > testing
 
 specific test
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Blog;
 
-use App\Data\Blog\PostData;
-use App\Data\Blog\StorePostData;
-use App\Data\Blog\UpdatePostData;
+use App\Data\Blog\Requests\StorePostData;
+use App\Data\Blog\Requests\UpdatePostData;
+use App\Data\Blog\Responses\PostData;
 use App\Models\Blog\Post;
 use App\Models\User;
 use App\Services\Blog\PostService;
@@ -14,15 +14,16 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\PaginatedDataCollection;
 
-class PostController
+readonly class PostController
 {
-    public function __construct(private readonly PostService $postService) {}
+    public function __construct(private PostService $postService) {}
 
     /**
      * @return PaginatedDataCollection<int, PostData>
      */
     public function index(): PaginatedDataCollection
     {
+        // todo add comments count to the response, but that would require a new PostWithCommentsCountData class that doesn't include the comments relation to avoid circular references
         $lengthAwarePaginator = $this->postService->query(perPage: 15);
 
         return PostData::collect($lengthAwarePaginator, PaginatedDataCollection::class);

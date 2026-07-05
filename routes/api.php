@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\Auth\CreateTokenController;
 use App\Http\Controllers\Api\Auth\RegisterUserController;
 use App\Http\Controllers\Api\Auth\RevokeTokenController;
+use App\Http\Controllers\Api\Blog\CommentController;
 use App\Http\Controllers\Api\Blog\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,5 +17,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::prefix('blog')->group(function (): void {
         Route::apiResource('posts', PostController::class);
+        Route::apiResource('comments', CommentController::class);
     });
 });

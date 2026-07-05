@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Data\Blog\Requests\StoreCommentData;
+use App\Data\Blog\Requests\UpdateCommentData;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -19,9 +21,10 @@ describe('CommentService', function (): void {
             $post = Post::factory()->for($user)->create();
             $commentService = app(CommentService::class);
 
-            $comment = $commentService->create($user, $post, [
-                'comment' => 'Great post!',
-            ]);
+            $comment = $commentService->create($user, $post, new StoreCommentData(
+                post_id: $post->id,
+                comment: 'Great post!',
+            ));
 
             expect($comment)->toBeInstanceOf(Comment::class)
                 ->and($comment->exists)->toBeTrue()
@@ -38,7 +41,9 @@ describe('CommentService', function (): void {
             $comment = Comment::factory()->for($post)->for($user)->create(['comment' => 'Original']);
             $commentService = app(CommentService::class);
 
-            $result = $commentService->update($user, $comment, ['comment' => 'Updated!']);
+            $result = $commentService->update($user, $comment, new UpdateCommentData(
+                comment: 'Updated!',
+            ));
 
             expect($result->comment)->toBe('Updated!');
             expect($comment->fresh()->comment)->toBe('Updated!');
@@ -51,7 +56,9 @@ describe('CommentService', function (): void {
             $comment = Comment::factory()->for($post)->for($creator)->create();
             $commentService = app(CommentService::class);
 
-            expect(fn () => $commentService->update($other, $comment, ['comment' => 'Hacked']))
+            expect(fn () => $commentService->update($other, $comment, new UpdateCommentData(
+                comment: 'Hacked',
+            )))
                 ->toThrow(AuthorizationException::class, 'You are not the owner of this comment.');
         });
     });
@@ -113,21 +120,6 @@ describe('CommentService', function (): void {
             foreach ($lengthAwarePaginator->items() as $comment) {
                 expect($comment->post_id)->toBe($postA->id);
             }
-        });
-
-        it('loads only id and name for the comment user', function (): void {
-            $user = User::factory()->create(['name' => 'Commenter Name']);
-            $post = Post::factory()->for($user)->create();
-            Comment::factory()->for($post)->for($user)->create();
-            $commentService = app(CommentService::class);
-
-            $lengthAwarePaginator = $commentService->query(perPage: 15);
-
-            $comment = $lengthAwarePaginator->first();
-            expect($comment->user->toArray())->toBe([
-                'id' => $user->id,
-                'name' => 'Commenter Name',
-            ]);
         });
     });
 });

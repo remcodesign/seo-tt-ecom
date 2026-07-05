@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Blog;
 
-use App\Data\Blog\StorePostData;
-use App\Data\Blog\UpdatePostData;
+use App\Data\Blog\Requests\StorePostData;
+use App\Data\Blog\Requests\UpdatePostData;
 use App\Models\Blog\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -129,7 +129,7 @@ readonly class PostService
 
         if ($withComments) {
             $builder->with(['comments' => function ($query): void {
-                $query->withUserName();
+                $query->with('user');
             }]);
         }
 
@@ -145,7 +145,7 @@ readonly class PostService
 
         if ($withComments) {
             $relations['comments'] = function ($query): void {
-                $query->withUserName();
+                $query->with('user');
             };
         }
 

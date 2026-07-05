@@ -11,8 +11,8 @@ namespace App\Services\Blog {
 
 namespace {
 
-    use App\Data\Blog\StorePostData;
-    use App\Data\Blog\UpdatePostData;
+    use App\Data\Blog\Requests\StorePostData;
+    use App\Data\Blog\Requests\UpdatePostData;
     use App\Models\Blog\Comment;
     use App\Models\Blog\Post;
     use App\Models\User;
@@ -202,21 +202,6 @@ namespace {
                 expect($comment->relationLoaded('user'))->toBeTrue();
             });
 
-            it('loads only comment user id and name when withComments is true', function (): void {
-                $user = User::factory()->create(['name' => 'Jane Doe']);
-                $post = Post::factory()->for($user)->create();
-                Comment::factory()->count(2)->for($post)->for($user)->create();
-                $postService = app(PostService::class);
-
-                $lengthAwarePaginator = $postService->query(withComments: true, perPage: 15);
-
-                $comment = $lengthAwarePaginator->first()->comments->first();
-
-                expect($comment->user->toArray())->toBe([
-                    'id' => $user->id,
-                    'name' => 'Jane Doe',
-                ]);
-            });
         });
     });
 }

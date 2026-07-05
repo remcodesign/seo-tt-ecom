@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Blog;
 
+use App\Data\Blog\Requests\StoreCommentData;
+use App\Data\Blog\Requests\UpdateCommentData;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -12,31 +14,27 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 readonly class CommentService
 {
-    /**
-     * Create a new comment on the given post by the given user.
-     *
-     * @param  array<string, mixed>  $data
-     */
-    public function create(User $user, Post $post, array $data): Comment
+    public function create(User $user, Post $post, StoreCommentData $storeCommentData): Comment
     {
         return $post->comments()->create([
             'user_id' => $user->id,
-            'comment' => $data['comment'],
+            'comment' => $storeCommentData->comment,
         ]);
     }
 
-    /**
-     * Update the given comment.
-     *
-     * @param  array<string, mixed>  $data
-     */
-    public function update(User $user, Comment $comment, array $data): Comment
+    public function update(User $user, Comment $comment, UpdateCommentData $updateCommentData): Comment
     {
         if ($user->isNot($comment->user)) {
             throw new AuthorizationException('You are not the owner of this comment.');
         }
 
-        $comment->update($data);
+        $data = array_filter([
+            'comment' => $updateCommentData->comment,
+        ], static fn (mixed $value): bool => $value !== null);
+
+        if ($data !== []) {
+            $comment->update($data);
+        }
 
         return $comment;
     }
@@ -61,14 +59,19 @@ readonly class CommentService
      */
     public function query(?int $postId = null, int $perPage = 15): LengthAwarePaginator
     {
-        $query = Comment::query()
-            ->withPostAndUserName()
+        $builder = Comment::query()
+            ->with(['post', 'user'])
             ->latest();
 
         if ($postId !== null) {
-            $query->where('post_id', $postId);
+            $builder->where('post_id', $postId);
         }
 
-        return $query->paginate($perPage);
+        return $builder->paginate($perPage);
+    }
+
+    public function find(Comment $comment): Comment
+    {
+        return $comment->load(['post', 'user']);
     }
 }

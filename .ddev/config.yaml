@@ -3,17 +3,19 @@ type: laravel
 docroot: public
 php_version: "8.4"
 webserver_type: nginx-fpm
-xdebug_enabled: false
+xdebug_enabled: true
 additional_hostnames: []
 additional_fqdns: []
 database:
     type: mariadb
     version: "11.8"
-host_db_port: "54329"
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
 corepack_enable: false
+# router_http_port: "8080"
+# router_https_port: "8443"
+host_db_port: "54330"
 
 # Key features of DDEV's config.yaml:
 

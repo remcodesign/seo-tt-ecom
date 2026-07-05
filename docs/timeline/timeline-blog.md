@@ -64,11 +64,29 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 -------------
 
-## TODO - adding `comments` controller + tests - with the same style as the `post` controller
+## DONE - adding `comments` controller + tests - with the same style as the `post` controller
+
+-------------
 
 ## TODO - prepent `blog` before `comments` classes/routes
 
-## TODO - simple blog - blade home / post-index / post-show + comments(read)
+## TODO - seed the full blog (post + comments + users)
+
+## TODO - postman test + sanctum > send full post/comment objects
+
+> vue
+>
+## TODO - start een simple vue frontend with components for common parts
+
+## TODO - frontend login via api - (no roles/permissions)
+
+## TODO - add create/update/delete comments (when logged-in)
+
+## TODO - add policies, user roles/permissions, spatie/laravel-permission
+
+docs/private/todo/policies-roles-permission.md
+
+## TODO - add blog categories, tags
 
 ## TODO - simple blog - add login > then can comment(write/update) via user
 
@@ -79,3 +97,7 @@ docs/private/todo/value-object.md
 ## TODO - domain invariants - exception handling
 
 docs/private/todo/domain-invariant.md
+
+> blade?
+>
+## TODO - simple blog - blade home / post-index / post-show + comments(read) + seeds + web.php routes

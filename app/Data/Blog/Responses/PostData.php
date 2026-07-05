@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\Blog;
+namespace App\Data\Blog\Responses;
 
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Attributes\WithCast;
@@ -21,6 +21,8 @@ final class PostData extends Data
         public string $slug,
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $published_on,
+        // public UserData $user, // todo add user relation here
+        // todo also add comments relation here, but that would require a new PostWithCommentsData class that doesn't include the post relation to avoid circular references
     ) {}
 
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\Blog;
+namespace App\Data\Blog\Requests;
 
 use Spatie\LaravelData\Attributes\Validation\Date;
 use Spatie\LaravelData\Attributes\Validation\Max;
