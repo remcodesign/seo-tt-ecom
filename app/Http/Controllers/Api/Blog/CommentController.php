@@ -61,10 +61,7 @@ readonly class CommentController
         $post = Post::findOrFail($storeCommentData->post_id);
         $comment = $this->commentService->create($user, $post, $storeCommentData);
 
-        $includes = $this->requestIncludedRelations();
-
-        $comment = $this->loadIncludes($comment, $includes);
-
+        [$comment, $includes] = $this->resolveOptionalIncludes($comment);
         $commentData = CommentData::from($comment);
         $this->applyIncludes($commentData, $includes);
 
@@ -78,10 +75,7 @@ readonly class CommentController
 
         $comment = $this->commentService->update($user, $comment, $updateCommentData);
 
-        $includes = $this->requestIncludedRelations();
-
-        $comment = $this->loadIncludes($comment, $includes);
-
+        [$comment, $includes] = $this->resolveOptionalIncludes($comment);
         $commentData = CommentData::from($comment);
         $this->applyIncludes($commentData, $includes);
 

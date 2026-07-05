@@ -61,4 +61,16 @@ trait HasOptionalIncludes
             $data->include(...$includes);
         }
     }
+
+    /**
+     * Resolve requested includes, load them on the model, and return both.
+     *
+     * @return array{0: Model, 1: non-falsy-string[]}
+     */
+    protected function resolveOptionalIncludes(Model $model): array
+    {
+        $includes = $this->requestIncludedRelations();
+
+        return [$this->loadIncludes($model, $includes), $includes];
+    }
 }

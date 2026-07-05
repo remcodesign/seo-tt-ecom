@@ -26,9 +26,19 @@ applyTo: '**/*'
   - Most often use this trait in `store()` and `update()` methods for minimal default JSON output.
   - In `store()` / `update()`:
     - create/update the model via the service
-    - call `$includes = $this->requestIncludedRelations();`
-    - call `$model = $this->loadIncludes($model, $includes);`
-    - return `$this->applyIncludes(DataClass::from($model), $includes);`
+    - call `[$model, $includes] = $this->resolveOptionalIncludes($model);`
+    - create the DTO: `$dto = DataClass::from($model);`
+    - call `$this->applyIncludes($dto, $includes);`
+    - return `$dto;`
+  - Example (`CommentController`):
+    ```php
+    [$comment, $includes] = $this->resolveOptionalIncludes($comment);
+
+    $commentData = CommentData::from($comment);
+    $this->applyIncludes($commentData, $includes);
+
+    return $commentData;
+    ```
   - Allowed relations are explicit and only loaded when requested, e.g. `?include=user` or `?include=post.user,user`.
 
 ### Service Layer

@@ -54,10 +54,7 @@ readonly class PostController
 
         $post = $this->postService->create($user, $storePostData);
 
-        $includes = $this->requestIncludedRelations();
-
-        $post = $this->loadIncludes($post, $includes);
-
+        [$post, $includes] = $this->resolveOptionalIncludes($post);
         $postData = PostData::from($post);
         $this->applyIncludes($postData, $includes);
 
@@ -71,10 +68,7 @@ readonly class PostController
 
         $post = $this->postService->update($user, $post, $updatePostData);
 
-        $includes = $this->requestIncludedRelations();
-
-        $post = $this->loadIncludes($post, $includes);
-
+        [$post, $includes] = $this->resolveOptionalIncludes($post);
         $postData = PostData::from($post);
         $this->applyIncludes($postData, $includes);
 
