@@ -21,6 +21,14 @@ readonly class PostController
 
     public function __construct(private PostService $postService) {}
 
+    private function user(): User
+    {
+        $user = Auth::user();
+        assert($user instanceof User);
+
+        return $user;
+    }
+
     /**
      * @return string[]
      */
@@ -49,10 +57,7 @@ readonly class PostController
 
     public function store(StorePostData $storePostData): PostData
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $post = $this->postService->create($user, $storePostData);
+        $post = $this->postService->create($this->user(), $storePostData);
 
         [$post, $includes] = $this->resolveOptionalIncludes($post);
         $postData = PostData::from($post);
@@ -63,10 +68,7 @@ readonly class PostController
 
     public function update(UpdatePostData $updatePostData, Post $post): PostData
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $post = $this->postService->update($user, $post, $updatePostData);
+        $post = $this->postService->update($this->user(), $post, $updatePostData);
 
         [$post, $includes] = $this->resolveOptionalIncludes($post);
         $postData = PostData::from($post);
@@ -77,10 +79,7 @@ readonly class PostController
 
     public function destroy(Post $post): JsonResponse
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $this->postService->delete($user, $post);
+        $this->postService->delete($this->user(), $post);
 
         return response()->json(null, 204);
     }

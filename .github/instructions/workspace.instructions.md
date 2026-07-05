@@ -21,6 +21,17 @@ applyTo: '**/*'
 - Keep thin: assemble validated input, authorize, delegate to services.
 - No business logic, query construction, or repeated eager-loading setup.
 - Prefer invokable controllers for single-action endpoints.
+- **Auth‑aware controllers:** For routes under the `auth:sanctum` middleware, extract the authenticated user into a private `user()` helper to avoid repeating `Auth::user()` casts in every method:
+  ```php
+  private function user(): User
+  {
+      $user = Auth::user();
+      assert($user instanceof User);
+
+      return $user;
+  }
+  ```
+  Then use `$this->user()` in `store()`, `update()`, and `destroy()` instead of the manual `/** @var User $user */ $user = Auth::user();` block.
 - Use `app/Http/Controllers/Api/Traits/HasOptionalIncludes.php` for optional response expansion.
   - Add `use HasOptionalIncludes;` to the controller and implement `protected function allowedIncludes(): array`.
   - Most often use this trait in `store()` and `update()` methods for minimal default JSON output.

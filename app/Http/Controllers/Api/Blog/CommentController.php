@@ -22,6 +22,14 @@ readonly class CommentController
 
     public function __construct(private CommentService $commentService) {}
 
+    private function user(): User
+    {
+        $user = Auth::user();
+        assert($user instanceof User);
+
+        return $user;
+    }
+
     /**
      * @return string[]
      */
@@ -55,11 +63,8 @@ readonly class CommentController
 
     public function store(StoreCommentData $storeCommentData): CommentData
     {
-        /** @var User $user */
-        $user = Auth::user();
-
         $post = Post::findOrFail($storeCommentData->post_id);
-        $comment = $this->commentService->create($user, $post, $storeCommentData);
+        $comment = $this->commentService->create($this->user(), $post, $storeCommentData);
 
         [$comment, $includes] = $this->resolveOptionalIncludes($comment);
         $commentData = CommentData::from($comment);
@@ -70,10 +75,7 @@ readonly class CommentController
 
     public function update(UpdateCommentData $updateCommentData, Comment $comment): CommentData
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $comment = $this->commentService->update($user, $comment, $updateCommentData);
+        $comment = $this->commentService->update($this->user(), $comment, $updateCommentData);
 
         [$comment, $includes] = $this->resolveOptionalIncludes($comment);
         $commentData = CommentData::from($comment);
@@ -84,10 +86,7 @@ readonly class CommentController
 
     public function destroy(Comment $comment): JsonResponse
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $this->commentService->delete($user, $comment);
+        $this->commentService->delete($this->user(), $comment);
 
         return response()->json(null, 204);
     }
