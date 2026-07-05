@@ -28,7 +28,11 @@ describe('CommentController (API)', function (): void {
                             'post_id',
                             'user_id',
                             'comment',
-                            'post' => ['id', 'title'],
+                            'post' => [
+                                'id',
+                                'title',
+                                'user' => ['id', 'name', 'email'],
+                            ],
                             'user' => ['id', 'name', 'email'],
                         ],
                     ],
@@ -71,7 +75,11 @@ describe('CommentController (API)', function (): void {
                     'post_id',
                     'user_id',
                     'comment',
-                    'post' => ['id', 'title'],
+                    'post' => [
+                        'id',
+                        'title',
+                        'user' => ['id', 'name', 'email'],
+                    ],
                     'user' => ['id', 'name', 'email'],
                 ]);
         });
@@ -93,7 +101,11 @@ describe('CommentController (API)', function (): void {
                     'post_id',
                     'user_id',
                     'comment',
-                    'post' => ['id', 'title'],
+                    'post' => [
+                        'id',
+                        'title',
+                        'user' => ['id', 'name', 'email'],
+                    ],
                     'user' => ['id', 'name', 'email'],
                 ])
                 ->assertJson([

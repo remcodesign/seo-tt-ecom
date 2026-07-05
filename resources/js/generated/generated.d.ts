@@ -59,6 +59,7 @@ declare namespace App {
                     body: string | null;
                     slug: string;
                     published_on: string | null;
+                    user: App.Data.Auth.UserData;
                 };
             }
         }

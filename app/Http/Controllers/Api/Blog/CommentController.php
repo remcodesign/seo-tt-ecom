@@ -49,7 +49,7 @@ readonly class CommentController
 
         $post = Post::findOrFail($storeCommentData->post_id);
         $comment = $this->commentService->create($user, $post, $storeCommentData);
-        $comment->load(['post', 'user']); // todo optionaly load the post and user relations, but that would require a new CommentWithPostAndUserData class that doesn't include the post and user relations to avoid circular references
+        $comment->load(['post.user', 'user']);
 
         return CommentData::from($comment);
     }
@@ -60,7 +60,7 @@ readonly class CommentController
         $user = Auth::user();
 
         $comment = $this->commentService->update($user, $comment, $updateCommentData);
-        $comment->loadMissing(['post', 'user']); // todo optionaly load the post and user relations, but that would require a new CommentWithPostAndUserData class that doesn't include the post and user relations to avoid circular references
+        $comment->loadMissing(['post.user', 'user']);
 
         return CommentData::from($comment);
     }

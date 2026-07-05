@@ -60,7 +60,7 @@ readonly class CommentService
     public function query(?int $postId = null, int $perPage = 15): LengthAwarePaginator
     {
         $builder = Comment::query()
-            ->with(['post', 'user'])
+            ->with(['post.user', 'user'])
             ->latest();
 
         if ($postId !== null) {
@@ -72,6 +72,6 @@ readonly class CommentService
 
     public function find(Comment $comment): Comment
     {
-        return $comment->load(['post', 'user']);
+        return $comment->load(['post.user', 'user']);
     }
 }

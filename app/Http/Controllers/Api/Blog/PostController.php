@@ -42,6 +42,7 @@ readonly class PostController
         $user = Auth::user();
 
         $post = $this->postService->create($user, $storePostData);
+        $post->load('user');
 
         return PostData::from($post);
     }
@@ -52,6 +53,7 @@ readonly class PostController
         $user = Auth::user();
 
         $post = $this->postService->update($user, $post, $updatePostData);
+        $post->load('user');
 
         return PostData::from($post);
     }

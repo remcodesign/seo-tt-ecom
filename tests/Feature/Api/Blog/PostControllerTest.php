@@ -17,8 +17,23 @@ describe('PostController (API)', function (): void {
 
             $response = $this->getJson('/api/blog/posts');
 
+            // dump($response->json());
+
             $response->assertSuccessful()
-                ->assertJsonStructure(['data', 'meta', 'links'])
+                ->assertJsonStructure([
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'title',
+                            'body',
+                            'slug',
+                            'user_id',
+                            'user' => ['id', 'name', 'email'],
+                        ],
+                    ],
+                    'meta',
+                    'links',
+                ])
                 ->assertJsonCount(5, 'data');
         });
 
@@ -35,7 +50,14 @@ describe('PostController (API)', function (): void {
             $response = $this->getJson('/api/blog/posts/'.$post->id);
 
             $response->assertSuccessful()
-                ->assertJsonStructure(['id', 'title', 'body', 'slug']);
+                ->assertJsonStructure([
+                    'id',
+                    'title',
+                    'body',
+                    'slug',
+                    'user_id',
+                    'user' => ['id', 'name', 'email'],
+                ]);
         });
     });
 
@@ -50,11 +72,19 @@ describe('PostController (API)', function (): void {
             ]);
 
             $response->assertCreated()
-                ->assertJsonStructure(['id', 'title', 'body', 'slug', 'user_id'])
+                ->assertJsonStructure([
+                    'id',
+                    'title',
+                    'body',
+                    'slug',
+                    'user_id',
+                    'user' => ['id', 'name', 'email'],
+                ])
                 ->assertJson([
                     'title' => 'My New Post',
                     'body' => 'This is the body content.',
                     'user_id' => $user->id,
+                    'user' => ['id' => $user->id],
                 ]);
         });
 
@@ -85,6 +115,7 @@ describe('PostController (API)', function (): void {
             $response->assertSuccessful()
                 ->assertJson([
                     'title' => 'Updated Title',
+                    'user' => ['id' => $user->id],
                 ]);
             expect($post->fresh()->title)->toBe('Updated Title');
         });
