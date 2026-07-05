@@ -22,6 +22,9 @@ readonly class CommentController
 
     public function __construct(private CommentService $commentService) {}
 
+    /**
+     * @return string[]
+     */
     protected function allowedIncludes(): array
     {
         return ['post', 'post.user', 'user'];
@@ -62,7 +65,10 @@ readonly class CommentController
 
         $comment = $this->loadIncludes($comment, $includes);
 
-        return $this->applyIncludes(CommentData::from($comment), $includes);
+        $commentData = CommentData::from($comment);
+        $this->applyIncludes($commentData, $includes);
+
+        return $commentData;
     }
 
     public function update(UpdateCommentData $updateCommentData, Comment $comment): CommentData
@@ -76,7 +82,10 @@ readonly class CommentController
 
         $comment = $this->loadIncludes($comment, $includes);
 
-        return $this->applyIncludes(CommentData::from($comment), $includes);
+        $commentData = CommentData::from($comment);
+        $this->applyIncludes($commentData, $includes);
+
+        return $commentData;
     }
 
     public function destroy(Comment $comment): JsonResponse

@@ -21,6 +21,9 @@ readonly class PostController
 
     public function __construct(private PostService $postService) {}
 
+    /**
+     * @return string[]
+     */
     protected function allowedIncludes(): array
     {
         return ['user'];
@@ -55,7 +58,10 @@ readonly class PostController
 
         $post = $this->loadIncludes($post, $includes);
 
-        return $this->applyIncludes(PostData::from($post), $includes);
+        $postData = PostData::from($post);
+        $this->applyIncludes($postData, $includes);
+
+        return $postData;
     }
 
     public function update(UpdatePostData $updatePostData, Post $post): PostData
@@ -69,7 +75,10 @@ readonly class PostController
 
         $post = $this->loadIncludes($post, $includes);
 
-        return $this->applyIncludes(PostData::from($post), $includes);
+        $postData = PostData::from($post);
+        $this->applyIncludes($postData, $includes);
+
+        return $postData;
     }
 
     public function destroy(Post $post): JsonResponse

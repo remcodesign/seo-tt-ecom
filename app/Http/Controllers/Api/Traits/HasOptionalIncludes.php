@@ -10,11 +10,17 @@ use Spatie\LaravelData\Data;
 
 trait HasOptionalIncludes
 {
+    /**
+     * @return non-falsy-string[]
+     */
     protected function allowedIncludes(): array
     {
         return [];
     }
 
+    /**
+     * @return non-falsy-string[]
+     */
     protected function requestIncludedRelations(string $parameter = 'include'): array
     {
         $raw = request()->query($parameter);
@@ -29,11 +35,14 @@ trait HasOptionalIncludes
             ->map(fn (string $value): string => trim($value))
             ->filter()
             ->unique()
-            ->intersect($this->allowedIncludes())
+            ->filter(fn (string $value): bool => in_array($value, $this->allowedIncludes(), true))
             ->values()
             ->all();
     }
 
+    /**
+     * @param  string[]  $includes
+     */
     protected function loadIncludes(Model $model, array $includes): Model
     {
         if ($includes === []) {
@@ -43,12 +52,13 @@ trait HasOptionalIncludes
         return $model->loadMissing($includes);
     }
 
-    protected function applyIncludes(Data $data, array $includes): Data
+    /**
+     * @param  string[]  $includes
+     */
+    protected function applyIncludes(Data $data, array $includes): void
     {
-        if ($includes === []) {
-            return $data;
+        if ($includes !== []) {
+            $data->include(...$includes);
         }
-
-        return $data->include(...$includes);
     }
 }

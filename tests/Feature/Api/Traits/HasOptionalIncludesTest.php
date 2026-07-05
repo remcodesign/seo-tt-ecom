@@ -68,7 +68,10 @@ final class HasOptionalIncludesTest extends TestCase
         $postData = PostData::from($post);
 
         $this->assertSame($post, $this->loadIncludes($post, []));
-        $this->assertSame($postData, $this->applyIncludes($postData, []));
+
+        $ref = $postData;
+        $this->applyIncludes($postData, []);
+        $this->assertSame($ref, $postData);
 
         $model = $this->loadIncludes($post, ['user']);
 
