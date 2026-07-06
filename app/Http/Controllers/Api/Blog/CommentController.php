@@ -37,7 +37,7 @@ readonly class CommentController
         return CommentData::collect(
             $this->commentService->query(
                 postId: $postId !== null ? (int) $postId : null,
-                perPage: 15,
+                perPage: 5,
             ),
             PaginatedDataCollection::class,
         );

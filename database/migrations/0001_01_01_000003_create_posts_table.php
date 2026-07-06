@@ -15,8 +15,8 @@ return new class extends Migration
             $blueprint->id();
             $blueprint->foreignId('user_id')->constrained()->cascadeOnDelete();
             $blueprint->string('title');
-            $blueprint->text('body')->nullable();
             $blueprint->string('slug')->unique();
+            $blueprint->text('body')->nullable();
             $blueprint->dateTime('published_on')->nullable();
             $blueprint->timestamps();
 

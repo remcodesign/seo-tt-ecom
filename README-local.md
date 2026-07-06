@@ -66,11 +66,13 @@ ddev composer format
 
 ## > artisan
 
-### refresh db
+### refresh db + seed
 
 ```bash
 ddev artisan migrate
 ddev artisan migrate:refresh
+
+ddev artisan db:seed
 ```
 
 ### Spatie Data :: Generate Typescript

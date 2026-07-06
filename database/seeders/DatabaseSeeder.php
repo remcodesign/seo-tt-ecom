@@ -23,5 +23,14 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        User::factory()->create([
+            'name' => 'test Admin',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('test'),
+            // 'is_admin' => true,
+        ]);
+
+        $this->call(BlogSeeder::class);
     }
 }
