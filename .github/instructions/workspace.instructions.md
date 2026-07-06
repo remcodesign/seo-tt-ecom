@@ -211,3 +211,82 @@ Verify the full HTTP lifecycle without duplicating service-layer assertions.
 - Test required fields, format validation, unique constraints.
 
 **Reference:** `tests/Feature/Api/Blog/PostControllerTest.php` — each CRUD action in its own `describe()` block.
+
+---
+
+## Vue 3 SPA Frontend
+
+### Stack
+- **Framework:** Vue 3 (`<script setup lang="ts">` syntax) with TypeScript.
+- **Bundler:** Vite 8 via `laravel-vite-plugin` + `@vitejs/plugin-vue`.
+- **Routing:** `vue-router` with `createWebHistory()` — no Inertia, pure client-side SPA.
+- **HTTP:** Axios (`resources/js/api.ts`) with `/api` base URL.
+- **Styling:** Tailwind CSS 4 (same theme as backend views).
+- **State:** No Pinia yet — components use `ref`/`reactive` locally.
+
+### Directory Structure
+
+```
+resources/js/
+├── api.ts                  # Axios client (baseURL: /api)
+├── app.ts                  # Entry point — creates Vue app + router, mounts #app
+├── App.vue                 # Root component (AppLayout > router-view)
+├── env.d.ts                # .vue module declarations
+├── types.ts                # Re-exports ambient types from generated.d.ts as modules
+├── layouts/
+│   └── AppLayout.vue       # Base shell — AppHeader, <main> slot, AppFooter
+├── components/
+└── pages/
+```
+
+### Route Configuration
+
+**Vue Router (`resources/js/app.ts`):**
+
+**Catch-all in `routes/web.php`:** A `Route::get('/{any}', ...)->where('any', '.*')` must be the **last** web route so that all non-root paths serve the `welcome` Blade view, allowing Vue Router to resolve them client-side:
+
+```php
+Route::get('/{any}', fn (): Factory|View => view('welcome'))
+    ->where('any', '.*');
+```
+
+### API Pattern
+
+All API calls go through `resources/js/api.ts` (a preconfigured axios instance). The Laravel API lives under `/api/*` and returns JSON. Frontend routes that match the catch-all are handled by Vue Router, which then calls the API to hydrate the page.
+
+**Example — fetching posts on mount:**
+```typescript
+import { onMounted, ref } from 'vue';
+import type { PostData } from '@/types';
+import api from '@/api';
+
+const posts = ref<PostData[]>([]);
+
+onMounted(async () => {
+    const { data } = await api.get<{ data: PostData[] }>('/blog/posts');
+    posts.value = data.data;
+});
+```
+
+### TypeScript Types
+
+- Backend Spatie DTOs (annotated with `#[TypeScript]`) are transformed to ambient types via `php artisan typescript:transform`.
+- The generated file `resources/js/generated/generated.d.ts` uses `declare namespace App` — it is **not** a module.
+- `resources/js/types.ts` re-exports the ambient types as proper module imports so components can do:
+
+```typescript
+import type { PostData, UserData } from '@/types';
+```
+
+The path alias `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.js`).
+
+**Available types (`resources/js/types.ts`):**
+
+### Component Conventions
+
+1. **Layout components** go in `layouts/` — wrap `<slot />` with shared chrome (header, nav, footer).
+2. **Page components** go in `pages/` — lazy-loaded via `() => import(...)`, fetch their own data on mount.
+3. **Reusable UI components** go in `components/` — receive data via `defineProps`, emit events or rely on router links for navigation.
+4. **Page-state components** (loading, empty, error) are inline in the same page component rather than abstracted, unless reused across 3+ pages.
+5. **Every component uses `<script setup lang="ts">`** with explicit prop and emit types.
+6. **Keep components focused** — `PostCard` renders one post card, `CardLister` renders a grid of `PostCard`. No single component does both.

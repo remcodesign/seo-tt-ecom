@@ -104,14 +104,29 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 - then fill the current home `resources/js/pages/HomePage.vue`, so it contains a demo (dummy data) card based  (create a component for this) lister  (create a component for this) of the last 6 posts (with dummy link to post show page and writer data on the card)
   - use typescript `resources/js/generated/generated.d.ts` (use/create path alias) to type check and possible data and to fill the demo post data
 
+..done
+
 - add a post show page (with user/writer data) - 'it should be on `/blog/posts/xxx`' so in the blog url context - use axios
 
 ```php
     Route::apiResource('posts', PostController::class)
         ->scoped(['post' => 'slug'])
-        ->only(['index', 'show']);```
+        ->only(['index', 'show']);
+```
 
-- on the post show page, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
+..done
+
+- make the home page dynamic with post index data
+
+..
+
+> try to convert the `resources/js/generated/generated.d.ts` to a module format - so after `php artisan typescript:transform`, this way we can import it directly as a module and not with the current `resources/js/types.ts` file, if not, generate the `types.ts` from the `generated.d.ts`
+
+- make a component of the homepage blog-post-card-lister, so we can place more variants more of them and no polution
+
+- create folders for the `blog` context pages and components
+
+- on the post show page `resources/js/pages/PostShowPage.vue`, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
 
 - add a post index page with card lister (reuse card component and lister) - 'it should be on `/blog/posts`' so in the blog url context - use axios
 
