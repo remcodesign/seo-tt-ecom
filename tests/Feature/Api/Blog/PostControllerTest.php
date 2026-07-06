@@ -36,6 +36,18 @@ describe('PostController (API)', function (): void {
                 ])
                 ->assertJsonCount(5, 'data');
         });
+
+        it('does not include draft posts in the public list', function (): void {
+            // Create three published posts
+            Post::factory()->count(3)->for(User::factory())->create();
+            // Create a draft post (published_on is null)
+            Post::factory()->for(User::factory())->create(['published_on' => null]);
+
+            $response = $this->getJson('/api/blog/posts');
+
+            $response->assertSuccessful()
+                ->assertJsonCount(3, 'data');
+        });
     });
 
     describe('show', function (): void {
@@ -64,6 +76,13 @@ describe('PostController (API)', function (): void {
                     ],
                 ])
                 ->assertJsonPath('comments.0.id', $comment->id);
+        });
+
+        it('returns 404 for draft posts', function (): void {
+            $post = Post::factory()->for(User::factory())->create(['published_on' => null]);
+
+            $this->getJson('/api/blog/posts/'.$post->slug)
+                ->assertNotFound();
         });
     });
 

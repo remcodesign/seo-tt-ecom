@@ -125,7 +125,9 @@ readonly class PostService
      */
     public function query(bool $withComments = false, int $perPage = 15): LengthAwarePaginator
     {
-        $builder = Post::query()->with('user');
+        $builder = Post::query()
+            ->published()
+            ->with('user');
 
         if ($withComments) {
             $builder->with(['comments' => function ($query): void {

@@ -80,11 +80,13 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 -------------
 
-## TODO - user add fields `is_admin(bool)` `role_label(varchar)` to store a short label + change tests + seeder to use these fields + role_label ENUM
+## DONE - user add fields `is_admin(bool)` `role_label(varchar)` to store a short label + change tests + seeder to use these fields + role_label ENUM
 
-- create role_label enum (guest, user, writer, admin)
+-------------
 
-## TODO - blog post `published_on = null` should not be visible with the normal index call
+## DONE - blog post `published_on = null` should not be visible with the public index and show api calls
+
+-------------
 
 <!-- ## TODO - postman test + sanctum > send full post/comment objects -->
 

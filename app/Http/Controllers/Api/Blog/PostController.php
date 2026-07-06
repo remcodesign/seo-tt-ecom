@@ -47,7 +47,7 @@ readonly class PostController
         return PostData::collect(
             $this->postService->query(
                 withComments: false,
-                perPage: 10
+                perPage: 5
             ),
             PaginatedDataCollection::class
         );
@@ -57,6 +57,11 @@ readonly class PostController
     {
         // todo use the optional includes for the index and show methods, not for store and update
         // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
+
+        if ($post->published_on === null) {
+            abort(404);
+        }
+
         $post = $this->postService->find($post, withComments: true);
 
         return PostData::from($post);

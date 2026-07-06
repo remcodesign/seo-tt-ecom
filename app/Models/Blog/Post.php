@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Comment> $comments
  *
  * @method static Builder<static> withoutContentFields()
+ * @method static Builder<static> published()
  */
 #[Fillable(['user_id', 'title', 'body', 'slug', 'published_on'])]
 #[Table(name: 'blog_posts')]
@@ -67,6 +68,17 @@ class Post extends BlogRootModel
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Scope to only return published posts.
+     *
+     * @param  Builder<Post>  $builder
+     * @return Builder<Post>
+     */
+    public function scopePublished(Builder $builder): Builder
+    {
+        return $builder->whereNotNull('published_on');
     }
 
     /**
