@@ -58,7 +58,7 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## DONE - goto phpstan level 9 and use `spatie/laravel-data`
+## DONE - goto phpstan level 9 and use `spatie/laravel-data` DTO's for the whole stack - no RAW array passing anymore
 
 docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
@@ -76,7 +76,9 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 -------------
 
-## TODO - blog post slug should be used for the show method
+## DONE - blog post slug should be used for the show method
+
+-------------
 
 ## TODO - user add fields `is_admin(bool)` `role_label(varchar)` to store a short label + change tests + seeder to use these fields + role_label ENUM
 

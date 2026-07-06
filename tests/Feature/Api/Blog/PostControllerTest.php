@@ -43,7 +43,7 @@ describe('PostController (API)', function (): void {
             $post = Post::factory()->for(User::factory())->create();
             $comment = Comment::factory()->for($post)->for(User::factory())->create();
 
-            $response = $this->getJson('/api/blog/posts/'.$post->id);
+            $response = $this->getJson('/api/blog/posts/'.$post->slug);
 
             $response->assertSuccessful()
                 ->assertJsonStructure([

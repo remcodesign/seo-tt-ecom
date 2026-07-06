@@ -13,7 +13,9 @@ Route::post('/sanctum/token', CreateTokenController::class);
 Route::post('/users', RegisterUserController::class);
 
 Route::prefix('blog')->group(function (): void {
-    Route::apiResource('posts', PostController::class)->only(['index', 'show']);
+    Route::apiResource('posts', PostController::class)
+        ->scoped(['post' => 'slug'])
+        ->only(['index', 'show']);
     Route::apiResource('comments', CommentController::class)->only(['index', 'show']);
 });
 
