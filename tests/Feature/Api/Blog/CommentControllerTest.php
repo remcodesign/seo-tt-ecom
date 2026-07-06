@@ -58,6 +58,20 @@ describe('CommentController (API)', function (): void {
                 expect($item['post_id'])->toBe($postA->id);
             }
         });
+
+        it('does not include comments on unpublished posts', function (): void {
+            $user = User::factory()->create();
+            $publishedPost = Post::factory()->for($user)->create();
+            $draftPost = Post::factory()->for($user)->create(['published_on' => null]);
+
+            Comment::factory()->count(2)->for($publishedPost)->for(User::factory())->create();
+            Comment::factory()->count(2)->for($draftPost)->for(User::factory())->create();
+
+            $response = $this->getJson('/api/blog/comments');
+
+            $response->assertSuccessful()
+                ->assertJsonCount(2, 'data');
+        });
     });
 
     describe('show', function (): void {
@@ -79,6 +93,13 @@ describe('CommentController (API)', function (): void {
                     ],
                     'user' => ['id', 'name', 'email'],
                 ]);
+        });
+
+        it('returns 404 for a comment on an unpublished post', function (): void {
+            $comment = Comment::factory()->for(Post::factory()->for(User::factory())->create(['published_on' => null]))->create();
+
+            $this->getJson('/api/blog/comments/'.$comment->id)
+                ->assertNotFound();
         });
     });
 

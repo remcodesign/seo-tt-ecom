@@ -52,6 +52,8 @@ declare namespace App {
                     comment: string;
                     post: App.Data.Blog.Responses.PostForCommentData | null;
                     user: App.Data.Auth.UserData | null;
+                    created_at: string | null;
+                    updated_at: string | null;
                 };
                 export type PostData = {
                     id: number;
@@ -62,6 +64,8 @@ declare namespace App {
                     published_on: string | null;
                     user: App.Data.Auth.UserData | null;
                     comments: App.Data.Blog.Responses.CommentData[] | null;
+                    created_at: string | null;
+                    updated_at: string | null;
                 };
                 export type PostForCommentData = {
                     id: number;
@@ -70,6 +74,8 @@ declare namespace App {
                     slug: string;
                     published_on: string | null;
                     user: App.Data.Auth.UserData | null;
+                    created_at: string | null;
+                    updated_at: string | null;
                 };
             }
         }

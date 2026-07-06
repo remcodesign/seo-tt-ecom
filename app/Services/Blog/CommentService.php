@@ -11,6 +11,7 @@ use App\Models\Blog\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 
 readonly class CommentService
 {
@@ -61,8 +62,18 @@ readonly class CommentService
     public function query(?int $postId = null, int $perPage = 15): LengthAwarePaginator
     {
         $builder = Comment::query()
-            ->with(['post' => fn ($query) => $query->withoutContentFields()])
-            ->with(['post.user', 'user'])
+            ->whereHas('post', function ($query): void {
+                /** @var Builder<Post> $query */
+                $query->published();
+            })
+            ->with([
+                'post' => function ($query): void {
+                    /** @var Builder<Post> $query */
+                    $query->withoutContentFields();
+                },
+                'post.user',
+                'user',
+            ])
             ->latest();
 
         if ($postId !== null) {

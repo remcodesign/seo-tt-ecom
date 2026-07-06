@@ -29,6 +29,8 @@ final class PostData extends Data
         public ?UserData $user = null,
         #[DataCollectionOf(CommentData::class)]
         public ?array $comments = null,
+        public ?string $created_at = null,
+        public ?string $updated_at = null,
     ) {}
 
 }

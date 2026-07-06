@@ -27,5 +27,7 @@ final class PostForCommentData extends Data
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $published_on,
         public ?UserData $user = null,
+        public ?string $created_at = null,
+        public ?string $updated_at = null,
     ) {}
 }

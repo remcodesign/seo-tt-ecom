@@ -99,12 +99,25 @@ final class BlogSeeder extends Seeder
         $writer = $writers->get(1);
         assert($writer instanceof User);
 
-        // Create a draft post without comments and without a published date!
-        $postService->create(
+        // Create a draft post with a draft-only comment.
+        $draftPost = $postService->create(
             $writer,
             new StorePostData(
                 title: 'Drafting the Next Big Feature',
                 body: $makeBody($generator),
+            ),
+        );
+
+        $draftCommenter = $commenters->first();
+        assert($draftCommenter instanceof User);
+
+        // Create a comment for the draft post, which should not be visible in the public API.
+        $commentService->create(
+            $draftCommenter,
+            $draftPost,
+            new StoreCommentData(
+                post_id: $draftPost->id,
+                comment: $generator->paragraph(),
             ),
         );
     }

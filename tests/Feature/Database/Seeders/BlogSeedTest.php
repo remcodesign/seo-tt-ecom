@@ -19,14 +19,14 @@ describe('BlogSeeder', function (): void {
         expect(Post::whereNull('published_on')->count())->toBe(1);
     });
 
-    it('creates comments only for published posts', function (): void {
+    it('creates comments for published posts and draft-only comments for unpublished posts', function (): void {
         $this->seed(BlogSeeder::class);
 
         $publishedPostIds = Post::whereNotNull('published_on')->pluck('id');
         $draftPostIds = Post::whereNull('published_on')->pluck('id');
 
         expect(Comment::whereIn('post_id', $publishedPostIds)->count())->toBeGreaterThan(0);
-        expect(Comment::whereIn('post_id', $draftPostIds)->count())->toBe(0);
+        expect(Comment::whereIn('post_id', $draftPostIds)->count())->toBe(1);
     });
 
     it('creates two writers and five commenters', function (): void {

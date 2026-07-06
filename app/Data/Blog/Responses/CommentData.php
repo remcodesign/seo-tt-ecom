@@ -18,5 +18,7 @@ final class CommentData extends Data
         public string $comment,
         public ?PostForCommentData $post = null,
         public ?UserData $user = null,
+        public ?string $created_at = null,
+        public ?string $updated_at = null,
     ) {}
 }

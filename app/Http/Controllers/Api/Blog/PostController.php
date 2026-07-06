@@ -59,7 +59,7 @@ readonly class PostController
         // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
 
         if ($post->published_on === null) {
-            abort(404);
+            abort(404, 'Post not found.');
         }
 
         $post = $this->postService->find($post, withComments: true);

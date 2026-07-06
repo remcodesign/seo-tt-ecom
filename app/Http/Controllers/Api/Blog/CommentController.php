@@ -37,7 +37,7 @@ readonly class CommentController
         return CommentData::collect(
             $this->commentService->query(
                 postId: $postId !== null ? (int) $postId : null,
-                perPage: 5,
+                perPage: 50,
             ),
             PaginatedDataCollection::class,
         );
@@ -46,6 +46,10 @@ readonly class CommentController
     public function show(Comment $comment): CommentData
     {
         $comment = $this->commentService->find($comment);
+
+        if ($comment->post->published_on === null) {
+            abort(404, 'Comment not found.');
+        }
 
         return CommentData::from($comment);
     }
