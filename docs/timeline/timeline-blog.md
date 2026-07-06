@@ -95,13 +95,21 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 ## TODO - start een simple vue frontend with components for common parts
 
 ..done
+
 - use `laravel boost` and `context 7` to get the most modern vue3 vite within laravel
 - first only a base layout - setup to make vite / vue3 SPA (without inertia) inside the codebase `resources` - keep the styling very simple - just a bit contrast
 
-- then fill the current home `resources/js/pages/HomePage.vue`, so it contains a demo (dummy data) card based  (create a component for this) lister  (create a component for this) of the last 6 posts (with dummy link to show page and writer data)
-  - use typescript `resources/js/generated/generated.d.ts` to type check and to fill the demo post data
+..done
+
+- then fill the current home `resources/js/pages/HomePage.vue`, so it contains a demo (dummy data) card based  (create a component for this) lister  (create a component for this) of the last 6 posts (with dummy link to post show page and writer data on the card)
+  - use typescript `resources/js/generated/generated.d.ts` (use/create path alias) to type check and possible data and to fill the demo post data
 
 - add a post show page (with user/writer data) - 'it should be on `/blog/posts/xxx`' so in the blog url context - use axios
+
+```php
+    Route::apiResource('posts', PostController::class)
+        ->scoped(['post' => 'slug'])
+        ->only(['index', 'show']);```
 
 - on the post show page, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
 
