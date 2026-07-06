@@ -12,11 +12,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('/sanctum/token', CreateTokenController::class);
 Route::post('/users', RegisterUserController::class);
 
+Route::prefix('blog')->group(function (): void {
+    Route::apiResource('posts', PostController::class)->only(['index', 'show']);
+    Route::apiResource('comments', CommentController::class)->only(['index', 'show']);
+});
+
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::delete('/sanctum/tokens/current', RevokeTokenController::class);
 
     Route::prefix('blog')->group(function (): void {
-        Route::apiResource('posts', PostController::class);
-        Route::apiResource('comments', CommentController::class);
+        Route::apiResource('posts', PostController::class)->except(['index', 'show']);
+        Route::apiResource('comments', CommentController::class)->except(['index', 'show']);
     });
 });

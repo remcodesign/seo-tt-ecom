@@ -12,8 +12,7 @@ uses(RefreshDatabase::class);
 
 describe('CommentController (API)', function (): void {
     describe('index', function (): void {
-        it('returns paginated comments for an authenticated user', function (): void {
-            Sanctum::actingAs(User::factory()->create());
+        it('returns paginated comments for the public', function (): void {
             Comment::factory()->count(5)->for(Post::factory()->for(User::factory()))->create();
 
             $response = $this->getJson('/api/blog/comments');
@@ -43,7 +42,6 @@ describe('CommentController (API)', function (): void {
         });
 
         it('filters comments by post id', function (): void {
-            Sanctum::actingAs(User::factory()->create());
             $user = User::factory()->create();
             $postA = Post::factory()->for($user)->create();
             $postB = Post::factory()->for($user)->create();
@@ -63,8 +61,7 @@ describe('CommentController (API)', function (): void {
     });
 
     describe('show', function (): void {
-        it('returns a single comment for an authenticated user', function (): void {
-            Sanctum::actingAs(User::factory()->create());
+        it('returns a single comment for the public', function (): void {
             $comment = Comment::factory()->for(Post::factory()->for(User::factory()))->create();
 
             $response = $this->getJson('/api/blog/comments/'.$comment->id);

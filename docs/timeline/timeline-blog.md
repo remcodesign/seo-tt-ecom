@@ -54,7 +54,7 @@ docs/private/todo/done/6-default-immutable-carbon-classes.md
 
 -------------
 
-## DONE - prepent `blog` before `post` classes/routes
+## DONE - prepent `blog` before `post` and `comment` classes/routes
 
 -------------
 
@@ -68,7 +68,9 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 -------------
 
-## TODO - prepent `blog` before `comments` classes/routes
+## DONE - make `blog` `post` and `comments` methods `index` and `show` public in the routes and tests
+
+-------------
 
 ## TODO - seed the full blog (post + comments + users)
 

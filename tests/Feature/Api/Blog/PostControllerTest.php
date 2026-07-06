@@ -12,8 +12,7 @@ uses(RefreshDatabase::class);
 
 describe('PostController (API)', function (): void {
     describe('index', function (): void {
-        it('returns paginated posts for an authenticated user', function (): void {
-            Sanctum::actingAs(User::factory()->create());
+        it('returns paginated posts for the public', function (): void {
             Post::factory()->count(5)->for(User::factory())->create();
 
             $response = $this->getJson('/api/blog/posts');
@@ -37,15 +36,10 @@ describe('PostController (API)', function (): void {
                 ])
                 ->assertJsonCount(5, 'data');
         });
-
-        it('rejects unauthenticated requests', function (): void {
-            $this->getJson('/api/blog/posts')->assertUnauthorized();
-        });
     });
 
     describe('show', function (): void {
-        it('returns a single post for an authenticated user', function (): void {
-            Sanctum::actingAs(User::factory()->create());
+        it('returns a single post for the public', function (): void {
             $post = Post::factory()->for(User::factory())->create();
             $comment = Comment::factory()->for($post)->for(User::factory())->create();
 

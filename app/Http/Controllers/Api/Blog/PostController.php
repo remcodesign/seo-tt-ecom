@@ -34,7 +34,7 @@ readonly class PostController
      */
     protected function allowedIncludes(): array
     {
-        return ['user'];
+        return ['user', 'comments'];
     }
 
     /**
@@ -42,13 +42,21 @@ readonly class PostController
      */
     public function index(): PaginatedDataCollection
     {
-        $lengthAwarePaginator = $this->postService->query(withComments: false, perPage: 15);
-
-        return PostData::collect($lengthAwarePaginator, PaginatedDataCollection::class);
+        // todo use the optional includes for the index and show methods, not for store and update
+        // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
+        return PostData::collect(
+            $this->postService->query(
+                withComments: false,
+                perPage: 15
+            ),
+            PaginatedDataCollection::class
+        );
     }
 
     public function show(Post $post): PostData
     {
+        // todo use the optional includes for the index and show methods, not for store and update
+        // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
         $post = $this->postService->find($post, withComments: true);
 
         return PostData::from($post);
@@ -58,10 +66,12 @@ readonly class PostController
     {
         $post = $this->postService->create($this->user(), $storePostData);
 
+        // todo remove and use optional includes only for the index and show methods, not for store and update
         [$post, $includes] = $this->resolveOptionalIncludes($post);
         $postData = PostData::from($post);
         $this->applyIncludes($postData, $includes);
 
+        // todo use $postDataModfied DTO to return the modified data with the includes applied, instead of returning the original $postData
         return $postData;
     }
 
@@ -69,10 +79,12 @@ readonly class PostController
     {
         $post = $this->postService->update($this->user(), $post, $updatePostData);
 
+        // todo remove and use optional includes only for the index and show methods, not for store and update
         [$post, $includes] = $this->resolveOptionalIncludes($post);
         $postData = PostData::from($post);
         $this->applyIncludes($postData, $includes);
 
+        // todo use $postDataModfied DTO to return the modified data with the includes applied, instead of returning the original $postData
         return $postData;
     }
 
