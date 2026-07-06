@@ -35,5 +35,7 @@ describe('BlogSeeder', function (): void {
         expect(User::count())->toBe(7);
         expect(User::whereHas('posts')->count())->toBe(2);
         expect(User::whereHas('comments')->count())->toBe(5);
+        expect(User::where('role_label', 'writer')->count())->toBe(2);
+        expect(User::where('role_label', 'user')->count())->toBe(5);
     });
 });

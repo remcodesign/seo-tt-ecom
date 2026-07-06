@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\StorePostData;
+use App\Enums\RoleLabel;
 use App\Models\Blog\Post;
 use App\Models\User;
 use App\Services\Blog\CommentService;
@@ -31,8 +32,19 @@ final class BlogSeeder extends Seeder
         };
 
         // Create users for writers and commenters
-        $writers = User::factory()->count(2)->create();
-        $commenters = User::factory()->count(5)->create();
+        $writers = User::factory()
+            ->count(2)
+            ->create([
+                'is_admin' => false,
+                'role_label' => RoleLabel::writer,
+            ]);
+
+        $commenters = User::factory()
+            ->count(5)
+            ->create([
+                'is_admin' => false,
+                'role_label' => RoleLabel::user,
+            ]);
 
         // Use the real services to create posts and comments, so that the slug generation and other logic is exercised
         $postService = app(PostService::class);

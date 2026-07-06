@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\RoleLabel;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,13 +23,16 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'is_admin' => false,
+            'role_label' => RoleLabel::user,
         ]);
 
         User::factory()->create([
             'name' => 'test Admin',
             'email' => 'admin@example.com',
             'password' => bcrypt('test'),
-            // 'is_admin' => true,
+            'is_admin' => true,
+            'role_label' => RoleLabel::admin,
         ]);
 
         $this->call(BlogSeeder::class);

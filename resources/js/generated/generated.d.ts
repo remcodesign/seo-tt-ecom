@@ -21,6 +21,7 @@ declare namespace App {
                 id: number;
                 name: string;
                 email: string;
+                role_label: App.Enums.RoleLabel;
             };
         }
         namespace Blog {
@@ -72,5 +73,8 @@ declare namespace App {
                 };
             }
         }
+    }
+    namespace Enums {
+        export type RoleLabel = "guest" | "user" | "writer" | "admin";
     }
 }

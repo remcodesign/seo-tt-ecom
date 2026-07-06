@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\RoleLabel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -14,20 +15,30 @@ describe('User (API)', function (): void {
                 'name' => 'Jane Doe',
                 'email' => 'jane@example.com',
                 'password' => 'password',
-                'password_confirmation' => 'password',
+                'password_confirmation' => 'password', // via validation rule `Confirmed`
+
             ]);
 
+            // Verify the response status and structure
             $response->assertCreated()
-                ->assertJsonStructure(['id', 'name', 'email'])
+                ->assertJsonStructure([
+                    'id',
+                    'name',
+                    'email',
+                    'role_label',
+                ])
                 ->assertJson([
                     'id' => 1,
                     'name' => 'Jane Doe',
                     'email' => 'jane@example.com',
+                    'role_label' => 'user',
                 ]);
 
+            // Verify that the user is actually in the database
             $this->assertDatabaseHas('users', [
                 'name' => 'Jane Doe',
                 'email' => 'jane@example.com',
+                'role_label' => RoleLabel::user,
             ]);
         });
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\RoleLabel;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use Database\Factories\UserFactory;
@@ -16,8 +17,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property bool $is_admin
+ * @property string $role_label
+ */
 #[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'remember_token', 'is_admin'])]
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -40,6 +45,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'role_label' => RoleLabel::class,
         ];
     }
 

@@ -92,6 +92,16 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 >
 ## TODO - start een simple vue frontend with components for common parts
 
+- use `laravel boost` and `context 7` to get the most modern vue3 vite within laravel
+- first only a base layout - setup to make vite / vue3 SPA inside the project `resources` - keep the styling very simple - just a bit contrast
+- upgrade to blog layout : add header nav menu, main container with content and right sidebar
+- then create the home with the previous layout, contains a demo card based lister of the last 5 posts (with link to show page and writer data)
+- use axios and the typescript `resources/js/generated/generated.d.ts` to fill the demo post data
+- add a post show page (with user/writer data)
+- add a post show page add comments lister in table form (with user data)
+- add a post index page with bigger card lister
+- add a comment lister index page with a table style lister and references to the post and user
+
 ## TODO - frontend login via api - (no roles/permissions)
 
 ## TODO - add create/update/delete comments (when logged-in)
