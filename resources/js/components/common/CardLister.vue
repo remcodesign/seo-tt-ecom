@@ -1,26 +1,36 @@
 <script setup lang="ts">
-import type { PostData } from '@types';
-import PostCard from '@/components/blog/PostCard.vue';
+import { computed } from 'vue';
+import type { Component } from 'vue';
 
-defineProps<{
-    posts: PostData[];
+const props = withDefaults(defineProps<{
+    items: unknown[];
+    cardPropName: string;
+    cardComponent: Component;
+    maxItems?: number;
     emptyText?: string;
-}>();
+}>(), {
+    maxItems: 6,
+    emptyText: 'No items available.',
+});
+
+const renderedItems = computed(() => {
+    return props.items.slice(0, props.maxItems);
+});
 </script>
 
 <template>
-    <div
-        v-if="posts.length > 0"
-        class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-    >
-        <PostCard
-            v-for="post in posts"
-            :key="post.id"
-            :post="post"
-        />
+    <div v-if="renderedItems.length > 0" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <article v-for="(item, index) in renderedItems" :key="index"
+            class="flex flex-col overflow-hidden rounded-lg border border-[#19140035] bg-white shadow-xs transition-shadow hover:shadow-md dark:border-[#3E3E3A] dark:bg-[#161615]">
+           
+            <div class="flex flex-1 flex-col p-5">
+                <component :is="props.cardComponent" v-bind="{ [props.cardPropName]: item }" />
+            </div>
+            
+        </article>
     </div>
 
     <p v-else class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
-        {{ emptyText ?? 'No posts available.' }}
+        {{ props.emptyText }}
     </p>
 </template>

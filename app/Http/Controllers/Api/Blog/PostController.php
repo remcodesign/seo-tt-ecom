@@ -47,7 +47,7 @@ readonly class PostController
         return PostData::collect(
             $this->postService->query(
                 withComments: false,
-                perPage: 5
+                perPage: 10
             ),
             PaginatedDataCollection::class
         );

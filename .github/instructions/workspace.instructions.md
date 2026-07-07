@@ -278,6 +278,49 @@ onMounted(async () => {
 import type { PostData, UserData } from '@/types';
 ```
 
+### Card list pattern
+
+- `resources/js/components/blog/homepage/FeaturePost.vue` is the caller of the list. It loads data, chooses the card variant, and passes `items`, `card-component`, `card-prop-name`, and optional `max-items` into `CardLister`.
+- `resources/js/components/common/CardLister.vue` is the generic list shell. It renders the grid and card wrapper, enforces `max-items`, and delegates item rendering to a card component via `<component :is="cardComponent" />`.
+- `resources/js/components/blog/PostCard.vue` is the card component. It defines the inner rendering for a single item and only receives the actual item prop name specified by the caller.
+- Prefer `withDefaults(defineProps<...>(), {...})` in every Vue component so the template stays clean and the component defaults are visible at the top of the script. Only set defaults for optional props — required props should be left without defaults to enforce compile-time checks.
+- Example props block:
+
+```ts
+const props = withDefaults(defineProps<{
+    title: string;
+    endpoint?: string;
+    description?: string;
+    cardComponent?: Component;
+    cardPropName?: string;
+    maxItems?: number;
+    emptyText?: string;
+}>(), {
+    endpoint: '/blog/posts',
+    description: 'A live overview of the most recent blog posts.',
+    cardComponent: PostCard,
+    cardPropName: 'post',
+    maxItems: 6,
+    emptyText: 'No posts available.',
+});
+```
+
+- Example call structure of (lister) components:
+
+```vue
+<template>
+  <CardLister
+    :items="posts"
+    :card-component="PostCard"
+    card-prop-name="post"
+    :max-items="6"
+  />
+</template>
+```
+
+- This keeps the homepage lean: data fetching and section metadata stay in the caller, layout and iteration live in the lister, and content markup stays inside the card component.
+- The same pattern can be reused for future variants like `TableLister` with a different rendering shell and inner row component.
+
 The path alias `@/` resolves to `resources/js/` (configured in both `tsconfig.json` and `vite.config.js`).
 
 **Available types (`resources/js/types.ts`):**

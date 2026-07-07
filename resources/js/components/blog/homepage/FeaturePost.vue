@@ -1,23 +1,35 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import type { Component } from 'vue';
 import type { PostData } from '@types';
 import api from '@/api';
 import CardLister from '@/components/common/CardLister.vue';
+import PostCard from '@/components/blog/PostCard.vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     title: string;
-}>();
+    endpoint?: string;
+    description?: string;
+    cardComponent?: Component;
+    cardPropName?: string;
+    maxItems?: number;
+    emptyText?: string;
+}>(), {
+    endpoint: '/blog/posts',
+    description: 'A live overview of the most recent blog posts.',
+    cardComponent: PostCard,
+    cardPropName: 'post',
+    maxItems: 6,
+    emptyText: 'No posts available.',
+});
 
 const posts = ref<PostData[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
-const description = 'A live overview of the most recent blog posts.'
-const emptyText = 'No posts available.';
-
 onMounted(async () => {
     try {
-        const response = await api.get<{ data: PostData[] }>(`/blog/posts`);
+        const response = await api.get<{ data: PostData[] }>(props.endpoint);
 
         posts.value = response.data.data;
     } catch {
@@ -45,6 +57,13 @@ onMounted(async () => {
             {{ error }}
         </div>
 
-        <CardLister v-else :posts="posts" :empty-text="emptyText" />
+        <CardLister
+            v-else
+            :items="posts"
+            :card-component="props.cardComponent"
+            :card-prop-name="props.cardPropName"
+            :empty-text="props.emptyText"
+            :max-items="props.maxItems"
+        />
     </div>
 </template>
