@@ -88,21 +88,24 @@
             "@php -r \"is_dir('public/coverage') && system('rm -rf public/coverage');\"",
             "XDEBUG_MODE=coverage vendor/bin/pest --compact --parallel --coverage-html public/coverage --coverage-clover clover.xml"
         ],
-        "typescript": "@php artisan typescript:transform",
+        "typescript": [
+            "@php artisan typescript:transform",
+            "@php artisan typescript:generate-types"
+        ],
         "format-basic": [
             "@php artisan config:clear --ansi",
             "@pint",
             "@rector",
-            "@phpstan",
             "@typescript",
+            "@phpstan",
             "@pest"
         ],
         "format": [
             "@php artisan config:clear --ansi",
             "@pint",
             "@rector",
-            "@phpstan",
             "@typescript",
+            "@phpstan",
             "@coverage"
         ]
     },

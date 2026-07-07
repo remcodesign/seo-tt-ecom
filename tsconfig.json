@@ -11,9 +11,9 @@
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
         "paths": {
-            "@/*": ["./resources/js/*"]
+            "@/*": ["./resources/js/*"],
+            "@types": ["./resources/js/types.ts"]
         },
-        "baseUrl": ".",
         "types": ["vite/client"]
     },
     "include": [

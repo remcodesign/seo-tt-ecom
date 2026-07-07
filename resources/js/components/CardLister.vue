@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PostData } from '@/types';
+import type { PostData } from '@types';
 import PostCard from '@/components/PostCard.vue';
 
 defineProps<{

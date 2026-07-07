@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import type { PostData } from '@/types';
+import type { PostData } from '@types';
 import api from '@/api';
 import CardLister from '@/components/CardLister.vue';
 

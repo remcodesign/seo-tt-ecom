@@ -29,6 +29,7 @@ class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServ
                 'string'
             )
             ->transformDirectories(app_path())
+            ->outputDirectory(base_path('resources/js/generated'))
             ->writer(new GlobalNamespaceWriter('generated.d.ts'))
             ->formatter(PrettierFormatter::class);
     }

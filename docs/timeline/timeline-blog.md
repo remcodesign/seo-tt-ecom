@@ -94,17 +94,11 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 >
 ## TODO - start een simple vue frontend with components for common parts
 
-..done
-
 - use `laravel boost` and `context 7` to get the most modern vue3 vite within laravel
 - first only a base layout - setup to make vite / vue3 SPA (without inertia) inside the codebase `resources` - keep the styling very simple - just a bit contrast
 
-..done
-
 - then fill the current home `resources/js/pages/HomePage.vue`, so it contains a demo (dummy data) card based  (create a component for this) lister  (create a component for this) of the last 6 posts (with dummy link to post show page and writer data on the card)
   - use typescript `resources/js/generated/generated.d.ts` (use/create path alias) to type check and possible data and to fill the demo post data
-
-..done
 
 - add a post show page (with user/writer data) - 'it should be on `/blog/posts/xxx`' so in the blog url context - use axios
 
@@ -114,25 +108,27 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
         ->only(['index', 'show']);
 ```
 
-..done
-
 - make the home page dynamic with post index data
 
-..
+>HERE
 
-> try to convert the `resources/js/generated/generated.d.ts` to a module format - so after `php artisan typescript:transform`, this way we can import it directly as a module and not with the current `resources/js/types.ts` file, if not, generate the `types.ts` from the `generated.d.ts`
+- convert the transformer output to a module at `resources/js/generated/generated.ts` so after `php artisan typescript:transform` we can import it directly as a module using the `@generated` alias instead of `resources/js/types.ts`
+  - no fallback re-export file should be needed once this works
+  - change `app/Providers/TypeScriptTransformerServiceProvider.php` to use `FlatModuleWriter` and output into `resources/js/generated`
 
-- make a component of the homepage blog-post-card-lister, so we can place more variants more of them and no polution
+- make a component of the `homepage` blog-post-card-lister, so we can place more variants more of them and no polution
 
 - create folders for the `blog` context pages and components
 
-- on the post show page `resources/js/pages/PostShowPage.vue`, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
+- on the `post show` page `resources/js/pages/PostShowPage.vue`, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
 
-- add a post index page with card lister (reuse card component and lister) - 'it should be on `/blog/posts`' so in the blog url context - use axios
+- add a `post index` page with card lister (reuse card component and lister) - 'it should be on `/blog/posts`' so in the blog url context - use axios
 
-- add a comment lister index page with a table style lister (reuse components for comment item  and lister) and references to the post and user - 'it should be on `/blog/comments`' so in the blog url context
+- add a `comment index` page with a table style lister (reuse components for comment item  and lister) and references to the post and user - 'it should be on `/blog/comments`' so in the blog url context
 
 - add eslint fix, to cleanup js
+
+- add browser tests
 
 ## TODO - frontend login via api - (no roles/permissions)
 
