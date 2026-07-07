@@ -90,7 +90,8 @@
         ],
         "typescript": [
             "@php artisan typescript:transform",
-            "@php artisan typescript:generate-types"
+            "@php artisan typescript:generate-types",
+            "npm run typecheck"
         ],
         "format-basic": [
             "@php artisan config:clear --ansi",
