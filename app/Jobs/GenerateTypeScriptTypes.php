@@ -25,8 +25,16 @@ class GenerateTypeScriptTypes implements ShouldQueue
 
     public function handle(): void
     {
-        $declarationPath = $this->declarationPath ?? base_path('resources/js/generated/generated.d.ts');
-        $outputPath = $this->outputPath ?? base_path('resources/js/types.ts');
+        $declarationPath = ($this->declarationPath ?? config('typescript.declaration_path'));
+        $outputPath = ($this->outputPath ?? config('typescript.output_path'));
+
+        if (! is_string($declarationPath)) {
+            throw new RuntimeException('The configured TypeScript declaration path must be a string.');
+        }
+
+        if (! is_string($outputPath)) {
+            throw new RuntimeException('The configured TypeScript output path must be a string.');
+        }
 
         $content = $this->readDeclarationFile($declarationPath);
 
