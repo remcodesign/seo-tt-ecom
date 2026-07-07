@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { PostData } from '@types';
 import api from '@/api';
+import CommentRow from '@/components/blog/CommentRow.vue';
+import TableLister from '@/components/common/TableLister.vue';
 
 const route = useRoute();
 const slug = route.params.slug as string;
@@ -10,6 +12,15 @@ const slug = route.params.slug as string;
 const post = ref<PostData | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+const commentColumnLabels = {
+    user: 'Author',
+    comment: 'Comment',
+    created_at: 'Created',
+} as const;
+
+type CommentColumn = keyof typeof commentColumnLabels;
+const commentColumns: CommentColumn[] = ['user', 'comment', 'created_at'];
 
 onMounted(async () => {
     try {
@@ -61,6 +72,36 @@ onMounted(async () => {
             <div v-if="post.body" class="prose prose-sm max-w-none text-[#1b1b18] dark:text-[#EDEDEC]">
                 {{ post.body }}
             </div>
+
+            <section class="mt-10 rounded-lg border border-[#19140035] bg-white p-5 shadow-xs dark:border-[#3E3E3A] dark:bg-[#161615]">
+                <div class="mb-4 flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-semibold tracking-tight text-[#111113] dark:text-[#EDEDEC]">Comments</h2>
+                        <p class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">Showing the latest comments for this post.</p>
+                    </div>
+                </div>
+
+                <TableLister
+                    :items="post.comments ?? []"
+                    row-prop-name="comment"
+                    :row-component="CommentRow"
+                    :columns="commentColumns"
+                    :max-rows="5"
+                    empty-text="No comments yet."
+                >
+                    <template #header>
+                        <tr class="bg-[#f7f6f3] text-xs uppercase tracking-[0.16em] text-[#6C6C66] dark:bg-[#262624] dark:text-[#9B9B92]">
+                            <th
+                                v-for="column in commentColumns"
+                                :key="column"
+                                class="px-4 py-3"
+                            >
+                                {{ commentColumnLabels[column] }}
+                            </th>
+                        </tr>
+                    </template>
+                </TableLister>
+            </section>
         </article>
     </div>
 </template>

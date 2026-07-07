@@ -278,11 +278,12 @@ onMounted(async () => {
 import type { PostData, UserData } from '@/types';
 ```
 
-### Card list pattern
+### Card and Table list pattern
 
-- `resources/js/components/blog/homepage/FeaturePost.vue` is the caller of the list. It loads data, chooses the card variant, and passes `items`, `card-component`, `card-prop-name`, and optional `max-items` into `CardLister`.
-- `resources/js/components/common/CardLister.vue` is the generic list shell. It renders the grid and card wrapper, enforces `max-items`, and delegates item rendering to a card component via `<component :is="cardComponent" />`.
-- `resources/js/components/blog/PostCard.vue` is the card component. It defines the inner rendering for a single item and only receives the actual item prop name specified by the caller.
+- A list caller component should load its data, choose the card or row component, and pass `items`, the component reference, the item prop name, and optional display limits into a generic lister.
+- `resources/js/components/common/CardLister.vue` is the generic list shell for grid/card UI. It renders a wrapper around each item, enforces `max-items`, and delegates per-item rendering using `<component :is="cardComponent" />`.
+- `resources/js/components/common/TableLister.vue` is the generic table shell. It renders a responsive table wrapper, supports an optional `header` slot, enforces `max-rows`, and delegates per-row rendering using `<component :is="rowComponent" />`.
+- Item renderer components should stay narrow: they receive only the item prop specified by the caller and render the card or row markup. Table row components may also accept a `columns` prop when the caller needs dynamic cell selection.
 - Prefer `withDefaults(defineProps<...>(), {...})` in every Vue component so the template stays clean and the component defaults are visible at the top of the script. Only set defaults for optional props — required props should be left without defaults to enforce compile-time checks.
 - Example props block:
 
@@ -305,7 +306,7 @@ const props = withDefaults(defineProps<{
 });
 ```
 
-- Example call structure of (lister) components:
+- Example call structure of (lister like card and table) components:
 
 ```vue
 <template>

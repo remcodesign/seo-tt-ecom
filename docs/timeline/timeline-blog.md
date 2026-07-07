@@ -116,9 +116,13 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - create folders for the `blog` context pages and components
 
->HERE
+- create table lister based on `resources/js/components/common/CardLister.vue` - then create a `CommentRow` based on `resources/js/components/blog/PostCard.vue` - with the typescript type of `CommentData` from `resources/js/types.ts` - with dynamic columns rendering
 
 - on the `post show` page `resources/js/pages/PostShowPage.vue`, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
+
+>HERE
+
+- remove the email from the user-data object
 
 - add a `post index` page with card lister (reuse card component and lister) - 'it should be on `/blog/posts`' so in the blog url context - use axios
 
