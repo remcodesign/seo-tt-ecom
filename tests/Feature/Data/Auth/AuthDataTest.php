@@ -34,6 +34,5 @@ it('converts a User model into UserData', function (): void {
 
     expect($userData)->toBeInstanceOf(UserData::class)
         ->and($userData->id)->toBe(42)
-        ->and($userData->name)->toBe('Jane Doe')
-        ->and($userData->email)->toBe('jane@example.com');
+        ->and($userData->name)->toBe('Jane Doe');
 });

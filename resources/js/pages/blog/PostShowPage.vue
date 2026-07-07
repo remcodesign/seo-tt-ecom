@@ -60,7 +60,6 @@ onMounted(async () => {
 
                     <div class="flex flex-col">
                         <span class="text-sm font-medium">{{ post.user.name }}</span>
-                        <span class="text-xs text-[#6C6C66] dark:text-[#A1A19A]">{{ post.user.email }}</span>
                     </div>
 
                     <span v-if="post.published_on" class="ml-auto text-xs text-[#6C6C66] dark:text-[#A1A19A]">

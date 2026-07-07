@@ -83,7 +83,7 @@
         "rector": "vendor/bin/rector process",
         "phpstan": "vendor/bin/phpstan analyse",
         "stan": "@phpstan",
-        "pest": "vendor/bin/pest",
+        "pest": "vendor/bin/pest --compact",
         "coverage": [
             "@php -r \"is_dir('public/coverage') && system('rm -rf public/coverage');\"",
             "XDEBUG_MODE=coverage vendor/bin/pest --compact --parallel --coverage-html public/coverage --coverage-clover clover.xml"

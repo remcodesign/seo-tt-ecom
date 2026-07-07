@@ -24,13 +24,11 @@ describe('User (API)', function (): void {
                 ->assertJsonStructure([
                     'id',
                     'name',
-                    'email',
                     'role_label',
                 ])
                 ->assertJson([
                     'id' => 1,
                     'name' => 'Jane Doe',
-                    'email' => 'jane@example.com',
                     'role_label' => 'user',
                 ]);
 

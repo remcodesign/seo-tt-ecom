@@ -28,7 +28,7 @@ describe('PostController (API)', function (): void {
                             'body',
                             'slug',
                             'user_id',
-                            'user' => ['id', 'name', 'email'],
+                            'user' => ['id', 'name'],
                         ],
                     ],
                     'meta',
@@ -64,14 +64,14 @@ describe('PostController (API)', function (): void {
                     'body',
                     'slug',
                     'user_id',
-                    'user' => ['id', 'name', 'email'],
+                    'user' => ['id', 'name'],
                     'comments' => [
                         '*' => [
                             'id',
                             'post_id',
                             'user_id',
                             'comment',
-                            'user' => ['id', 'name', 'email'],
+                            'user' => ['id', 'name'],
                         ],
                     ],
                 ])
@@ -127,7 +127,7 @@ describe('PostController (API)', function (): void {
                     'body',
                     'slug',
                     'user_id',
-                    'user' => ['id', 'name', 'email'],
+                    'user' => ['id', 'name'],
                 ])
                 ->assertJson(['user' => ['id' => $user->id]]);
         });
@@ -178,7 +178,7 @@ describe('PostController (API)', function (): void {
                     'body',
                     'slug',
                     'user_id',
-                    'user' => ['id', 'name', 'email'],
+                    'user' => ['id', 'name'],
                 ])
                 ->assertJson(['user' => ['id' => $user->id]]);
             expect($post->fresh()->title)->toBe('Updated Title');

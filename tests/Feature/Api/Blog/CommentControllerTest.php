@@ -30,9 +30,9 @@ describe('CommentController (API)', function (): void {
                             'post' => [
                                 'id',
                                 'title',
-                                'user' => ['id', 'name', 'email'],
+                                'user' => ['id', 'name'],
                             ],
-                            'user' => ['id', 'name', 'email'],
+                            'user' => ['id', 'name'],
                         ],
                     ],
                     'meta',
@@ -89,9 +89,9 @@ describe('CommentController (API)', function (): void {
                     'post' => [
                         'id',
                         'title',
-                        'user' => ['id', 'name', 'email'],
+                        'user' => ['id', 'name'],
                     ],
-                    'user' => ['id', 'name', 'email'],
+                    'user' => ['id', 'name'],
                 ]);
         });
 

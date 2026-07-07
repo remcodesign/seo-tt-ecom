@@ -120,9 +120,9 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - on the `post show` page `resources/js/pages/PostShowPage.vue`, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
 
->HERE
-
 - remove the email from the user-data object
+
+>HERE
 
 - add a `post index` page with card lister (reuse card component and lister) - 'it should be on `/blog/posts`' so in the blog url context - use axios
 

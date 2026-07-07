@@ -20,7 +20,6 @@ declare namespace App {
             export type UserData = {
                 id: number;
                 name: string;
-                email: string;
                 role_label: App.Enums.RoleLabel;
             };
         }
