@@ -16,7 +16,7 @@ const router = createRouter({
         {
             path: '/blog/posts/:slug',
             name: 'posts.show',
-            component: () => import('./pages/PostShowPage.vue'),
+            component: () => import('./pages/blog/PostShowPage.vue'),
         },
     ],
 });

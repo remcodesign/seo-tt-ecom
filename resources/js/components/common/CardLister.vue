@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { PostData } from '@types';
-import PostCard from '@/components/PostCard.vue';
+import PostCard from '@/components/blog/PostCard.vue';
 
 defineProps<{
     posts: PostData[];
+    emptyText?: string;
 }>();
 </script>
 
@@ -20,6 +21,6 @@ defineProps<{
     </div>
 
     <p v-else class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
-        No posts available.
+        {{ emptyText ?? 'No posts available.' }}
     </p>
 </template>

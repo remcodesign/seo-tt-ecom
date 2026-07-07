@@ -110,15 +110,13 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - make the home page dynamic with post index data
 
->HERE
-
-- convert the transformer output to a module at `resources/js/generated/generated.ts` so after `php artisan typescript:transform` we can import it directly as a module using the `@generated` alias instead of `resources/js/types.ts`
-  - no fallback re-export file should be needed once this works
-  - change `app/Providers/TypeScriptTransformerServiceProvider.php` to use `FlatModuleWriter` and output into `resources/js/generated`
+- automatic converter from `resources/js/generated/generated.ts` to  `resources/js/types.ts` - keeping both - nice readble file in the first and easy usage in the next
 
 - make a component of the `homepage` blog-post-card-lister, so we can place more variants more of them and no polution
 
 - create folders for the `blog` context pages and components
+
+>HERE
 
 - on the `post show` page `resources/js/pages/PostShowPage.vue`, now add comments (create a component for this) lister in table form (reuse or create a component for this) (with user data) - use axios
 
