@@ -128,7 +128,8 @@ readonly class PostService
     {
         $builder = Post::query()
             ->published()
-            ->with('user');
+            ->with('user')
+            ->withCount('comments');
 
         if ($withComments) {
             $builder->with(['comments' => function ($query): void {
@@ -152,6 +153,6 @@ readonly class PostService
             };
         }
 
-        return $post->load($relations);
+        return $post->load($relations)->loadCount('comments');
     }
 }

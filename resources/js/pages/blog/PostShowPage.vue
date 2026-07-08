@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { PostDataResponse } from '@types';
 import api from '@/api';
+import BackLink from '@/components/common/BackLink.vue';
 import CommentRow from '@/components/blog/CommentRow.vue';
 import TableLister from '@/components/common/TableLister.vue';
 
@@ -48,6 +49,12 @@ onMounted(async () => {
 
         <!-- Post -->
         <article v-else-if="post" class="mx-auto max-w-3xl">
+            <!-- Back Link -->
+            <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <BackLink />
+            </div>
+
+            <!-- Post Header -->
             <header class="mb-8">
                 <h1 class="mb-4 text-3xl font-bold tracking-tight">
                     {{ post.title }}
@@ -68,10 +75,12 @@ onMounted(async () => {
                 </div>
             </header>
 
+            <!-- Post Body -->
             <div v-if="post.body" class="prose prose-sm max-w-none text-[#1b1b18] dark:text-[#EDEDEC]">
                 {{ post.body }}
             </div>
 
+            <!-- Comments Section -->
             <section class="mt-10 rounded-lg border border-[#19140035] bg-white p-5 shadow-xs dark:border-[#3E3E3A] dark:bg-[#161615]">
                 <div class="mb-4 flex items-center justify-between gap-4">
                     <div>

@@ -129,25 +129,23 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - remove optional/null from `public ?UserData $user = null, // relation` in `app/Data/Blog/Responses/PostData.php` - gives test error currently
 
->HERE
-
 - convert to PEST format `tests/Feature/Api/Traits/HasOptionalIncludesTest.php`
 
 - postController, remove the relation adder from store and update, clean postDataModified of relations and this the same for other `Modified's`
 
 - first do not add any complex additions to postController index and show
 
->THEN
-
 - add a `post index` page with card lister (reuse card component and lister) - 'it should be on `/blog/posts`' so in the blog url context - use axios
+
+>HERE
+
+- add eslint fix, to cleanup js
 
 - add a `comment index` page with a table style lister (reuse components for comment item  and lister) and references to the post and user - 'it should be on `/blog/comments`' so in the blog url context
 
 - add `featuredComment` on `homepage` as table lister
 
 >THEN
-
-- add eslint fix, to cleanup js
 
 - add browser tests
 

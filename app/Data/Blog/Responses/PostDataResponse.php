@@ -24,6 +24,7 @@ final class PostDataResponse extends Data
         public UserDataResponse $user, // relation
         public ?string $body = null,
         public ?array $comments = null, // relation
+        public int $comments_count = 0,
 
         public ?CarbonImmutable $published_on = null,
         public ?CarbonImmutable $created_at = null,

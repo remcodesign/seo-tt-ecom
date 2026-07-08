@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<{
     description: 'A live overview of the most recent blog posts.',
     cardComponent: PostCard,
     cardPropName: 'post',
-    maxItems: 6,
+    maxItems: 3,
     emptyText: 'No posts available.',
 });
 

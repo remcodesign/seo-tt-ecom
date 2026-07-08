@@ -14,6 +14,11 @@ const router = createRouter({
             component: () => import('./pages/HomePage.vue'),
         },
         {
+            path: '/blog/posts',
+            name: 'posts.index',
+            component: () => import('./pages/blog/PostIndexPage.vue'),
+        },
+        {
             path: '/blog/posts/:slug',
             name: 'posts.show',
             component: () => import('./pages/blog/PostShowPage.vue'),

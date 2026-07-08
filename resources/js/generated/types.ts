@@ -39,6 +39,7 @@ export type PostDataResponse = {
     user: UserDataResponse;
     body: string | null;
     comments: CommentDataResponse[] | null;
+    comments_count: number;
     published_on: string | null;
     created_at: string | null;
     updated_at: string | null;

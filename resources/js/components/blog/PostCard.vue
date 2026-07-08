@@ -1,16 +1,40 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import type { PostDataResponse } from '@types';
 
-defineProps<{
+const route = useRoute();
+const props = defineProps<{
     post: PostDataResponse;
 }>();
+
+const commentsCount = computed(() => props.post.comments_count ?? 0);
+
+// ? create composable for this logic, as it is used in multiple places
+const linkQuery = computed(() => {
+    const query: Record<string, string> = {};
+
+    if (typeof route.query.orderby === 'string') {
+        query.orderby = route.query.orderby;
+    }
+
+    if (typeof route.query.per_page === 'string') {
+        query.per_page = route.query.per_page;
+    }
+
+    if (typeof route.query.page === 'string') {
+        query.page = route.query.page;
+    }
+
+    return query;
+});
 </script>
 
 <template>
     <div class="flex flex-1 flex-col">
         <h3 class="mb-2 text-lg font-semibold leading-snug tracking-tight">
             <router-link
-                :to="`/blog/posts/${post.slug}`"
+                :to="{ name: 'posts.show', params: { slug: post.slug }, query: linkQuery }"
                 class="transition-colors hover:text-[#f53003] dark:hover:text-[#FF4433]"
             >
                 {{ post.title }}
@@ -30,6 +54,9 @@ defineProps<{
                 <span class="text-xs font-medium">{{ post.user.name }}</span>
                 <span v-if="post.published_on" class="text-[10px] text-[#6C6C66] dark:text-[#A1A19A]">
                     {{ new Date(post.published_on).toLocaleDateString('nl-NL', { year: 'numeric', month: 'short', day: 'numeric' }) }}
+                </span>
+                <span class="mt-1 text-sm font-medium text-[#111113] dark:text-[#EDEDEC]">
+                    {{ commentsCount }} comment{{ commentsCount === 1 ? '' : 's' }}
                 </span>
             </div>
         </div>
