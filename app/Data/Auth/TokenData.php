@@ -10,5 +10,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript]
 final class TokenData extends Data
 {
-    public function __construct(public string $token) {}
+    public function __construct(
+        public string $token
+    ) {}
 }

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Blog;
 use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\UpdateCommentData;
 use App\Data\Blog\Responses\CommentData;
+use App\Data\Blog\Responses\CommentDataModifiedResponse;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -54,19 +55,19 @@ readonly class CommentController
         return CommentData::from($comment);
     }
 
-    public function store(StoreCommentData $storeCommentData): CommentData
+    public function store(StoreCommentData $storeCommentData): CommentDataModifiedResponse
     {
         $post = Post::findOrFail($storeCommentData->post_id);
         $comment = $this->commentService->create($this->user(), $post, $storeCommentData);
 
-        return CommentData::from($comment);
+        return CommentDataModifiedResponse::from($comment);
     }
 
-    public function update(UpdateCommentData $updateCommentData, Comment $comment): CommentData
+    public function update(UpdateCommentData $updateCommentData, Comment $comment): CommentDataModifiedResponse
     {
         $comment = $this->commentService->update($this->user(), $comment, $updateCommentData);
 
-        return CommentData::from($comment);
+        return CommentDataModifiedResponse::from($comment);
     }
 
     public function destroy(Comment $comment): JsonResponse

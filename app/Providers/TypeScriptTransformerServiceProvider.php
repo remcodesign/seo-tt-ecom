@@ -11,7 +11,7 @@ use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\Transformers\AttributedClassTransformer;
 use Spatie\TypeScriptTransformer\Transformers\EnumTransformer;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfigFactory;
-use Spatie\TypeScriptTransformer\Writers\GlobalNamespaceWriter;
+use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
 
 class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServiceProvider
 {
@@ -20,6 +20,7 @@ class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServ
         $config
             ->transformer(AttributedClassTransformer::class)
             ->transformer(EnumTransformer::class)
+
             ->replaceType(
                 Carbon::class,
                 'string'
@@ -28,9 +29,11 @@ class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServ
                 CarbonImmutable::class,
                 'string'
             )
+
             ->transformDirectories(app_path())
+
             ->outputDirectory(base_path('resources/js/generated'))
-            ->writer(new GlobalNamespaceWriter('generated.d.ts'))
+            ->writer(new FlatModuleWriter('types.ts'))
             ->formatter(PrettierFormatter::class);
     }
 }

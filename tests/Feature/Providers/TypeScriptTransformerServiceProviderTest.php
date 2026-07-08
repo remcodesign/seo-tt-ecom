@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Providers\TypeScriptTransformerServiceProvider;
 use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfigFactory;
-use Spatie\TypeScriptTransformer\Writers\GlobalNamespaceWriter;
+use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
 
 class TestableTypeScriptTransformerServiceProvider extends TypeScriptTransformerServiceProvider
 {
@@ -32,7 +32,7 @@ describe('TypeScriptTransformerServiceProvider', function (): void {
 
         $typeScriptTransformerConfig = $typeScriptTransformerConfigFactory->outputDirectory($outputDirectory)->get();
 
-        expect($typeScriptTransformerConfig->typesWriter::class)->toBe(GlobalNamespaceWriter::class)
+        expect($typeScriptTransformerConfig->typesWriter::class)->toBe(FlatModuleWriter::class)
             ->and($typeScriptTransformerConfig->formatter::class)->toBe(PrettierFormatter::class);
     });
 });

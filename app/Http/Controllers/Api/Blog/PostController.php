@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Blog;
 use App\Data\Blog\Requests\StorePostData;
 use App\Data\Blog\Requests\UpdatePostData;
 use App\Data\Blog\Responses\PostData;
+use App\Data\Blog\Responses\PostDataModifiedResponse;
 use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -44,6 +45,7 @@ readonly class PostController
     {
         // todo use the optional includes for the index and show methods, not for store and update
         // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
+
         return PostData::collect(
             $this->postService->query(
                 withComments: false,
@@ -67,30 +69,28 @@ readonly class PostController
         return PostData::from($post);
     }
 
-    public function store(StorePostData $storePostData): PostData
+    public function store(StorePostData $storePostData): PostDataModifiedResponse
     {
         $post = $this->postService->create($this->user(), $storePostData);
 
         // todo remove and use optional includes only for the index and show methods, not for store and update
         [$post, $includes] = $this->resolveOptionalIncludes($post);
-        $postData = PostData::from($post);
-        $this->applyIncludes($postData, $includes);
+        $postDataModifiedResponse = PostDataModifiedResponse::from($post);
+        $this->applyIncludes($postDataModifiedResponse, $includes);
 
-        // todo use $postDataModfied DTO to return the modified data with the includes applied, instead of returning the original $postData
-        return $postData;
+        return $postDataModifiedResponse;
     }
 
-    public function update(UpdatePostData $updatePostData, Post $post): PostData
+    public function update(UpdatePostData $updatePostData, Post $post): PostDataModifiedResponse
     {
         $post = $this->postService->update($this->user(), $post, $updatePostData);
 
         // todo remove and use optional includes only for the index and show methods, not for store and update
         [$post, $includes] = $this->resolveOptionalIncludes($post);
-        $postData = PostData::from($post);
-        $this->applyIncludes($postData, $includes);
+        $postDataModifiedResponse = PostDataModifiedResponse::from($post);
+        $this->applyIncludes($postDataModifiedResponse, $includes);
 
-        // todo use $postDataModfied DTO to return the modified data with the includes applied, instead of returning the original $postData
-        return $postData;
+        return $postDataModifiedResponse;
     }
 
     public function destroy(Post $post): JsonResponse

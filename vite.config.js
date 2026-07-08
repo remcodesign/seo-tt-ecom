@@ -29,7 +29,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'resources/js'),
-            '@types': path.resolve(__dirname, './resources/js/types.ts'),
+            '@types': path.resolve(__dirname, './resources/js/generated/types.ts'),
         },
     },
     server: {

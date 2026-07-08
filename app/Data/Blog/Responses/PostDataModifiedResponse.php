@@ -13,7 +13,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
-final class PostData extends Data
+final class PostDataModifiedResponse extends Data
 {
     /**
      * @param  CommentData[]|null  $comments
@@ -23,10 +23,9 @@ final class PostData extends Data
         public int $user_id,
         public string $title,
         public string $slug,
-        public ?UserData $user = null, // relation
-
         public ?string $body = null,
 
+        public ?UserData $user = null, // relation
         #[DataCollectionOf(CommentData::class)]
         public ?array $comments = null, // relation
 
@@ -37,5 +36,4 @@ final class PostData extends Data
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $updated_at = null,
     ) {}
-
 }

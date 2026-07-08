@@ -232,7 +232,7 @@ resources/js/
 ├── app.ts                  # Entry point — creates Vue app + router, mounts #app
 ├── App.vue                 # Root component (AppLayout > router-view)
 ├── env.d.ts                # .vue module declarations
-├── types.ts                # Re-exports ambient types from generated.d.ts as modules
+├── types.ts                # TypeScript backend DTOs (generated from Spatie Data)
 ├── layouts/
 │   └── AppLayout.vue       # Base shell — AppHeader, <main> slot, AppFooter
 ├── components/
@@ -271,8 +271,7 @@ onMounted(async () => {
 ### TypeScript Types
 
 - Backend Spatie DTOs (annotated with `#[TypeScript]`) are transformed to ambient types via `php artisan typescript:transform`.
-- The generated file `resources/js/generated/generated.d.ts` uses `declare namespace App` — it is **not** a module.
-- `resources/js/types.ts` re-exports the ambient types as proper module imports so components can do:
+- `resources/js/types.ts` TypeScript module exports all DTOs for frontend usage. Example:
 
 ```typescript
 import type { PostData, UserData } from '@/types';

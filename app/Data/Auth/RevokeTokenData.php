@@ -10,5 +10,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript]
 final class RevokeTokenData extends Data
 {
-    public function __construct(public string $message) {}
+    public function __construct(
+        public string $message
+    ) {}
 }

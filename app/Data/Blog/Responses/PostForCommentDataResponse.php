@@ -17,17 +17,21 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
  * to keep responses minimal and DB-efficient.
  */
 #[TypeScript]
-final class PostForCommentData extends Data
+final class PostForCommentDataResponse extends Data
 {
     public function __construct(
         public int $id,
         public int $user_id,
         public string $title,
         public string $slug,
+
+        public ?UserData $user = null, // relation
+
         #[WithCast(DateTimeInterfaceCast::class)]
-        public ?CarbonImmutable $published_on,
-        public ?UserData $user = null,
-        public ?string $created_at = null,
-        public ?string $updated_at = null,
+        public ?CarbonImmutable $published_on = null,
+        #[WithCast(DateTimeInterfaceCast::class)]
+        public ?CarbonImmutable $created_at = null,
+        #[WithCast(DateTimeInterfaceCast::class)]
+        public ?CarbonImmutable $updated_at = null,
     ) {}
 }
