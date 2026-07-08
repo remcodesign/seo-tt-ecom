@@ -53,7 +53,7 @@ onMounted(async () => {
                     {{ post.title }}
                 </h1>
 
-                <div v-if="post.user" class="flex items-center gap-3">
+                <div class="flex items-center gap-3">
                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#e3e3e0] text-sm font-medium text-[#1b1b18] dark:bg-[#3E3E3A] dark:text-[#EDEDEC]">
                         {{ post.user.name.charAt(0).toUpperCase() }}
                     </div>

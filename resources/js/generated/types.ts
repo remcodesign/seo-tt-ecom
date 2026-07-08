@@ -3,8 +3,6 @@ export type CommentDataModifiedResponse = {
     post_id: number;
     user_id: number;
     comment: string;
-    user: UserData | null;
-    post: PostForCommentDataResponse | null;
     created_at: string | null;
     updated_at: string | null;
 };
@@ -29,8 +27,6 @@ export type PostDataModifiedResponse = {
     title: string;
     slug: string;
     body: string | null;
-    user: UserData | null;
-    comments: CommentDataResponse[] | null;
     published_on: string | null;
     created_at: string | null;
     updated_at: string | null;
@@ -40,7 +36,7 @@ export type PostDataResponse = {
     user_id: number;
     title: string;
     slug: string;
-    user: UserData | null;
+    user: UserData;
     body: string | null;
     comments: CommentDataResponse[] | null;
     published_on: string | null;

@@ -10,7 +10,7 @@ defineProps<{
 <template>
     <td class="px-4 py-4 align-top" v-if="columns?.includes('user') ?? true">
         <div class="flex flex-col gap-1">
-            <p class="text-sm font-semibold text-[#111113] dark:text-[#EDEDEC]">{{ comment.user?.name ?? 'Unknown user' }}</p>
+            <p class="text-sm font-semibold text-[#111113] dark:text-[#EDEDEC]">{{ comment.user.name ?? 'Unknown user' }}</p>
         </div>
     </td>
 

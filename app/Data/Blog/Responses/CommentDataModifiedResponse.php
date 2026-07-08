@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Data\Blog\Responses;
 
-use App\Data\Auth\UserData;
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Attributes\WithCast;
 use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
@@ -19,9 +18,6 @@ final class CommentDataModifiedResponse extends Data
         public int $post_id,
         public int $user_id,
         public string $comment,
-
-        public ?UserData $user = null, // relation
-        public ?PostForCommentDataResponse $post = null, // relation
 
         #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $created_at = null,

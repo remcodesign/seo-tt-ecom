@@ -125,11 +125,11 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 - types.ts via flatwriter - keep the namespaced variant, but only to read as a doc, the types.ts is the one who is connected
   - remove the action and job and the command for the conversion of the namespaced one to the module one
 
->HERE
-
 - rename response DTO's, with `response` in the name appended
 
 - remove optional/null from `public ?UserData $user = null, // relation` in `app/Data/Blog/Responses/PostData.php` - gives test error currently
+
+>HERE
 
 - convert to PEST format `tests/Feature/Api/Traits/HasOptionalIncludesTest.php`
 

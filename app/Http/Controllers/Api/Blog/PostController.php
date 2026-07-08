@@ -73,24 +73,14 @@ readonly class PostController
     {
         $post = $this->postService->create($this->user(), $storePostData);
 
-        // todo remove and use optional includes only for the index and show methods, not for store and update
-        [$post, $includes] = $this->resolveOptionalIncludes($post);
-        $postDataModifiedResponse = PostDataModifiedResponse::from($post);
-        $this->applyIncludes($postDataModifiedResponse, $includes);
-
-        return $postDataModifiedResponse;
+        return PostDataModifiedResponse::from($post);
     }
 
     public function update(UpdatePostData $updatePostData, Post $post): PostDataModifiedResponse
     {
         $post = $this->postService->update($this->user(), $post, $updatePostData);
 
-        // todo remove and use optional includes only for the index and show methods, not for store and update
-        [$post, $includes] = $this->resolveOptionalIncludes($post);
-        $postDataModifiedResponse = PostDataModifiedResponse::from($post);
-        $this->applyIncludes($postDataModifiedResponse, $includes);
-
-        return $postDataModifiedResponse;
+        return PostDataModifiedResponse::from($post);
     }
 
     public function destroy(Post $post): JsonResponse

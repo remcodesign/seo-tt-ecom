@@ -23,7 +23,7 @@ final class PostDataResponse extends Data
         public int $user_id,
         public string $title,
         public string $slug,
-        public ?UserData $user = null, // relation
+        public UserData $user, // relation
 
         public ?string $body = null,
 
