@@ -31,14 +31,6 @@ readonly class PostController
     }
 
     /**
-     * @return string[]
-     */
-    protected function allowedIncludes(): array
-    {
-        return ['user', 'comments'];
-    }
-
-    /**
      * @return PaginatedDataCollection<int, PostDataResponse>
      */
     public function index(): PaginatedDataCollection

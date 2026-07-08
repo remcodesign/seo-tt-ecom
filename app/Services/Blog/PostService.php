@@ -37,7 +37,7 @@ readonly class PostService
 
         if ($updatePostData->title !== null && $updatePostData->title !== $post->title) {
             $data['slug'] = $this->generateUniqueSlug($updatePostData->title, $post);
-            // TODO: If slug changes and old URLs were shared externally, 
+            // TODO: If slug changes and old URLs were shared externally,
             // .. consider adding a redirects table to map old slugs → new slugs (301 redirects).
         }
 

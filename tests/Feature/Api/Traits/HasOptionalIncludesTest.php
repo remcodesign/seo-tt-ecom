@@ -2,78 +2,182 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Api\Traits;
-
 use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Tests\TestCase;
+use Spatie\LaravelData\Data;
 
-final class HasOptionalIncludesTest extends TestCase
+// more like a unit test than a feature test, but this is the only way to get the request() helper to work in Pest
+// currently not implemented anywhere else, but this is a good start to test the HasOptionalIncludes trait in isolation
+class HasOptionalIncludesTestStub
 {
     use HasOptionalIncludes;
-    use RefreshDatabase;
+
+    public function __construct(
+        private array $allowedIncludes = ['user', 'post'],
+    ) {}
 
     protected function allowedIncludes(): array
     {
-        return ['user', 'post'];
+        return $this->allowedIncludes;
     }
 
-    public function test_requested_includes_are_filtered_against_allowed_list(): void
+    public function requestIncludedRelationsPublic(): array
     {
+        return $this->requestIncludedRelations();
+    }
+
+    public function loadIncludesPublic(Model $model, array $includes): Model
+    {
+        return $this->loadIncludes($model, $includes);
+    }
+
+    public function applyIncludesPublic(Data $data, array $includes): void
+    {
+        $this->applyIncludes($data, $includes);
+    }
+
+    public function resolveOptionalIncludesPublic(Model $model): array
+    {
+        return $this->resolveOptionalIncludes($model);
+    }
+}
+
+class HasOptionalIncludesLoadMissingModel extends Model
+{
+    public array $loadedIncludes = [];
+
+    #[Override]
+    public function loadMissing($relations): self
+    {
+        $this->loadedIncludes = is_array($relations) ? $relations : [$relations];
+
+        return $this;
+    }
+}
+
+class HasOptionalIncludesDataStub extends Data
+{
+    public array $included = [];
+
+    public function include(string ...$includes): static
+    {
+        $this->included = $includes;
+
+        return $this;
+    }
+}
+
+class HasOptionalIncludesDefaultAllowedIncludesStub
+{
+    use HasOptionalIncludes;
+
+    public function requestIncludedRelationsPublic(): array
+    {
+        return $this->requestIncludedRelations();
+    }
+}
+
+beforeEach(function (): void {
+    app()['request'] = Request::create('/', 'GET');
+});
+
+describe('HasOptionalIncludes', function (): void {
+    it('filters requested includes against allowed list', function (): void {
         $request = Request::create('/?include=user,invalid,post', 'GET');
-        $this->app['request'] = $request;
+        app()['request'] = $request;
 
-        $includes = $this->requestIncludedRelations();
-
-        $this->assertSame(['user', 'post'], $includes);
-    }
-
-    public function test_request_included_relations_returns_empty_when_no_query_is_present(): void
-    {
-        $request = Request::create('/', 'GET');
-        $this->app['request'] = $request;
-
-        $includes = $this->requestIncludedRelations();
-
-        $this->assertSame([], $includes);
-    }
-
-    public function test_request_included_relations_returns_empty_when_no_allowed_includes_are_defined(): void
-    {
-        $request = Request::create('/?include=user,post', 'GET');
-        $this->app['request'] = $request;
-
-        $stub = new class
-        {
-            use HasOptionalIncludes;
-
-            public function requestIncludedRelationsPublic(): array
-            {
-                return $this->requestIncludedRelations();
-            }
-        };
+        $stub = new HasOptionalIncludesTestStub;
 
         $includes = $stub->requestIncludedRelationsPublic();
 
-        $this->assertSame([], $includes);
-    }
+        expect($includes)->toBe(['user', 'post']);
+    });
 
-    // note : currently not implemented, but could be useful in the future
-    // public function test_load_and_apply_includes_handle_empty_relations_and_load_requested_relations(): void
-    // {
-    //     $post = Post::factory()->for(User::factory()->create())->create();
-    //     $postDataResponse = PostDataResponse::from($post);
+    it('returns empty when no include query is present', function (): void {
+        $request = Request::create('/', 'GET');
+        app()['request'] = $request;
 
-    //     $this->assertSame($post, $this->loadIncludes($post, []));
+        $stub = new HasOptionalIncludesTestStub;
 
-    //     $ref = $postDataResponse;
-    //     $this->applyIncludes($postDataResponse, []);
-    //     $this->assertSame($ref, $postDataResponse);
+        $includes = $stub->requestIncludedRelationsPublic();
 
-    //     $model = $this->loadIncludes($post, ['user']);
+        expect($includes)->toBe([]);
+    });
 
-    //     $this->assertTrue($model->relationLoaded('user'));
-    //     $this->assertSame($post->getRelation('user')->id, $model->user->id);
-    // }
-}
+    it('returns empty when no allowed includes are defined', function (): void {
+        $request = Request::create('/?include=user,post', 'GET');
+        app()['request'] = $request;
+
+        // Create a stub with no allowed includes
+        $stub = new HasOptionalIncludesTestStub([]);
+
+        $includes = $stub->requestIncludedRelationsPublic();
+
+        expect($includes)->toBe([]);
+    });
+
+    // default allowed includes implementation is to return an empty array, so this test ensures that behavior is preserved
+    it('uses the default allowed includes implementation when none are overridden', function (): void {
+        $request = Request::create('/?include=user,post', 'GET');
+        app()['request'] = $request;
+
+        $stub = new HasOptionalIncludesDefaultAllowedIncludesStub;
+
+        $includes = $stub->requestIncludedRelationsPublic();
+
+        expect($includes)->toBe([]);
+    });
+
+    it('returns the model unchanged when includes are empty', function (): void {
+        $model = new HasOptionalIncludesLoadMissingModel;
+        $stub = new HasOptionalIncludesTestStub;
+
+        $result = $stub->loadIncludesPublic($model, []);
+
+        expect($result)->toBe($model);
+        expect($model->loadedIncludes)->toBe([]);
+    });
+
+    it('loads missing relations when includes are supplied', function (): void {
+        $model = new HasOptionalIncludesLoadMissingModel;
+        $stub = new HasOptionalIncludesTestStub;
+
+        $result = $stub->loadIncludesPublic($model, ['user']);
+
+        expect($result)->toBe($model);
+        expect($model->loadedIncludes)->toBe(['user']);
+    });
+
+    it('does not apply includes when the list is empty', function (): void {
+        $data = new HasOptionalIncludesDataStub;
+        $stub = new HasOptionalIncludesTestStub;
+
+        $stub->applyIncludesPublic($data, []);
+
+        expect($data->included)->toBe([]);
+    });
+
+    it('applies includes when the list is supplied', function (): void {
+        $data = new HasOptionalIncludesDataStub;
+        $stub = new HasOptionalIncludesTestStub;
+
+        $stub->applyIncludesPublic($data, ['user', 'post']);
+
+        expect($data->included)->toBe(['user', 'post']);
+    });
+
+    it('resolves optional includes and loads them on the model', function (): void {
+        $request = Request::create('/?include=user', 'GET');
+        app()['request'] = $request;
+
+        $model = new HasOptionalIncludesLoadMissingModel;
+        $stub = new HasOptionalIncludesTestStub(['user']);
+
+        [$result, $includes] = $stub->resolveOptionalIncludesPublic($model);
+
+        expect($result)->toBe($model);
+        expect($includes)->toBe(['user']);
+        expect($model->loadedIncludes)->toBe(['user']);
+    });
+});
