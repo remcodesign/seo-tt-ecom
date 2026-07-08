@@ -6,8 +6,8 @@ namespace App\Http\Controllers\Api\Blog;
 
 use App\Data\Blog\Requests\StorePostData;
 use App\Data\Blog\Requests\UpdatePostData;
-use App\Data\Blog\Responses\PostData;
 use App\Data\Blog\Responses\PostDataModifiedResponse;
+use App\Data\Blog\Responses\PostDataResponse;
 use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -39,14 +39,14 @@ readonly class PostController
     }
 
     /**
-     * @return PaginatedDataCollection<int, PostData>
+     * @return PaginatedDataCollection<int, PostDataResponse>
      */
     public function index(): PaginatedDataCollection
     {
         // todo use the optional includes for the index and show methods, not for store and update
         // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
 
-        return PostData::collect(
+        return PostDataResponse::collect(
             $this->postService->query(
                 withComments: false,
                 perPage: 10
@@ -55,7 +55,7 @@ readonly class PostController
         );
     }
 
-    public function show(Post $post): PostData
+    public function show(Post $post): PostDataResponse
     {
         // todo use the optional includes for the index and show methods, not for store and update
         // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
@@ -66,7 +66,7 @@ readonly class PostController
 
         $post = $this->postService->find($post, withComments: true);
 
-        return PostData::from($post);
+        return PostDataResponse::from($post);
     }
 
     public function store(StorePostData $storePostData): PostDataModifiedResponse

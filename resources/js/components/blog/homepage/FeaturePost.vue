@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import type { Component } from 'vue';
-import type { PostData } from '@types';
+import type { PostDataResponse } from '@types';
 import api from '@/api';
 import CardLister from '@/components/common/CardLister.vue';
 import PostCard from '@/components/blog/PostCard.vue';
@@ -23,13 +23,13 @@ const props = withDefaults(defineProps<{
     emptyText: 'No posts available.',
 });
 
-const posts = ref<PostData[]>([]);
+const posts = ref<PostDataResponse[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
 onMounted(async () => {
     try {
-        const response = await api.get<{ data: PostData[] }>(props.endpoint);
+        const response = await api.get<{ data: PostDataResponse[] }>(props.endpoint);
 
         posts.value = response.data.data;
     } catch {

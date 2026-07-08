@@ -23,18 +23,6 @@ export type CreateTokenData = {
     password: string;
     device_name: string;
 };
-export type PostData = {
-    id: number;
-    user_id: number;
-    title: string;
-    slug: string;
-    user: UserData | null;
-    body: string | null;
-    comments: CommentData[] | null;
-    published_on: string | null;
-    created_at: string | null;
-    updated_at: string | null;
-};
 export type PostDataModifiedResponse = {
     id: number;
     user_id: number;
@@ -42,6 +30,18 @@ export type PostDataModifiedResponse = {
     slug: string;
     body: string | null;
     user: UserData | null;
+    comments: CommentData[] | null;
+    published_on: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+};
+export type PostDataResponse = {
+    id: number;
+    user_id: number;
+    title: string;
+    slug: string;
+    user: UserData | null;
+    body: string | null;
     comments: CommentData[] | null;
     published_on: string | null;
     created_at: string | null;

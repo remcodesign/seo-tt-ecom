@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import type { PostData } from '@types';
+import type { PostDataResponse } from '@types';
 import api from '@/api';
 import CommentRow from '@/components/blog/CommentRow.vue';
 import TableLister from '@/components/common/TableLister.vue';
@@ -9,7 +9,7 @@ import TableLister from '@/components/common/TableLister.vue';
 const route = useRoute();
 const slug = route.params.slug as string;
 
-const post = ref<PostData | null>(null);
+const post = ref<PostDataResponse | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
 
@@ -24,7 +24,7 @@ const commentColumns: CommentColumn[] = ['user', 'comment', 'created_at'];
 
 onMounted(async () => {
     try {
-        const response = await api.get<PostData>(`/blog/posts/${slug}`);
+        const response = await api.get<PostDataResponse>(`/blog/posts/${slug}`);
         post.value = response.data;
     } catch {
         error.value = 'Post not found.';

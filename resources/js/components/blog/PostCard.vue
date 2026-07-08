@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { PostData } from '@types';
+import type { PostDataResponse } from '@types';
 
 defineProps<{
-    post: PostData;
+    post: PostDataResponse;
 }>();
 </script>
 

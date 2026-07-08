@@ -13,7 +13,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
-final class PostData extends Data
+final class PostDataResponse extends Data
 {
     /**
      * @param  CommentData[]|null  $comments
