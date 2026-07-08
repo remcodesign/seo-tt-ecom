@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Data\Blog\Responses;
 
 use Carbon\CarbonImmutable;
-use Spatie\LaravelData\Attributes\WithCast;
-use Spatie\LaravelData\Casts\DateTimeInterfaceCast;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -20,11 +18,8 @@ final class PostDataModifiedResponse extends Data
         public string $slug,
         public ?string $body = null,
 
-        #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $published_on = null,
-        #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $created_at = null,
-        #[WithCast(DateTimeInterfaceCast::class)]
         public ?CarbonImmutable $updated_at = null,
     ) {}
 }
