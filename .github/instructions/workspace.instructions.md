@@ -55,6 +55,7 @@ applyTo: '**/*'
 ### Service Layer
 - Encapsulate business logic, queries, and side effects.
 - Reuse model scopes for shared query logic (e.g., `withPostAndUserName()`).
+- Prefer Laravel collection helpers over raw PHP `array_*` functions when transforming DTO arrays or building payloads in services.
 - Default to readonly properties and constructor injection. Use `readonly class` (PHP 8.4+).
 
 ### Content-Field Scope (`withoutContentFields`)
@@ -95,13 +96,13 @@ public function scopeWithoutContentFields(Builder $builder): Builder
 - Keep DTOs tiny: constructor-promoted public properties only, no business logic.
 - Use `#[WithCast(DateTimeInterfaceCast::class)]` for Carbon dates with global mapping in `config/data.php`.
 - Replace Carbon types in generated TypeScript via `TypeScriptTransformerServiceProvider`.
-- Map optional DTO properties to Eloquent payloads with compact `array_filter`:
+- Map optional DTO properties to Eloquent payloads with Laravel collection filtering instead of raw `array_*` helpers:
   ```php
-  $data = array_filter([
+  $data = collect([
       'title' => $dto->title,
       'body' => $dto->body,
       'published_on' => $dto->published_on,
-  ], static fn (?string $value): bool => $value !== null);
+  ])->filter(static fn (?string $value): bool => $value !== null)->all();
   ```
 - Add `#[TypeScript]` above DTO classes for frontend type generation (`php artisan typescript:transform`).
 - Use nullable DTO properties for optional relations and response expansions. Keep default response payloads minimal by defining optional relation fields with default `null`, for example:

@@ -29,9 +29,10 @@ readonly class CommentService
             throw new AuthorizationException('You are not the owner of this comment.');
         }
 
-        $data = array_filter([
+        // Filter out null values to avoid overwriting existing fields with null
+        $data = collect([
             'comment' => $updateCommentData->comment,
-        ], static fn (mixed $value): bool => $value !== null);
+        ])->filter(static fn (mixed $value): bool => $value !== null)->all();
 
         if ($data !== []) {
             $comment->update($data);

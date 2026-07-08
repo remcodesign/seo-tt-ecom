@@ -28,16 +28,17 @@ readonly class PostService
             throw new AuthorizationException('You are not the owner of this post.');
         }
 
-        $data = array_filter([
+        // Filter out null values to avoid overwriting existing fields with null
+        $data = collect([
             'title' => $updatePostData->title,
             'body' => $updatePostData->body,
             'published_on' => $updatePostData->published_on,
-        ], static fn (?string $value): bool => $value !== null);
+        ])->filter(static fn (?string $value): bool => $value !== null)->all();
 
         if ($updatePostData->title !== null && $updatePostData->title !== $post->title) {
             $data['slug'] = $this->generateUniqueSlug($updatePostData->title, $post);
-            // TODO: If slug changes and old URLs were shared externally, consider
-            // adding a redirects table to map old slugs → new slugs (301 redirects).
+            // TODO: If slug changes and old URLs were shared externally, 
+            // .. consider adding a redirects table to map old slugs → new slugs (301 redirects).
         }
 
         $post->update($data);
