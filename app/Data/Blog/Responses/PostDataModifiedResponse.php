@@ -16,7 +16,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 final class PostDataModifiedResponse extends Data
 {
     /**
-     * @param  CommentData[]|null  $comments
+     * @param  CommentDataResponse[]|null  $comments
      */
     public function __construct(
         public int $id,
@@ -26,7 +26,7 @@ final class PostDataModifiedResponse extends Data
         public ?string $body = null,
 
         public ?UserData $user = null, // relation
-        #[DataCollectionOf(CommentData::class)]
+        #[DataCollectionOf(CommentDataResponse::class)]
         public ?array $comments = null, // relation
 
         #[WithCast(DateTimeInterfaceCast::class)]

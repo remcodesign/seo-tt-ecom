@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { CommentData } from '@types';
+import type { CommentDataResponse } from '@types';
 
 defineProps<{
-    comment: CommentData;
+    comment: CommentDataResponse;
     columns?: string[];
 }>();
 </script>

@@ -1,19 +1,19 @@
-export type CommentData = {
-    id: number;
-    post_id: number;
-    user_id: number;
-    comment: string;
-    user: UserData;
-    post: PostForCommentDataResponse | null;
-    created_at: string | null;
-    updated_at: string | null;
-};
 export type CommentDataModifiedResponse = {
     id: number;
     post_id: number;
     user_id: number;
     comment: string;
     user: UserData | null;
+    post: PostForCommentDataResponse | null;
+    created_at: string | null;
+    updated_at: string | null;
+};
+export type CommentDataResponse = {
+    id: number;
+    post_id: number;
+    user_id: number;
+    comment: string;
+    user: UserData;
     post: PostForCommentDataResponse | null;
     created_at: string | null;
     updated_at: string | null;
@@ -30,7 +30,7 @@ export type PostDataModifiedResponse = {
     slug: string;
     body: string | null;
     user: UserData | null;
-    comments: CommentData[] | null;
+    comments: CommentDataResponse[] | null;
     published_on: string | null;
     created_at: string | null;
     updated_at: string | null;
@@ -42,7 +42,7 @@ export type PostDataResponse = {
     slug: string;
     user: UserData | null;
     body: string | null;
-    comments: CommentData[] | null;
+    comments: CommentDataResponse[] | null;
     published_on: string | null;
     created_at: string | null;
     updated_at: string | null;

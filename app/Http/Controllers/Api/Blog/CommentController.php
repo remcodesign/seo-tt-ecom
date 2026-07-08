@@ -6,8 +6,8 @@ namespace App\Http\Controllers\Api\Blog;
 
 use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\UpdateCommentData;
-use App\Data\Blog\Responses\CommentData;
 use App\Data\Blog\Responses\CommentDataModifiedResponse;
+use App\Data\Blog\Responses\CommentDataResponse;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -29,13 +29,13 @@ readonly class CommentController
     }
 
     /**
-     * @return PaginatedDataCollection<int, CommentData>
+     * @return PaginatedDataCollection<int, CommentDataResponse>
      */
     public function index(): PaginatedDataCollection
     {
         $postId = request()->query('post_id');
 
-        return CommentData::collect(
+        return CommentDataResponse::collect(
             $this->commentService->query(
                 postId: $postId !== null ? (int) $postId : null,
                 perPage: 50,
@@ -44,7 +44,7 @@ readonly class CommentController
         );
     }
 
-    public function show(Comment $comment): CommentData
+    public function show(Comment $comment): CommentDataResponse
     {
         $comment = $this->commentService->find($comment);
 
@@ -52,7 +52,7 @@ readonly class CommentController
             abort(404, 'Comment not found.');
         }
 
-        return CommentData::from($comment);
+        return CommentDataResponse::from($comment);
     }
 
     public function store(StoreCommentData $storeCommentData): CommentDataModifiedResponse

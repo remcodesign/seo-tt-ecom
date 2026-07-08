@@ -12,7 +12,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
-final class CommentData extends Data
+final class CommentDataResponse extends Data
 {
     public function __construct(
         public int $id,
