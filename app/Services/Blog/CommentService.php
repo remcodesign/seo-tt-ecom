@@ -62,10 +62,12 @@ readonly class CommentService
     public function query(?int $postId = null, int $perPage = 15): LengthAwarePaginator
     {
         $builder = Comment::query()
+            // Only include comments for published posts, and eager-load the post relation
             ->whereHas('post', function ($query): void {
                 /** @var Builder<Post> $query */
                 $query->published();
             })
+            // Eager-load the post relation, but exclude content-heavy fields (body, etc.)
             ->with([
                 'post' => function ($query): void {
                     /** @var Builder<Post> $query */

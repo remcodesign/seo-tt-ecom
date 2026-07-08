@@ -8,7 +8,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
-final class TokenData extends Data
+final class TokenDataResponse extends Data
 {
     public function __construct(
         public string $token

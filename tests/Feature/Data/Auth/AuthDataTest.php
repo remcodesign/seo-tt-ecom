@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Data\Auth\RegisterData;
-use App\Data\Auth\UserData;
+use App\Data\Auth\UserDataResponse;
 use App\Models\User;
 
 it('hydrates RegisterData and converts it to an array', function (): void {
@@ -30,9 +30,9 @@ it('converts a User model into UserData', function (): void {
         'email' => 'jane@example.com',
     ]);
 
-    $userData = UserData::from($user);
+    $userDataResponse = UserDataResponse::from($user);
 
-    expect($userData)->toBeInstanceOf(UserData::class)
-        ->and($userData->id)->toBe(42)
-        ->and($userData->name)->toBe('Jane Doe');
+    expect($userDataResponse)->toBeInstanceOf(UserDataResponse::class)
+        ->and($userDataResponse->id)->toBe(42)
+        ->and($userDataResponse->name)->toBe('Jane Doe');
 });

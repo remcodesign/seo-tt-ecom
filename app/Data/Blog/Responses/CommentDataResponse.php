@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Blog\Responses;
 
-use App\Data\Auth\UserData;
+use App\Data\Auth\UserDataResponse;
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -18,7 +18,7 @@ final class CommentDataResponse extends Data
         public int $user_id,
         public string $comment,
 
-        public UserData $user, // relation
+        public UserDataResponse $user, // relation
         public ?PostForCommentDataResponse $post = null, // relation
 
         public ?CarbonImmutable $created_at = null,

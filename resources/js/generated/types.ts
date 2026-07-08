@@ -11,7 +11,7 @@ export type CommentDataResponse = {
     post_id: number;
     user_id: number;
     comment: string;
-    user: UserData;
+    user: UserDataResponse;
     post: PostForCommentDataResponse | null;
     created_at: string | null;
     updated_at: string | null;
@@ -36,7 +36,7 @@ export type PostDataResponse = {
     user_id: number;
     title: string;
     slug: string;
-    user: UserData;
+    user: UserDataResponse;
     body: string | null;
     comments: CommentDataResponse[] | null;
     published_on: string | null;
@@ -48,7 +48,7 @@ export type PostForCommentDataResponse = {
     user_id: number;
     title: string;
     slug: string;
-    user: UserData | null;
+    user: UserDataResponse;
     published_on: string | null;
     created_at: string | null;
     updated_at: string | null;
@@ -58,7 +58,7 @@ export type RegisterData = {
     email: string;
     password: string;
 };
-export type RevokeTokenData = {
+export type RevokeTokenDataResponse = {
     message: string;
 };
 export type RoleLabel = "guest" | "user" | "writer" | "admin";
@@ -71,7 +71,7 @@ export type StorePostData = {
     body: string | null;
     published_on: string | null;
 };
-export type TokenData = {
+export type TokenDataResponse = {
     token: string;
 };
 export type UpdateCommentData = {
@@ -82,7 +82,7 @@ export type UpdatePostData = {
     body: string | null;
     published_on: string | null;
 };
-export type UserData = {
+export type UserDataResponse = {
     id: number;
     name: string;
     role_label: RoleLabel;
