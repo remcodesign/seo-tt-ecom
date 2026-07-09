@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import type {
     PaginationLinkData,
@@ -11,6 +11,7 @@ import api from '@/api';
 import CardLister from '@/components/common/CardLister.vue';
 import PaginationLinks from '@/components/common/PaginationLinks.vue';
 import PostCard from '@/components/blog/PostCard.vue';
+import SectionHeaderControls from '@/components/common/SectionHeaderControls.vue';
 import { usePagination } from '@/composable/common/usePagination';
 
 
@@ -59,14 +60,6 @@ const {
     },
 });
 
-const totalLabel = computed(() => {
-    if (meta.value.total === 0) {
-        return 'No posts available.';
-    }
-
-    return `${meta.value.total} post${meta.value.total === 1 ? '' : 's'} total`;
-});
-
 const fetchPosts = async (): Promise<void> => {
     loading.value = true;
     error.value = null;
@@ -96,11 +89,13 @@ const fetchPosts = async (): Promise<void> => {
     }
 };
 
+// Watchers to refetch posts when relevant parameters change
 watch([orderBy, perPage], () => {
     page.value = 1;
     void fetchPosts();
 });
 
+// Watch for changes in the page number to refetch posts
 watch(page, () => {
     void fetchPosts();
 });
@@ -112,48 +107,19 @@ onMounted(() => {
 
 <template>
     <div>
-        <!-- Filters and Sorting -->
-        <div
-            class="mb-8 flex flex-col gap-6 rounded-xl border border-[#19140035] bg-white p-6 shadow-xs dark:border-[#3E3E3A] dark:bg-[#161615]">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Blog Posts</h1>
-                    <p class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
-                        Browse recent blog posts.
-                    </p>
-                </div>
-
-                <div class="flex flex-col gap-3 sm:items-end">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <label class="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]" for="orderby">
-                            Order
-                        </label>
-
-                        <select id="orderby" v-model="orderBy"
-                            class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]">
-                            <option v-for="option in orderOptions" :key="option.value" :value="option.value">
-                                {{ option.label }}
-                            </option>
-                        </select>
-
-                        <label class="text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC]" for="per-page">
-                            Items
-                        </label>
-
-                        <select id="per-page" v-model.number="perPage"
-                            class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]">
-                            <option v-for="size in perPageOptions" :key="size" :value="size">
-                                {{ size }} per page
-                            </option>
-                        </select>
-                    </div>
-
-                    <p class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
-                        {{ totalLabel }}
-                    </p>
-                </div>
-            </div>
-        </div>
+        <SectionHeaderControls
+            title="Blog Posts"
+            description="Browse recent blog posts."
+            :order-by="orderBy"
+            :per-page="perPage"
+            :total="meta.total"
+            :show-order="true"
+            :show-items="true"
+            :order-options="orderOptions"
+            :items-options="perPageOptions"
+            @update:orderBy="(value) => orderBy = value"
+            @update:perPage="(value) => perPage = value"
+        />
 
         <!-- Loading, Error, and Content -->
         <div v-if="loading" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
