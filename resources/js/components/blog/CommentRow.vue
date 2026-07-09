@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CommentDataResponse } from '@types';
+import Button from '@/components/common/Button.vue';
 
 defineProps<{
     comment: CommentDataResponse;
@@ -19,13 +20,13 @@ defineProps<{
     </td>
 
     <td class="px-4 py-4 align-top" v-if="columns?.includes('post')">
-        <router-link
+        <Button
             v-if="comment.post?.slug"
+            variant="text-underline"
             :to="{ name: 'posts.show', params: { slug: comment.post.slug } }"
-            class="text-sm text-[#6C6C66] underline decoration-dotted underline-offset-2 transition-colors hover:text-[#f53003] dark:text-[#A1A19A] dark:hover:text-[#FF4433]"
         >
             {{ comment.post.title ?? 'Unknown post' }}
-        </router-link>
+        </Button>
         <span v-else class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
             {{ comment.post?.title ?? 'Unknown post' }}
         </span>

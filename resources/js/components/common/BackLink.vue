@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import Button from '@/components/common/Button.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -32,12 +33,13 @@ const backToIndex = (): void => {
 </script>
 
 <template>
-    <button
-        type="button"
+    <Button
+        variant="text"
+        size="xs"
+        class="gap-2"
         @click="backToIndex"
-        class="cursor-pointer inline-flex items-center gap-2 text-sm font-medium text-[#1b1b18] transition-colors hover:text-[#f53003] dark:text-[#EDEDEC] dark:hover:text-[#FF4433]"
     >
         <span aria-hidden="true">←</span>
         <span>Back to posts</span>
-    </button>
+    </Button>
 </template>

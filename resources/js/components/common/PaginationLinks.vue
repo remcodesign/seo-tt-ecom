@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import type { PaginationLinkData } from '@types';
+import Button from '@/components/common/Button.vue';
 
 const props = defineProps({
     links: {
@@ -22,19 +23,18 @@ const handlePageClick = (page: number | null): void => {
     <nav v-if="props.links.length > 0" class="mt-8">
         <ul class="flex flex-wrap items-center justify-center gap-2 text-sm">
             <li v-for="link in props.links" :key="link.label">
-                <button
-                    type="button"
+                <Button
                     :disabled="link.page === null"
+                    :active="link.active"
+                    variant="bordered_normal"
+                    size="md"
+                    class="min-w-[3rem]"
                     @click="handlePageClick(link.page)"
-                    class="cursor-pointer inline-flex min-w-[3rem] items-center justify-center rounded-md border px-3 py-2 transition-colors disabled:cursor-not-allowed disabled:border-[#d6d6d1] disabled:bg-[#f5f5f3] disabled:text-[#a5a59d] dark:disabled:border-[#3A3A36] dark:disabled:bg-[#1f1f1d] dark:disabled:text-[#5D5D57]"
-                    :class="link.active
-                        ? 'border-[#f53003] bg-[#f53003] text-white shadow-sm dark:border-[#FF4433] dark:bg-[#FF4433]'
-                        : 'border-[#8a7f4f20] bg-white text-[#1b1b18] hover:border-[#f53003] hover:text-[#f53003] dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC] dark:hover:border-[#FF4433] dark:hover:text-[#FF4433]'"
                 >
                     <span v-if="/previous/i.test(link.label)">←</span>
                     <span v-else-if="/next/i.test(link.label)">→</span>
                     <span v-else>{{ link.label }}</span>
-                </button>
+                </Button>
             </li>
         </ul>
     </nav>

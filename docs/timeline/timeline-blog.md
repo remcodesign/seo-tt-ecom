@@ -139,15 +139,16 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - let the `post index` order and per page work
 
-- let the `comment index` order and per page work
+- add a `comment index` page with a table style lister (reuse components for comment item  and lister) and references to the post and user - 'it should be on `/blog/comments`' so in the blog url context
+
+- create common button.vue component - and refactor links/buttons in the current vue3 codebase
 
 >HERE
 
-- add a `comment index` page with a table style lister (reuse components for comment item  and lister) and references to the post and user - 'it should be on `/blog/comments`' so in the blog url context
+- add `featuredComment` on `homepage` as table lister
 
 - add eslint fix, to cleanup js
 
-- add `featuredComment` on `homepage` as table lister
 
 >THEN
 
