@@ -54,14 +54,18 @@ readonly class CommentService
     }
 
     /**
-     * Query comments with pagination, optional post filter, and eager-loaded
-     * relations to prevent N+1. Post relation is constrained to exclude
-     * content-heavy fields (body, etc.) via the withoutContentFields scope.
+     * Query comments with pagination, optional post filter, and order-by support,
+     * with eager-loaded relations to prevent N+1.
      *
+     * @param  'asc'|'desc'  $orderByDirection
      * @return LengthAwarePaginator<int, Comment>
      */
-    public function query(?int $postId = null, int $perPage = 15): LengthAwarePaginator
-    {
+    public function query(
+        ?int $postId = null,
+        int $perPage = 15,
+        string $orderByColumn = 'created_at',
+        string $orderByDirection = 'desc',
+    ): LengthAwarePaginator {
         $builder = Comment::query()
             // Only include comments for published posts, and eager-load the post relation
             ->whereHas('post', function ($query): void {
@@ -76,14 +80,13 @@ readonly class CommentService
                 },
                 'post.user',
                 'user',
-            ])
-            ->latest();
+            ]);
 
         if ($postId !== null) {
             $builder->where('post_id', $postId);
         }
 
-        return $builder->paginate($perPage);
+        return $builder->orderBy($orderByColumn, $orderByDirection)->paginate($perPage);
     }
 
     public function find(Comment $comment): Comment

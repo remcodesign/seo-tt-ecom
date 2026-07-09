@@ -23,6 +23,11 @@ const router = createRouter({
             name: 'posts.show',
             component: () => import('./pages/blog/PostShowPage.vue'),
         },
+        {
+            path: '/blog/comments',
+            name: 'comments.index',
+            component: () => import('./pages/blog/CommentIndexPage.vue'),
+        },
     ],
 });
 

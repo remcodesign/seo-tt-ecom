@@ -17,8 +17,6 @@ describe('CommentController (API)', function (): void {
 
             $response = $this->getJson('/api/blog/comments');
 
-            // dump($response->json());
-
             $response->assertSuccessful()
                 ->assertJsonStructure([
                     'data' => [
@@ -71,6 +69,45 @@ describe('CommentController (API)', function (): void {
 
             $response->assertSuccessful()
                 ->assertJsonCount(2, 'data');
+        });
+
+        it('respects the per_page query parameter', function (): void {
+            Comment::factory()->count(10)->for(Post::factory()->for(User::factory()))->create();
+
+            $response = $this->getJson('/api/blog/comments?per_page=4');
+
+            $response->assertSuccessful()
+                ->assertJsonPath('meta.per_page', 4)
+                ->assertJsonCount(4, 'data')
+                ->assertJsonPath('meta.total', 10);
+        });
+
+        it('orders by created_at when orderby parameter is set', function (): void {
+            $user = User::factory()->create();
+            $post = Post::factory()->for($user)->create();
+            $older = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDays(2)]);
+            $newer = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDay()]);
+
+            $response = $this->getJson('/api/blog/comments?orderby=created_at');
+
+            $response->assertSuccessful();
+
+            $ids = collect($response->json('data'))->pluck('id')->all();
+            expect($ids)->toBe([$older->id, $newer->id]);
+        });
+
+        it('orders by created_at desc when orderby has _desc suffix', function (): void {
+            $user = User::factory()->create();
+            $post = Post::factory()->for($user)->create();
+            $newer = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDay()]);
+            $older = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDays(2)]);
+
+            $response = $this->getJson('/api/blog/comments?orderby=created_at_desc');
+
+            $response->assertSuccessful();
+
+            $ids = collect($response->json('data'))->pluck('id')->all();
+            expect($ids)->toBe([$newer->id, $older->id]);
         });
     });
 

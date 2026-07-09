@@ -8,6 +8,8 @@ use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\UpdateCommentData;
 use App\Data\Blog\Responses\CommentDataModifiedResponse;
 use App\Data\Blog\Responses\CommentDataResponse;
+use App\Http\Controllers\Api\Traits\HasOrderBy;
+use App\Http\Controllers\Api\Traits\HasPerPage;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -18,6 +20,9 @@ use Spatie\LaravelData\PaginatedDataCollection;
 
 readonly class CommentController
 {
+    use HasOrderBy;
+    use HasPerPage;
+
     public function __construct(private CommentService $commentService) {}
 
     private function user(): User
@@ -29,16 +34,29 @@ readonly class CommentController
     }
 
     /**
+     * Define the columns that are allowed for ordering in this controller.
+     *
+     * @return string[]
+     */
+    protected function allowedOrderByFields(): array
+    {
+        return ['created_at', 'updated_at'];
+    }
+
+    /**
      * @return PaginatedDataCollection<int, CommentDataResponse>
      */
     public function index(): PaginatedDataCollection
     {
         $postId = request()->query('post_id');
+        [$orderByColumn, $orderByDirection] = $this->getOrderBy('created_at', 'desc');
 
         return CommentDataResponse::collect(
             $this->commentService->query(
                 postId: $postId !== null ? (int) $postId : null,
-                perPage: 50,
+                perPage: $this->getPerPage(default: 5, max: 100),
+                orderByColumn: $orderByColumn,
+                orderByDirection: $orderByDirection,
             ),
             PaginatedDataCollection::class,
         );

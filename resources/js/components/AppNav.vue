@@ -2,6 +2,7 @@
 const links: Array<{ label: string; route: string }> = [
     { label: 'Home', route: 'home' },
     { label: 'Blog', route: 'posts.index' },
+    { label: 'Comments', route: 'comments.index' },
     // { label: 'Admin', route: 'posts.index' },
 ];
 </script>

@@ -19,9 +19,16 @@ defineProps<{
     </td>
 
     <td class="px-4 py-4 align-top" v-if="columns?.includes('post')">
-        <div class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
+        <router-link
+            v-if="comment.post?.slug"
+            :to="{ name: 'posts.show', params: { slug: comment.post.slug } }"
+            class="text-sm text-[#6C6C66] underline decoration-dotted underline-offset-2 transition-colors hover:text-[#f53003] dark:text-[#A1A19A] dark:hover:text-[#FF4433]"
+        >
+            {{ comment.post.title ?? 'Unknown post' }}
+        </router-link>
+        <span v-else class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
             {{ comment.post?.title ?? 'Unknown post' }}
-        </div>
+        </span>
     </td>
 
     <td class="px-4 py-4 align-top text-xs text-[#6C6C66] dark:text-[#A1A19A]" v-if="columns?.includes('created_at') ?? true">

@@ -121,5 +121,39 @@ describe('CommentService', function (): void {
                 expect($comment->post_id)->toBe($postA->id);
             }
         });
+
+        it('applies custom orderBy column and direction', function (): void {
+            $user = User::factory()->create();
+            $post = Post::factory()->for($user)->create();
+            $older = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDays(2)]);
+            $newer = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDay()]);
+            $commentService = app(CommentService::class);
+
+            $lengthAwarePaginator = $commentService->query(
+                perPage: 15,
+                orderByColumn: 'created_at',
+                orderByDirection: 'asc',
+            );
+
+            $ids = $lengthAwarePaginator->pluck('id')->all();
+            expect($ids)->toBe([$older->id, $newer->id]);
+        });
+
+        it('orders by desc direction', function (): void {
+            $user = User::factory()->create();
+            $post = Post::factory()->for($user)->create();
+            $newer = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDay()]);
+            $older = Comment::factory()->for($post)->for($user)->create(['created_at' => now()->subDays(2)]);
+            $commentService = app(CommentService::class);
+
+            $lengthAwarePaginator = $commentService->query(
+                perPage: 15,
+                orderByColumn: 'created_at',
+                orderByDirection: 'desc',
+            );
+
+            $ids = $lengthAwarePaginator->pluck('id')->all();
+            expect($ids)->toBe([$newer->id, $older->id]);
+        });
     });
 });

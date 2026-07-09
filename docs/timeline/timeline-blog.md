@@ -137,13 +137,15 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - add a `post index` page with card lister (reuse card component and lister) - 'it should be on `/blog/posts`' so in the blog url context - use axios
 
->HERE
-
 - let the `post index` order and per page work
 
-- add eslint fix, to cleanup js
+- let the `comment index` order and per page work
+
+>HERE
 
 - add a `comment index` page with a table style lister (reuse components for comment item  and lister) and references to the post and user - 'it should be on `/blog/comments`' so in the blog url context
+
+- add eslint fix, to cleanup js
 
 - add `featuredComment` on `homepage` as table lister
 
