@@ -44,9 +44,9 @@ const linkQuery = computed(() => {
             {{ post.body }}
         </p>
 
-        <div class="mt-auto flex items-center gap-3 border-t border-[#19140020] pt-3 dark:border-[#3E3E3A40]">
-            <div
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#e3e3e0] text-xs font-medium text-[#1b1b18] dark:bg-[#3E3E3A] dark:text-[#EDEDEC]">
+        <div class="mt-auto flex items-center gap-3 border-t border-[#19140020] pt-3 dark:border-[#3E3E3A99]">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#e3e3e0] 
+                text-xs font-medium text-[#1b1b18] dark:bg-[#3E3E3A] dark:text-[#EDEDEC]">
                 {{ post.user.name.charAt(0).toUpperCase() }}
             </div>
 

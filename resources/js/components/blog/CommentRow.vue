@@ -15,6 +15,7 @@ defineProps<{
         </div>
     </td>
 
+    <!-- use `line-clamp-3` in non-show lister mode -->
     <td class="px-4 py-4 align-top" v-if="columns?.includes('comment') ?? true">
         <div class="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">{{ comment.comment }}</div>
     </td>
