@@ -386,6 +386,62 @@ The path alias `@/` resolves to `resources/js/` (configured in both `tsconfig.js
 
 **Available types (`resources/js/types.ts`):**
 
+### Universal Components
+
+Always use these shared components as the default when styling needs match. They keep the design system consistent and reduce duplication.
+
+**`resources/js/components/common/Card.vue`** — the default card wrapper for any content that goes inside a rounded, bordered container:
+```vue
+<Card class="flex flex-col">
+    <!-- any content -->
+</Card>
+```
+- Accepts any HTML attribute or class via `$attrs` (e.g. `class="flex flex-col"`).
+- Use whenever you need a card-style container — do not re-implement the border/background/shadow styles manually.
+
+**`resources/js/components/common/Button.vue`** — universal button and link component with 4 variants:
+
+| Variant | Appearance | Use case |
+|---------|-----------|----------|
+| `bordered_normal` | Bordered button with active/disabled states | Pagination, action buttons |
+| `nav` | Pill-style with active highlight | Navigation menu items |
+| `text` | Plain text, no underline | Back links, card titles |
+| `text-underline` | Dotted underline | Inline links (e.g. post title in a comment row) |
+
+**Props:**
+- `variant` — one of the variants above (default `bordered_normal`)
+- `size` — 'xs' | 'sm' | 'md' | 'lg' (default `md`)
+- `disabled` — disables button (ignored when `to` is set)
+- `active` — applies the active/highlighted state
+- `to` — a vue-router route location; when set, renders a `<router-link>` instead of a `<button>`
+
+**Usage examples:**
+```vue
+<!-- Pagination button -->
+<Button variant="bordered_normal" size="sm" :active="link.active" :disabled="link.page === null">
+    {{ link.label }}
+</Button>
+
+<!-- Navigation link -->
+<Button variant="nav" size="md" :active="isActive" @click="navigate">
+    Blog
+</Button>
+
+<!-- Text link to a post -->
+<Button variant="text-underline" :to="{ name: 'posts.show', params: { slug: post.slug } }">
+    {{ post.title }}
+</Button>
+
+<!-- Back link -->
+<Button variant="text" class="gap-2" @click="goBack">
+    <span>←</span><span>Back</span>
+</Button>
+```
+
+- Always prefer `Button` over raw `<button>` or `<router-link>` when visual styling is needed.
+- Use the `to` prop for navigation instead of `@click` + `router.push()` when possible.
+- Keep location-specific sizing/positioning as `class` overrides (e.g. `class="min-w-[3rem]"` on pagination buttons).
+
 ### Component Conventions
 
 1. **Layout components** go in `layouts/` — wrap `<slot />` with shared chrome (header, nav, footer).

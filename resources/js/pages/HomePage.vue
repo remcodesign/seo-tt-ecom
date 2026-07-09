@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import FeaturePost from '@/components/blog/homepage/FeaturePost.vue';
+import FeaturePosts from '@/components/blog/homepage/FeaturePosts.vue';
 </script>
 
 <template>
     <div>
-        <FeaturePost title="Latest Posts" />
+        <FeaturePosts title="Latest Posts" />
     </div>
 </template>

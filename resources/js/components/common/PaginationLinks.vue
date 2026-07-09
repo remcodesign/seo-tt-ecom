@@ -27,7 +27,7 @@ const handlePageClick = (page: number | null): void => {
                     :disabled="link.page === null"
                     :active="link.active"
                     variant="bordered_normal"
-                    size="md"
+                    size="sm"
                     class="min-w-[3rem]"
                     @click="handlePageClick(link.page)"
                 >

@@ -145,7 +145,9 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 >HERE
 
-- add `featuredComment` on `homepage` as table lister
+- add `goto links` to the post index, below the featured post cards on the `homepage`
+
+- add `FeaturedComments` on `homepage` as table lister - in the style of `resources/js/components/blog/homepage/FeaturePosts.vue` but then with comments presented with the `TableLister` and also add the `goto links` to the comment index
 
 - add eslint fix, to cleanup js
 
