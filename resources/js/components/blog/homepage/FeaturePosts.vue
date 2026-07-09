@@ -68,7 +68,7 @@ onMounted(async () => {
         />
 
         <div v-if="!loading && !error && posts.length > 0" class="mt-8 flex flex-wrap items-center gap-3">
-            <Button variant="text-underline" size="sm" :to="{ name: 'posts.index' }">
+            <Button variant="text-underline" size="sm" :active="true" :to="{ name: 'posts.index' }">
                 View all blog posts
             </Button>
         </div>

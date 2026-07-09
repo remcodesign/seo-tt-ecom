@@ -143,22 +143,26 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - create common button.vue component - and refactor links/buttons in the current vue3 codebase
 
->HERE
-
 - add `goto links` to the post index, below the featured post cards on the `homepage`
 
-- add `FeaturedComments` on `homepage` as table lister - in the style of `resources/js/components/blog/homepage/FeaturePosts.vue` but then with comments presented with the `TableLister` and also add the `goto links` to the comment index
+>HERE
 
-- add eslint fix, to cleanup js
-
+- add `FeaturedComments` on the  `homepage` as table lister, below the `#sym:FeaturePosts`  - in the code-style of `resources/js/components/blog/homepage/FeaturePosts.vue` but then with comments presented with the `TableLister` and also add the `View all blog comments` below the feature list to the the comment index, max 3 comments
+  - extra info how to use the tablelister with the comments `resources/js/pages/blog/CommentIndexPage.vue`
 
 >THEN
 
-- add browser tests
+- add eslint fixer, to cleanup js
 
-## TODO - frontend login via api - (no roles/permissions)
+## TODO - frontend login via api - (no roles/permissions) - using current user `role_labels` and `admin`
 
 ## TODO - add create/update/delete comments (when logged-in) (non-admin)
+
+>THEN
+
+- make the website visual responsive correct, use: desktop normal, tablet portrait, mobile portrait
+
+- add browser tests
 
 ## TODO - add policies, user roles/permissions, spatie/laravel-permission
 

@@ -134,6 +134,16 @@ const buttonClasses = computed(() => {
                 'dark:hover:text-[#FF4433]',
             );
         }
+
+        // Extra pronounced styles using active state
+        if (props.active) {
+            classes.push(
+                'text-[#f53003]',
+                'dark:text-[#FF4433]',
+                'hover:hover:no-underline',
+                'hover:opacity-80',
+            );
+        }
     }
 
     return classes;
