@@ -4,6 +4,6 @@ import FeaturePosts from '@/components/blog/homepage/FeaturePosts.vue';
 
 <template>
     <div>
-        <FeaturePosts title="Latest Posts" />
+        <FeaturePosts title="Latest Blog Posts" />
     </div>
 </template>

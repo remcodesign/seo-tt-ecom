@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import type { Component } from 'vue';
 import type { PostDataResponse } from '@types';
 import api from '@/api';
+import Button from '@/components/common/Button.vue';
 import CardLister from '@/components/common/CardLister.vue';
 import PostCard from '@/components/blog/PostCard.vue';
 
@@ -65,5 +66,11 @@ onMounted(async () => {
             :empty-text="props.emptyText"
             :max-items="props.maxItems"
         />
+
+        <div v-if="!loading && !error && posts.length > 0" class="mt-8 flex flex-wrap items-center gap-3">
+            <Button variant="text-underline" size="sm" :to="{ name: 'posts.index' }">
+                View all blog posts
+            </Button>
+        </div>
     </div>
 </template>
