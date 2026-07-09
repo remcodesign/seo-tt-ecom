@@ -145,14 +145,14 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - add `goto links` to the post index, below the featured post cards on the `homepage`
 
->HERE
-
 - add `FeaturedComments` on the  `homepage` as table lister, below the `#sym:FeaturePosts`  - in the code-style of `resources/js/components/blog/homepage/FeaturePosts.vue` but then with comments presented with the `TableLister` and also add the `View all blog comments` below the feature list to the the comment index, max 3 comments
   - extra info how to use the tablelister with the comments `resources/js/pages/blog/CommentIndexPage.vue`
 
->THEN
-
 - add eslint fixer, to cleanup js
+
+>HERE
+
+>THEN
 
 ## TODO - frontend login via api - (no roles/permissions) - using current user `role_labels` and `admin`
 
