@@ -2,41 +2,16 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import type { LocationQueryRaw } from 'vue-router';
-import type { PostDataResponse } from '@types';
+import type {
+    PaginationLinkData,
+    PaginationMetaData,
+    PaginatedResponseData,
+    PostDataResponse,
+} from '@types';
 import api from '@/api';
 import CardLister from '@/components/common/CardLister.vue';
 import PaginationLinks from '@/components/common/PaginationLinks.vue';
 import PostCard from '@/components/blog/PostCard.vue';
-
-// todo make dto
-type PaginationLink = {
-    url: string | null;
-    label: string;
-    page: number | null;
-    active: boolean;
-};
-
-// todo make dto
-type PaginationMeta = {
-    current_page: number;
-    first_page_url: string;
-    from: number | null;
-    last_page: number;
-    last_page_url: string;
-    next_page_url: string | null;
-    path: string;
-    per_page: number;
-    prev_page_url: string | null;
-    to: number | null;
-    total: number;
-};
-
-// todo make dto
-type PaginatedResponse<T> = {
-    data: T[];
-    links: PaginationLink[];
-    meta: PaginationMeta;
-};
 
 const orderOptions = [
     { label: 'Published (A→Z)', value: 'published_on' },
@@ -45,7 +20,6 @@ const orderOptions = [
     { label: 'Updated (Z→A)', value: 'updated_at_desc' },
 ] as const;
 
-const perPageOptions = [3, 6, 9, 12] as const;
 
 const route = useRoute();
 const router = useRouter();
@@ -53,11 +27,15 @@ const router = useRouter();
 const posts = ref<PostDataResponse[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+const perPageOptions = [3, 6, 9, 12] as const;
+const orderBy = ref(String(route.query.orderby ?? 'published_on_desc'));
+
+// pagination and filtering state
 const page = ref(Number(route.query.page ?? 1));
 const perPage = ref(Number(route.query.per_page ?? 6));
-const orderBy = ref(String(route.query.orderby ?? 'published_on_desc'));
-const links = ref<PaginationLink[]>([]);
-const meta = ref<PaginationMeta>({
+const links = ref<PaginationLinkData[]>([]);
+const meta = ref<PaginationMetaData>({
     current_page: 1,
     first_page_url: '',
     from: null,
@@ -102,7 +80,7 @@ const fetchPosts = async (): Promise<void> => {
     });
 
     try {
-        const response = await api.get<PaginatedResponse<PostDataResponse>>('/blog/posts', {
+        const response = await api.get<PaginatedResponseData<PostDataResponse>>('/blog/posts', {
             params: {
                 page: page.value,
                 per_page: perPage.value,
@@ -163,7 +141,8 @@ onMounted(() => {
 
 <template>
     <div>
-        <div class="mb-8 flex flex-col gap-6 rounded-xl border border-[#19140035] bg-white p-6 shadow-xs dark:border-[#3E3E3A] dark:bg-[#161615]">
+        <div
+            class="mb-8 flex flex-col gap-6 rounded-xl border border-[#19140035] bg-white p-6 shadow-xs dark:border-[#3E3E3A] dark:bg-[#161615]">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <h1 class="text-3xl font-bold tracking-tight">Blog Posts</h1>
@@ -178,11 +157,8 @@ onMounted(() => {
                             Order
                         </label>
 
-                        <select
-                            id="orderby"
-                            v-model="orderBy"
-                            class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]"
-                        >
+                        <select id="orderby" v-model="orderBy"
+                            class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]">
                             <option v-for="option in orderOptions" :key="option.value" :value="option.value">
                                 {{ option.label }}
                             </option>
@@ -192,11 +168,8 @@ onMounted(() => {
                             Items
                         </label>
 
-                        <select
-                            id="per-page"
-                            v-model.number="perPage"
-                            class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]"
-                        >
+                        <select id="per-page" v-model.number="perPage"
+                            class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]">
                             <option v-for="size in perPageOptions" :key="size" :value="size">
                                 {{ size }} per page
                             </option>
@@ -219,13 +192,8 @@ onMounted(() => {
         </div>
 
         <div v-else>
-            <CardLister
-                :items="posts"
-                :card-component="PostCard"
-                card-prop-name="post"
-                :max-items="posts.length"
-                empty-text="No posts available."
-            />
+            <CardLister :items="posts" :card-component="PostCard" card-prop-name="post" :max-items="posts.length"
+                empty-text="No posts available." />
 
             <PaginationLinks :links="links" @page-change="setPage" />
         </div>

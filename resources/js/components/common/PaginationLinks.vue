@@ -1,17 +1,10 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
-
-// todo make dto
-type PaginationLink = {
-    url: string | null;
-    label: string;
-    page: number | null;
-    active: boolean;
-};
+import type { PaginationLinkData } from '@types';
 
 const props = defineProps({
     links: {
-        type: Array as PropType<PaginationLink[]>,
+        type: Array as PropType<PaginationLinkData[]>,
         required: true,
     },
 });

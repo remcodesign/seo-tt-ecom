@@ -33,8 +33,11 @@ describe('PostController (API)', function (): void {
                     ],
                     'meta',
                     'links',
-                ])
-                ->assertJsonCount(5, 'data');
+                ]);
+
+            $perPage = $response->json('meta.per_page');
+            expect($response->json('data'))->toHaveCount(min(5, $perPage));
+            $response->assertJsonPath('meta.total', 5);
         });
 
         it('does not include draft posts in the public list', function (): void {
