@@ -12,7 +12,7 @@ uses(RefreshDatabase::class);
 
 describe('PostController (API)', function (): void {
     describe('index', function (): void {
-        it('returns paginated posts for the public with the current static page size', function (): void {
+        it('returns paginated posts for the public with the default page size', function (): void {
             Post::factory()->count(5)->for(User::factory())->create();
 
             $response = $this->getJson('/api/blog/posts');
@@ -33,8 +33,8 @@ describe('PostController (API)', function (): void {
                     'links',
                 ]);
 
-            $response->assertJsonPath('meta.per_page', 4)
-                ->assertJsonCount(4, 'data')
+            $response->assertJsonPath('meta.per_page', 6)
+                ->assertJsonCount(5, 'data')
                 ->assertJsonPath('meta.total', 5);
         });
 
@@ -48,6 +48,72 @@ describe('PostController (API)', function (): void {
 
             $response->assertSuccessful()
                 ->assertJsonCount(3, 'data');
+        });
+
+        it('respects the per_page query parameter', function (): void {
+            Post::factory()->count(10)->for(User::factory())->create();
+
+            $response = $this->getJson('/api/blog/posts?per_page=4');
+
+            $response->assertSuccessful()
+                ->assertJsonPath('meta.per_page', 4)
+                ->assertJsonCount(4, 'data')
+                ->assertJsonPath('meta.total', 10);
+        });
+
+        it('clamps per_page to the maximum allowed value', function (): void {
+            Post::factory()->count(30)->for(User::factory())->create();
+
+            $response = $this->getJson('/api/blog/posts?per_page=999');
+
+            $response->assertSuccessful()
+                ->assertJsonPath('meta.per_page', 12)
+                ->assertJsonCount(12, 'data');
+        });
+
+        it('clamps per_page to a minimum of 1', function (): void {
+            Post::factory()->count(5)->for(User::factory())->create();
+
+            $response = $this->getJson('/api/blog/posts?per_page=0');
+
+            $response->assertSuccessful()
+                ->assertJsonPath('meta.per_page', 1)
+                ->assertJsonCount(1, 'data');
+        });
+
+        it('orders by updated_at when orderby parameter is set', function (): void {
+            $user = User::factory()->create();
+            $older = Post::factory()->for($user)->create(['updated_at' => now()->subDays(2)]);
+            $newer = Post::factory()->for($user)->create(['updated_at' => now()->subDay()]);
+            $latest = Post::factory()->for($user)->create(['updated_at' => now()]);
+
+            $response = $this->getJson('/api/blog/posts?orderby=updated_at');
+
+            $response->assertSuccessful();
+
+            $ids = collect($response->json('data'))->pluck('id')->all();
+            expect($ids)->toBe([$older->id, $newer->id, $latest->id]);
+        });
+
+        it('orders by updated_at desc when orderby has _desc suffix', function (): void {
+            $user = User::factory()->create();
+            $latest = Post::factory()->for($user)->create(['updated_at' => now()]);
+            $older = Post::factory()->for($user)->create(['updated_at' => now()->subDay()]);
+
+            $response = $this->getJson('/api/blog/posts?orderby=updated_at_desc');
+
+            $response->assertSuccessful();
+
+            $ids = collect($response->json('data'))->pluck('id')->all();
+            expect($ids)->toBe([$latest->id, $older->id]);
+        });
+
+        it('falls back to default ordering for an invalid orderby value', function (): void {
+            Post::factory()->count(3)->for(User::factory())->create();
+
+            $this->getJson('/api/blog/posts?orderby=invalid_column')
+                ->assertSuccessful()
+                ->assertJsonPath('meta.total', 3);
         });
     });
 

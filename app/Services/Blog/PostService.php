@@ -120,12 +120,17 @@ readonly class PostService
     }
 
     /**
-     * Query posts with pagination and optional comment loading, preventing N+1.
+     * Query posts with pagination, optional comment loading, and order-by support, preventing N+1.
      *
+     * @param  'asc'|'desc'  $orderByDirection
      * @return LengthAwarePaginator<int, Post>
      */
-    public function query(bool $withComments = false, int $perPage = 15): LengthAwarePaginator
-    {
+    public function query(
+        bool $withComments = false,
+        int $perPage = 15,
+        string $orderByColumn = 'published_on',
+        string $orderByDirection = 'desc',
+    ): LengthAwarePaginator {
         $builder = Post::query()
             ->published()
             ->with('user')
@@ -137,7 +142,7 @@ readonly class PostService
             }]);
         }
 
-        return $builder->latest('published_on')->paginate($perPage);
+        return $builder->orderBy($orderByColumn, $orderByDirection)->paginate($perPage);
     }
 
     /**

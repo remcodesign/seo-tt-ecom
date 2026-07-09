@@ -9,6 +9,8 @@ use App\Data\Blog\Requests\UpdatePostData;
 use App\Data\Blog\Responses\PostDataModifiedResponse;
 use App\Data\Blog\Responses\PostDataResponse;
 use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
+use App\Http\Controllers\Api\Traits\HasOrderBy;
+use App\Http\Controllers\Api\Traits\HasPerPage;
 use App\Models\Blog\Post;
 use App\Models\User;
 use App\Services\Blog\PostService;
@@ -18,7 +20,9 @@ use Spatie\LaravelData\PaginatedDataCollection;
 
 readonly class PostController
 {
-    use HasOptionalIncludes;
+    use HasOptionalIncludes; // currently not used, but kept for phpstan dead code detection
+    use HasOrderBy;
+    use HasPerPage;
 
     public function __construct(private PostService $postService) {}
 
@@ -31,17 +35,28 @@ readonly class PostController
     }
 
     /**
+     * Define the columns that are allowed for ordering in this controller.
+     *
+     * @return string[]
+     */
+    protected function allowedOrderByFields(): array
+    {
+        return ['published_on', 'updated_at'];
+    }
+
+    /**
      * @return PaginatedDataCollection<int, PostDataResponse>
      */
     public function index(): PaginatedDataCollection
     {
-        // todo use the optional includes for the index and show methods, not for store and update
-        // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
+        [$orderByColumn, $orderByDirection] = $this->getOrderBy('published_on', 'desc');
 
         return PostDataResponse::collect(
             $this->postService->query(
                 withComments: false,
-                perPage: 4
+                perPage: $this->getPerPage(default: 6, max: 12),
+                orderByColumn: $orderByColumn,
+                orderByDirection: $orderByDirection,
             ),
             PaginatedDataCollection::class
         );

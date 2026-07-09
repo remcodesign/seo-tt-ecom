@@ -52,6 +52,62 @@ applyTo: '**/*'
     ```
   - Allowed relations are explicit and only loaded when requested, e.g. `?include=user` or `?include=post.user,user`.
 
+### Index Method Traits (`HasPerPage` & `HasOrderBy`)
+
+Use `app/Http/Controllers/Api/Traits/HasPerPage.php` and `app/Http/Controllers/Api/Traits/HasOrderBy.php` in controllers that have an `index()` returning a paginated, sortable list.
+
+**`HasPerPage`** — resolves `?per_page=N` from the query string, clamped between `1` and a configurable maximum:
+```php
+$this->getPerPage(default: 15, max: 100); // returns int
+```
+
+**`HasOrderBy`** — resolves `?orderby=column[_desc]` from the query string, validated against a whitelist:
+```php
+[$column, $direction] = $this->getOrderBy('created_at', 'desc');
+// returns ['created_at', 'asc'] or ['created_at', 'desc']
+```
+- Supports a `_desc` suffix: `?orderby=updated_at_desc` → `['updated_at', 'desc']`.
+- Invalid column names fall back to the defaults.
+- **Must override `allowedOrderByFields(): array`** in the consuming controller (base returns `[]`, so unrecognized columns always fall back).
+
+**When to use:**
+- Any controller with a public `index()` endpoint that returns a paginated collection.
+- Each controller can define its own allowed fields and default ordering through the overrides.
+- The service's `query()` method must accept `$orderByColumn` and `$orderByDirection` parameters to apply the ordering.
+
+**Usage pattern in `index()`:**
+```php
+use App\Http\Controllers\Api\Traits\HasOrderBy;
+use App\Http\Controllers\Api\Traits\HasPerPage;
+
+readonly class PostController
+{
+    use HasOrderBy;
+    use HasPerPage;
+
+    protected function allowedOrderByFields(): array
+    {
+        return ['published_on', 'updated_at'];
+    }
+
+    public function index(): PaginatedDataCollection
+    {
+        [$orderByColumn, $orderByDirection] = $this->getOrderBy('published_on', 'desc');
+
+        return SomeData::collect(
+            $this->service->query(
+                perPage: $this->getPerPage(default: 6, max: 24),
+                orderByColumn: $orderByColumn,
+                orderByDirection: $orderByDirection,
+            ),
+            PaginatedDataCollection::class,
+        );
+    }
+}
+```
+
+**Reference:** `app/Http/Controllers/Api/Blog/PostController.php` — full example with both traits in `index()`.
+
 ### Service Layer
 - Encapsulate business logic, queries, and side effects.
 - Reuse model scopes for shared query logic (e.g., `withPostAndUserName()`).
@@ -194,6 +250,10 @@ Verify the full HTTP lifecycle without duplicating service-layer assertions.
 
 **Happy Path Per Action**
 - `index`: `assertSuccessful()`, JSON has `data`, `meta`, `links`.
+  - When the controller uses `HasPerPage` / `HasOrderBy`, also test:
+    - Custom `per_page` returns correct count and `meta.per_page`.
+    - `orderby` param returns items in expected order.
+    - Invalid `orderby` falls back to default (no error).
 - `show`: `assertSuccessful()`, contains resource ID and attribute structure.
 - `store`: `assertCreated()`, response has resource attributes, DB has record.
 - `update`: `assertSuccessful()`, fresh model confirms persistence.

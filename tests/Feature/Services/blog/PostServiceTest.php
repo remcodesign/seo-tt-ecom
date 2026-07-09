@@ -202,6 +202,40 @@ namespace {
                 expect($comment->relationLoaded('user'))->toBeTrue();
             });
 
+            it('applies custom orderBy column and direction', function (): void {
+                $user = User::factory()->create();
+                $older = Post::factory()->for($user)->create(['updated_at' => now()->subDays(2)]);
+                $newer = Post::factory()->for($user)->create(['updated_at' => now()->subDay()]);
+                $postService = app(PostService::class);
+
+                $lengthAwarePaginator = $postService->query(
+                    withComments: false,
+                    perPage: 15,
+                    orderByColumn: 'updated_at',
+                    orderByDirection: 'asc',
+                );
+
+                $ids = $lengthAwarePaginator->pluck('id')->all();
+                expect($ids)->toBe([$older->id, $newer->id]);
+            });
+
+            it('orders by multiple column-direction combinations', function (): void {
+                $user = User::factory()->create();
+                $latest = Post::factory()->for($user)->create(['updated_at' => now()]);
+                $older = Post::factory()->for($user)->create(['updated_at' => now()->subDay()]);
+                $postService = app(PostService::class);
+
+                $lengthAwarePaginator = $postService->query(
+                    withComments: false,
+                    perPage: 15,
+                    orderByColumn: 'updated_at',
+                    orderByDirection: 'desc',
+                );
+
+                $ids = $lengthAwarePaginator->pluck('id')->all();
+                expect($ids)->toBe([$latest->id, $older->id]);
+            });
+
         });
     });
 }
