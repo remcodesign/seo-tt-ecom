@@ -6,6 +6,7 @@ import api from '@/api';
 import BackLink from '@/components/common/BackLink.vue';
 import CommentRow from '@/components/blog/CommentRow.vue';
 import TableLister from '@/components/common/TableLister.vue';
+import Card from '@/components/common/Card.vue';
 
 const route = useRoute();
 const slug = route.params.slug as string;
@@ -61,7 +62,8 @@ onMounted(async () => {
                 </h1>
 
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#e3e3e0] text-sm font-medium text-[#1b1b18] dark:bg-[#3E3E3A] dark:text-[#EDEDEC]">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-[#e3e3e0] text-sm font-medium text-[#1b1b18] dark:bg-[#3E3E3A] dark:text-[#EDEDEC]">
                         {{ post.user.name.charAt(0).toUpperCase() }}
                     </div>
 
@@ -70,7 +72,10 @@ onMounted(async () => {
                     </div>
 
                     <span v-if="post.published_on" class="ml-auto text-xs text-[#6C6C66] dark:text-[#A1A19A]">
-                        {{ new Date(post.published_on).toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+                        {{ new Date(post.published_on).toLocaleDateString('nl-NL', {
+                            year: 'numeric', month: 'long',
+                            day: 'numeric'
+                        }) }}
                     </span>
                 </div>
             </header>
@@ -81,35 +86,30 @@ onMounted(async () => {
             </div>
 
             <!-- Comments Section -->
-            <section class="mt-10 rounded-lg border border-[#19140035] bg-white p-5 shadow-xs dark:border-[#3E3E3A] dark:bg-[#161615]">
-                <div class="mb-4 flex items-center justify-between gap-4">
+            <Card class="mt-10  p-5">
+                <div class=" mb-4 flex items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-semibold tracking-tight text-[#111113] dark:text-[#EDEDEC]">Comments</h2>
-                        <p class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">Showing the latest comments for this post.</p>
+                        <h2 class="text-xl font-semibold tracking-tight text-[#111113] dark:text-[#EDEDEC]">Comments
+                        </h2>
+                        <p class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">Showing the latest comments for this post.
+                        </p>
                     </div>
                 </div>
 
-                <TableLister
-                    :items="post.comments ?? []"
-                    row-prop-name="comment"
-                    :row-component="CommentRow"
-                    :columns="commentColumns"
-                    :max-rows="5"
-                    empty-text="No comments yet."
-                >
+                <TableLister :items="post.comments ?? []" row-prop-name="comment" :row-component="CommentRow"
+                    :columns="commentColumns" :max-rows="5" empty-text="No comments yet.">
                     <template #header>
-                        <tr class="bg-[#f7f6f3] text-xs uppercase tracking-[0.16em] text-[#6C6C66] dark:bg-[#262624] dark:text-[#9B9B92]">
-                            <th
-                                v-for="column in commentColumns"
-                                :key="column"
-                                class="px-4 py-3"
-                            >
+                        <tr
+                            class="bg-[#f7f6f3] text-xs uppercase tracking-[0.16em] text-[#6C6C66] dark:bg-[#262624] dark:text-[#9B9B92]">
+                            <th v-for="column in commentColumns" :key="column" class="px-4 py-3">
                                 {{ commentColumnLabels[column] }}
                             </th>
                         </tr>
                     </template>
                 </TableLister>
-            </section>
+            </Card>
+            <!-- END Comments Section -->
+
         </article>
     </div>
 </template>
