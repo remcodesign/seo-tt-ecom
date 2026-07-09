@@ -139,6 +139,8 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 >HERE
 
+- let the `post index` order and per page work
+
 - add eslint fix, to cleanup js
 
 - add a `comment index` page with a table style lister (reuse components for comment item  and lister) and references to the post and user - 'it should be on `/blog/comments`' so in the blog url context

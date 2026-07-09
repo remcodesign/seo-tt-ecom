@@ -12,12 +12,10 @@ uses(RefreshDatabase::class);
 
 describe('PostController (API)', function (): void {
     describe('index', function (): void {
-        it('returns paginated posts for the public', function (): void {
+        it('returns paginated posts for the public with the current static page size', function (): void {
             Post::factory()->count(5)->for(User::factory())->create();
 
             $response = $this->getJson('/api/blog/posts');
-
-            // dump($response->json());
 
             $response->assertSuccessful()
                 ->assertJsonStructure([
@@ -35,9 +33,9 @@ describe('PostController (API)', function (): void {
                     'links',
                 ]);
 
-            $perPage = $response->json('meta.per_page');
-            expect($response->json('data'))->toHaveCount(min(5, $perPage));
-            $response->assertJsonPath('meta.total', 5);
+            $response->assertJsonPath('meta.per_page', 4)
+                ->assertJsonCount(4, 'data')
+                ->assertJsonPath('meta.total', 5);
         });
 
         it('does not include draft posts in the public list', function (): void {
