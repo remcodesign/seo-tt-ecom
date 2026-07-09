@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import type { LocationQueryRaw } from 'vue-router';
+import { useRoute } from 'vue-router';
 import type {
     PaginationLinkData,
     PaginationMetaData,
@@ -12,7 +11,18 @@ import api from '@/api';
 import CardLister from '@/components/common/CardLister.vue';
 import PaginationLinks from '@/components/common/PaginationLinks.vue';
 import PostCard from '@/components/blog/PostCard.vue';
+import { usePagination } from '@/composable/common/usePagination';
 
+
+
+const route = useRoute();
+
+// Main data for the page
+const posts = ref<PostDataResponse[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+// Filter and sorting options
 const orderOptions = [
     { label: 'Published (A→Z)', value: 'published_on' },
     { label: 'Published (Z→A)', value: 'published_on_desc' },
@@ -20,33 +30,33 @@ const orderOptions = [
     { label: 'Updated (Z→A)', value: 'updated_at_desc' },
 ] as const;
 
-
-const route = useRoute();
-const router = useRouter();
-
-const posts = ref<PostDataResponse[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
-
-const perPageOptions = [3, 6, 9, 12] as const;
 const orderBy = ref(String(route.query.orderby ?? 'published_on_desc'));
+const perPageOptions = [3, 6, 9, 12] as const;
 
-// pagination and filtering state
-const page = ref(Number(route.query.page ?? 1));
-const perPage = ref(Number(route.query.per_page ?? 6));
-const links = ref<PaginationLinkData[]>([]);
-const meta = ref<PaginationMetaData>({
-    current_page: 1,
-    first_page_url: '',
-    from: null,
-    last_page: 1,
-    last_page_url: '',
-    next_page_url: null,
-    path: '',
-    per_page: 6,
-    prev_page_url: null,
-    to: null,
-    total: 0,
+// Used for the pagination composable
+const {
+    page,
+    perPage,
+    links,
+    meta,
+    setPage,
+    updateRoute,
+} = usePagination<PaginationLinkData, PaginationMetaData>({
+    defaultPage: 1,
+    defaultPerPage: 6,
+    initialMeta: {
+        current_page: 1,
+        first_page_url: '',
+        from: null,
+        last_page: 1,
+        last_page_url: '',
+        next_page_url: null,
+        path: '',
+        per_page: 6,
+        prev_page_url: null,
+        to: null,
+        total: 0,
+    },
 });
 
 const totalLabel = computed(() => {
@@ -57,22 +67,10 @@ const totalLabel = computed(() => {
     return `${meta.value.total} post${meta.value.total === 1 ? '' : 's'} total`;
 });
 
-// URL CURRENT HANDLING :: Update the route query parameters without reloading the page
-const updateRoute = (query: LocationQueryRaw): void => {
-    router.replace({
-        name: 'posts.index',
-        query: {
-            ...route.query,
-            ...query,
-        },
-    });
-};
-
 const fetchPosts = async (): Promise<void> => {
     loading.value = true;
     error.value = null;
 
-    // URL CURRENT HANDLING :: Update the route query parameters to reflect the current state
     updateRoute({
         page: page.value,
         per_page: perPage.value,
@@ -98,15 +96,6 @@ const fetchPosts = async (): Promise<void> => {
     }
 };
 
-// URL CURRENT HANDLING :: Handle page change from PaginationLinks component (change the route.query.page)
-const setPage = (pageNumber: number | null): void => {
-    if (pageNumber === null || pageNumber === page.value) {
-        return;
-    }
-
-    page.value = pageNumber;
-};
-
 watch([orderBy, perPage], () => {
     page.value = 1;
     void fetchPosts();
@@ -116,24 +105,6 @@ watch(page, () => {
     void fetchPosts();
 });
 
-watch(
-    () => route.query,
-    (query) => {
-        if (query.page && Number(query.page) !== page.value) {
-            page.value = Number(query.page);
-        }
-
-        if (query.per_page && Number(query.per_page) !== perPage.value) {
-            perPage.value = Number(query.per_page);
-        }
-
-        if (query.orderby && String(query.orderby) !== orderBy.value) {
-            orderBy.value = String(query.orderby);
-        }
-    },
-    { immediate: true },
-);
-
 onMounted(() => {
     void fetchPosts();
 });
@@ -141,6 +112,7 @@ onMounted(() => {
 
 <template>
     <div>
+        <!-- Filters and Sorting -->
         <div
             class="mb-8 flex flex-col gap-6 rounded-xl border border-[#19140035] bg-white p-6 shadow-xs dark:border-[#3E3E3A] dark:bg-[#161615]">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -183,6 +155,7 @@ onMounted(() => {
             </div>
         </div>
 
+        <!-- Loading, Error, and Content -->
         <div v-if="loading" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
             Loading posts…
         </div>
@@ -192,9 +165,11 @@ onMounted(() => {
         </div>
 
         <div v-else>
+            <!-- Content -->
             <CardLister :items="posts" :card-component="PostCard" card-prop-name="post" :max-items="posts.length"
                 empty-text="No posts available." />
 
+            <!-- Pagination -->
             <PaginationLinks :links="links" @page-change="setPage" />
         </div>
     </div>
