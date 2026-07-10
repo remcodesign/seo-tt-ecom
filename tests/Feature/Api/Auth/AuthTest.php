@@ -67,6 +67,15 @@ describe('Auth (API)', function (): void {
             $this->getJson('/api/blog/posts', [
                 'Authorization' => 'Bearer '.$token,
             ])->assertSuccessful();
+
+            $this->getJson('/api/user', [
+                'Authorization' => 'Bearer '.$token,
+            ])->assertSuccessful()
+                ->assertJson([
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'role_label' => $user->role_label->value,
+                ]);
         });
     });
 

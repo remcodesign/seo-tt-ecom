@@ -32,10 +32,12 @@ const renderedItems = computed(() => {
 
             <tbody class="divide-y divide-[#19140020] dark:divide-[#3E3E3A]">
                 <tr v-for="(item, index) in renderedItems" :key="index" class="hover:bg-[#f8f6f1] odd:bg-[#faf9f7] dark:hover:bg-[#2a2a28] dark:odd:bg-[#1c1c1b]">
+
                     <component
                         :is="props.rowComponent"
                         v-bind="{ [props.rowPropName]: item, columns: props.columns }"
                     />
+                    
                 </tr>
             </tbody>
         </table>

@@ -22,9 +22,9 @@ const renderedItems = computed(() => {
 <template>
     <div v-if="renderedItems.length > 0" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <Card v-for="(item, index) in renderedItems" :key="index" class="flex flex-col">
-            <div class="flex flex-1 flex-col p-5">
-                <component :is="props.cardComponent" v-bind="{ [props.cardPropName]: item }" />
-            </div>
+
+            <component :is="props.cardComponent" v-bind="{ [props.cardPropName]: item }" />
+
         </Card>
     </div>
 

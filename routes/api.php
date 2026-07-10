@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\Auth\CreateTokenController;
+use App\Http\Controllers\Api\Auth\CurrentUserController;
 use App\Http\Controllers\Api\Auth\RegisterUserController;
 use App\Http\Controllers\Api\Auth\RevokeTokenController;
 use App\Http\Controllers\Api\Blog\CommentController;
@@ -20,6 +21,8 @@ Route::prefix('blog')->group(function (): void {
 });
 
 Route::middleware('auth:sanctum')->group(function (): void {
+    Route::get('/user', CurrentUserController::class);
+
     Route::delete('/sanctum/tokens/current', RevokeTokenController::class);
 
     Route::prefix('blog')->group(function (): void {

@@ -19,7 +19,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property bool $is_admin
- * @property string $role_label
+ * @property RoleLabel $role_label
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token', 'is_admin'])]

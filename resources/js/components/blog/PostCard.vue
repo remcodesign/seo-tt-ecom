@@ -32,7 +32,7 @@ const linkQuery = computed(() => {
 </script>
 
 <template>
-    <div class="flex flex-1 flex-col">
+    <div class="flex flex-1 flex-col p-5">
         <h3 class="mb-2 leading-snug tracking-tight">
             <Button variant="text" class="font-semibold"
                 :to="{ name: 'posts.show', params: { slug: post.slug }, query: linkQuery }">

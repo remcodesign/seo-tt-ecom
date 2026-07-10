@@ -157,10 +157,10 @@ const handleClick = (event: MouseEvent): void => {
 </script>
 
 <template>
-    <button v-if="!isLink" :disabled="disabled" :class="buttonClasses" @click="handleClick">
+    <button v-if="!isLink" :disabled="disabled" :class="buttonClasses" @click="handleClick" v-bind="$attrs">
         <slot />
     </button>
-    <router-link v-else :to="to!" :class="buttonClasses" @click="handleClick">
+    <router-link v-else :to="to!" :class="buttonClasses" @click="handleClick" v-bind="$attrs">
         <slot />
     </router-link>
 </template>

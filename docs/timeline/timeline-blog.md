@@ -150,13 +150,17 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - add eslint fixer, to cleanup js
 
+## DONE - frontend login via api - (no roles/permissions) - using current user `role_labels` and `admin`
+
+- cleanup the `resources/js/components/AppNav.vue` file, make components/composables of the login parts
+
 >HERE
+
+- remove `is_admin` from the user object we have `role_label` for that
 
 >THEN
 
-## TODO - frontend login via api - (no roles/permissions) - using current user `role_labels` and `admin`
-
-## TODO - add create/update/delete comments (when logged-in) (non-admin)
+## TODO - add create/update/delete comments (when logged-in) - check `app/Http/Controllers/Api/Blog/CommentController.php` and the types for modifing for the correct data to send and receive
 
 >THEN
 

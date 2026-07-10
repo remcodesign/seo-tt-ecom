@@ -25,7 +25,7 @@ readonly class UserService
             'password' => Hash::make($registerData->password),
         ]);
 
-        $user->role_label = $roleLabel->value;
+        $user->role_label = $roleLabel;
         $user->is_admin = $isAdmin;
         $user->save();
 
