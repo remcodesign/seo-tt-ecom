@@ -8,7 +8,6 @@ use App\Data\Blog\Requests\StorePostData;
 use App\Data\Blog\Requests\UpdatePostData;
 use App\Models\Blog\Post;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 
@@ -24,10 +23,6 @@ readonly class PostService
 
     public function update(User $user, Post $post, UpdatePostData $updatePostData): Post
     {
-        if ($user->isNot($post->user)) {
-            throw new AuthorizationException('You are not the owner of this post.');
-        }
-
         // Filter out null values to avoid overwriting existing fields with null
         $data = collect([
             'title' => $updatePostData->title,
@@ -51,10 +46,6 @@ readonly class PostService
      */
     public function delete(User $user, Post $post): ?bool
     {
-        if ($user->isNot($post->user)) {
-            throw new AuthorizationException('You are not the owner of this post.');
-        }
-
         return $post->delete();
     }
 

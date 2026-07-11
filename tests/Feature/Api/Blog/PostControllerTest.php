@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\RoleLabel;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -220,6 +221,20 @@ describe('PostController (API)', function (): void {
                 ->assertForbidden();
         });
 
+        it('allows an admin user to update any post', function (): void {
+            $owner = User::factory()->create();
+            $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+            $post = Post::factory()->for($owner)->create(['title' => 'Original']);
+
+            Sanctum::actingAs($admin);
+
+            $this->putJson('/api/blog/posts/'.$post->id, ['title' => 'Admin Updated'])
+                ->assertSuccessful()
+                ->assertJson(['title' => 'Admin Updated']);
+
+            expect($post->fresh()->title)->toBe('Admin Updated');
+        });
+
     });
 
     describe('destroy', function (): void {
@@ -242,6 +257,19 @@ describe('PostController (API)', function (): void {
 
             $this->deleteJson('/api/blog/posts/'.$post->id)
                 ->assertForbidden();
+        });
+
+        it('allows an admin user to delete any post', function (): void {
+            $owner = User::factory()->create();
+            $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+            $post = Post::factory()->for($owner)->create();
+
+            Sanctum::actingAs($admin);
+
+            $this->deleteJson('/api/blog/posts/'.$post->id)
+                ->assertNoContent();
+
+            expect(Post::find($post->id))->toBeNull();
         });
     });
 });

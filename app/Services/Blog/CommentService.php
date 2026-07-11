@@ -9,7 +9,6 @@ use App\Data\Blog\Requests\UpdateCommentData;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -25,10 +24,6 @@ readonly class CommentService
 
     public function update(User $user, Comment $comment, UpdateCommentData $updateCommentData): Comment
     {
-        if ($user->isNot($comment->user)) {
-            throw new AuthorizationException('You are not the owner of this comment.');
-        }
-
         // Filter out null values to avoid overwriting existing fields with null
         $data = collect([
             'comment' => $updateCommentData->comment,
@@ -46,10 +41,6 @@ readonly class CommentService
      */
     public function delete(User $user, Comment $comment): ?bool
     {
-        if ($user->isNot($comment->user)) {
-            throw new AuthorizationException('You are not the owner of this comment.');
-        }
-
         return $comment->delete();
     }
 

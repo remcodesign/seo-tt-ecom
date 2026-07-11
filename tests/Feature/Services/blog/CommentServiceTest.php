@@ -8,7 +8,6 @@ use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
 use App\Services\Blog\CommentService;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -35,7 +34,7 @@ describe('CommentService', function (): void {
     });
 
     describe('update', function (): void {
-        it('updates a comment when the authenticated user is the creator', function (): void {
+        it('updates a comment with valid data', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
             $comment = Comment::factory()->for($post)->for($user)->create(['comment' => 'Original']);
@@ -48,23 +47,10 @@ describe('CommentService', function (): void {
             expect($result->comment)->toBe('Updated!');
             expect($comment->fresh()->comment)->toBe('Updated!');
         });
-
-        it('throws an exception when a non-creator tries to update', function (): void {
-            $creator = User::factory()->create();
-            $other = User::factory()->create();
-            $post = Post::factory()->for($creator)->create();
-            $comment = Comment::factory()->for($post)->for($creator)->create();
-            $commentService = app(CommentService::class);
-
-            expect(fn () => $commentService->update($other, $comment, new UpdateCommentData(
-                comment: 'Hacked',
-            )))
-                ->toThrow(AuthorizationException::class, 'You are not the owner of this comment.');
-        });
     });
 
     describe('delete', function (): void {
-        it('deletes a comment when the authenticated user is the creator', function (): void {
+        it('deletes a comment', function (): void {
             $user = User::factory()->create();
             $post = Post::factory()->for($user)->create();
             $comment = Comment::factory()->for($post)->for($user)->create();
@@ -73,17 +59,6 @@ describe('CommentService', function (): void {
             $commentService->delete($user, $comment);
 
             expect(Comment::find($comment->id))->toBeNull();
-        });
-
-        it('throws an exception when a non-creator tries to delete', function (): void {
-            $creator = User::factory()->create();
-            $other = User::factory()->create();
-            $post = Post::factory()->for($creator)->create();
-            $comment = Comment::factory()->for($post)->for($creator)->create();
-            $commentService = app(CommentService::class);
-
-            expect(fn () => $commentService->delete($other, $comment))
-                ->toThrow(AuthorizationException::class, 'You are not the owner of this comment.');
         });
     });
 

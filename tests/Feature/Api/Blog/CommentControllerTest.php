@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\RoleLabel;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
@@ -205,6 +206,20 @@ describe('CommentController (API)', function (): void {
             $this->putJson('/api/blog/comments/'.$comment->id, ['comment' => 'Hacked'])
                 ->assertForbidden();
         });
+
+        it('allows an admin user to update any comment', function (): void {
+            $owner = User::factory()->create();
+            $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+            $comment = Comment::factory()->for(Post::factory()->for($owner))->for($owner)->create(['comment' => 'Original']);
+
+            Sanctum::actingAs($admin);
+
+            $this->putJson('/api/blog/comments/'.$comment->id, ['comment' => 'Admin Updated'])
+                ->assertSuccessful()
+                ->assertJson(['comment' => 'Admin Updated']);
+
+            expect($comment->fresh()->comment)->toBe('Admin Updated');
+        });
     });
 
     describe('destroy', function (): void {
@@ -227,6 +242,19 @@ describe('CommentController (API)', function (): void {
 
             $this->deleteJson('/api/blog/comments/'.$comment->id)
                 ->assertForbidden();
+        });
+
+        it('allows an admin user to delete any comment', function (): void {
+            $owner = User::factory()->create();
+            $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+            $comment = Comment::factory()->for(Post::factory()->for($owner))->for($owner)->create();
+
+            Sanctum::actingAs($admin);
+
+            $this->deleteJson('/api/blog/comments/'.$comment->id)
+                ->assertNoContent();
+
+            expect(Comment::find($comment->id))->toBeNull();
         });
     });
 });

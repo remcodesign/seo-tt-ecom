@@ -8,6 +8,7 @@ use App\Data\Blog\Requests\StorePostData;
 use App\Data\Blog\Requests\UpdatePostData;
 use App\Data\Blog\Responses\PostDataModifiedResponse;
 use App\Data\Blog\Responses\PostDataResponse;
+use App\Enums\RoleLabel;
 use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 use App\Http\Controllers\Api\Traits\HasOrderBy;
 use App\Http\Controllers\Api\Traits\HasPerPage;
@@ -32,6 +33,15 @@ readonly class PostController
         assert($user instanceof User);
 
         return $user;
+    }
+
+    private function authorizePostOwnerOrAdmin(Post $post): void
+    {
+        $user = $this->user();
+
+        if ($user->isNot($post->user) && $user->role_label !== RoleLabel::admin) {
+            abort(403, 'You are not authorized to modify this post.');
+        }
     }
 
     /**
@@ -85,6 +95,8 @@ readonly class PostController
 
     public function update(UpdatePostData $updatePostData, Post $post): PostDataModifiedResponse
     {
+        $this->authorizePostOwnerOrAdmin($post);
+
         $post = $this->postService->update($this->user(), $post, $updatePostData);
 
         return PostDataModifiedResponse::from($post);
@@ -92,6 +104,7 @@ readonly class PostController
 
     public function destroy(Post $post): JsonResponse
     {
+        $this->authorizePostOwnerOrAdmin($post);
         $this->postService->delete($this->user(), $post);
 
         return response()->json(null, 204);

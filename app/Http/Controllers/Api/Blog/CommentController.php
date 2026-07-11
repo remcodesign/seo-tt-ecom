@@ -8,6 +8,7 @@ use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\UpdateCommentData;
 use App\Data\Blog\Responses\CommentDataModifiedResponse;
 use App\Data\Blog\Responses\CommentDataResponse;
+use App\Enums\RoleLabel;
 use App\Http\Controllers\Api\Traits\HasOrderBy;
 use App\Http\Controllers\Api\Traits\HasPerPage;
 use App\Models\Blog\Comment;
@@ -31,6 +32,15 @@ readonly class CommentController
         assert($user instanceof User);
 
         return $user;
+    }
+
+    private function authorizeCommentOwnerOrAdmin(Comment $comment): void
+    {
+        $user = $this->user();
+
+        if ($user->isNot($comment->user) && $user->role_label !== RoleLabel::admin) {
+            abort(403, 'You are not authorized to modify this comment.');
+        }
     }
 
     /**
@@ -83,6 +93,8 @@ readonly class CommentController
 
     public function update(UpdateCommentData $updateCommentData, Comment $comment): CommentDataModifiedResponse
     {
+        $this->authorizeCommentOwnerOrAdmin($comment);
+
         $comment = $this->commentService->update($this->user(), $comment, $updateCommentData);
 
         return CommentDataModifiedResponse::from($comment);
@@ -90,6 +102,7 @@ readonly class CommentController
 
     public function destroy(Comment $comment): JsonResponse
     {
+        $this->authorizeCommentOwnerOrAdmin($comment);
         $this->commentService->delete($this->user(), $comment);
 
         return response()->json(null, 204);

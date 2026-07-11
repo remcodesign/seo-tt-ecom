@@ -17,7 +17,6 @@ namespace {
     use App\Models\Blog\Post;
     use App\Models\User;
     use App\Services\Blog\PostService;
-    use Illuminate\Auth\Access\AuthorizationException;
     use Illuminate\Foundation\Testing\RefreshDatabase;
     use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -68,7 +67,6 @@ namespace {
                 $user = User::factory()->create();
                 $postService = app(PostService::class);
 
-                // Create 5 posts with the same title to exhaust -1, -2, -3 and reach the random fallback
                 for ($i = 0; $i < 5; $i++) {
                     $post = $postService->create($user, new StorePostData(
                         title: 'Collision Test',
@@ -79,7 +77,6 @@ namespace {
                     if ($i < 4) {
                         expect($post->slug)->toBe($i === 0 ? 'collision-test' : sprintf('collision-test-%d', $i));
                     } else {
-                        // Fifth post uses random fallback — should match pattern "collision-test-{6 digits}"
                         expect($post->slug)->toMatch('/^collision-test-\d{6}$/');
                     }
                 }
@@ -89,7 +86,6 @@ namespace {
                 $user = User::factory()->create();
                 $postService = app(PostService::class);
 
-                // Insert a post with the deterministic random fallback slug that our namespaced random_int will return.
                 Post::factory()->for($user)->create(['title' => 'Collision Test', 'slug' => 'collision-test-123456']);
 
                 for ($i = 0; $i < 4; $i++) {
@@ -109,7 +105,7 @@ namespace {
         });
 
         describe('update', function (): void {
-            it('updates a post when the authenticated user is the creator', function (): void {
+            it('updates a post with valid data', function (): void {
                 $user = User::factory()->create();
                 $post = Post::factory()->for($user)->create(['title' => 'Original']);
                 $postService = app(PostService::class);
@@ -136,22 +132,10 @@ namespace {
 
                 expect($post->fresh()->slug)->toBe($originalSlug);
             });
-
-            it('throws an exception when a non-creator tries to update', function (): void {
-                $creator = User::factory()->create();
-                $other = User::factory()->create();
-                $post = Post::factory()->for($creator)->create();
-                $postService = app(PostService::class);
-
-                expect(fn () => $postService->update($other, $post, new UpdatePostData(
-                    title: 'Hacked',
-                )))
-                    ->toThrow(AuthorizationException::class, 'You are not the owner of this post.');
-            });
         });
 
         describe('delete', function (): void {
-            it('deletes a post when the authenticated user is the creator', function (): void {
+            it('deletes a post', function (): void {
                 $user = User::factory()->create();
                 $post = Post::factory()->for($user)->create();
                 $postService = app(PostService::class);
@@ -159,16 +143,6 @@ namespace {
                 $postService->delete($user, $post);
 
                 expect(Post::find($post->id))->toBeNull();
-            });
-
-            it('throws an exception when a non-creator tries to delete', function (): void {
-                $creator = User::factory()->create();
-                $other = User::factory()->create();
-                $post = Post::factory()->for($creator)->create();
-                $postService = app(PostService::class);
-
-                expect(fn () => $postService->delete($other, $post))
-                    ->toThrow(AuthorizationException::class, 'You are not the owner of this post.');
             });
         });
 
