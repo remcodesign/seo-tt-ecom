@@ -1,38 +1,57 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { PostDataResponse } from '@types';
 import api from '@/api';
 import BackLink from '@/components/common/BackLink.vue';
+import CommentForm from '@/components/blog/CommentForm.vue';
 import CommentRow from '@/components/blog/CommentRow.vue';
 import TableLister from '@/components/common/TableLister.vue';
 import Card from '@/components/common/Card.vue';
+import { useAuth } from '@/composable/account/useAuth';
+import { usePostComments } from '@/composable/blog/usePostComments';
 
 const route = useRoute();
 const slug = route.params.slug as string;
-
+const auth = useAuth();
 const post = ref<PostDataResponse | null>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
+
+type CommentColumn = keyof typeof commentColumnLabels;
 
 const commentColumnLabels = {
     user: 'Author',
     comment: 'Comment',
     created_at: 'Created',
+    actions: 'Actions',
 } as const;
 
-type CommentColumn = keyof typeof commentColumnLabels;
-const commentColumns: CommentColumn[] = ['user', 'comment', 'created_at'];
+const commentColumns = computed<CommentColumn[]>(() => {
+    const baseColumns: CommentColumn[] = ['user', 'comment', 'created_at'];
 
-onMounted(async () => {
+    return auth.isAuthenticated.value ? [...baseColumns, 'actions'] : baseColumns;
+});
+
+const fetchPost = async (): Promise<void> => {
+    loading.value = true;
+    error.value = null;
+
     try {
-        const response = await api.get<PostDataResponse>(`/blog/posts/${slug}`);
+        const response = await api.get(`/blog/posts/${slug}`);
         post.value = response.data;
     } catch {
         error.value = 'Post not found.';
     } finally {
         loading.value = false;
     }
+};
+
+const { createComment, updateComment, deleteComment } = usePostComments(post, fetchPost);
+
+onMounted(async () => {
+    await auth.initializeAuth();
+    await fetchPost();
 });
 </script>
 
@@ -94,10 +113,24 @@ onMounted(async () => {
                         <p class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">Showing the latest comments for this post.
                         </p>
                     </div>
+                    <span class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
+                        {{ post.comments_count }} comment{{ post.comments_count === 1 ? '' : 's' }}
+                    </span>
                 </div>
 
-                <TableLister :items="post.comments ?? []" row-prop-name="comment" :row-component="CommentRow"
-                    :columns="commentColumns" :max-rows="5" empty-text="No comments yet.">
+                <TableLister
+                    :items="post.comments ?? []"
+                    row-prop-name="comment"
+                    :row-component="CommentRow"
+                    :columns="commentColumns"
+                    :row-props="{
+                        currentUserId: auth.user.value?.id ?? null,
+                        onUpdate: updateComment,
+                        onDelete: deleteComment,
+                    }"
+                    :max-rows="50"
+                    empty-text="No comments yet."
+                >
                     <template #header>
                         <tr
                             class="bg-[#f7f6f3] text-xs uppercase tracking-[0.16em] text-[#6C6C66] dark:bg-[#262624] dark:text-[#9B9B92]">
@@ -110,6 +143,9 @@ onMounted(async () => {
             </Card>
             <!-- END Comments Section -->
 
+            <div v-if="auth.isAuthenticated.value" class="mt-6">
+                <CommentForm :on-submit="createComment" />
+            </div>
         </article>
     </div>
 </template>

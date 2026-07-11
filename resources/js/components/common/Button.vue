@@ -7,12 +7,14 @@ const props = withDefaults(defineProps<{
     size?: 'xs' | 'sm' | 'md' | 'lg';
     disabled?: boolean;
     active?: boolean;
+    state?: 'normal' | 'warning' | 'danger';
     to?: RouteLocationRaw;
 }>(), {
     variant: 'bordered_normal',
     size: 'md',
     disabled: false,
     active: false,
+    state: 'normal',
 });
 
 const emit = defineEmits<{
@@ -43,6 +45,32 @@ const buttonClasses = computed(() => {
                 'dark:disabled:bg-[#1f1f1d]',
                 'dark:disabled:text-[#5D5D57]',
             );
+        } else if (props.state === 'danger') {
+            classes.push(
+                'border-[#d03f3f]',
+                'bg-[#feeaea]',
+                'text-[#b31c1c]',
+                'hover:border-[#f53003]',
+                'hover:bg-[#ffebeb]',
+                'dark:border-[#ffb3b3]',
+                'dark:bg-[#2f1212]',
+                'dark:text-[#f8c8c8]',
+                'dark:hover:border-[#ff4433]',
+                'dark:hover:bg-[#381010]',
+            );
+        } else if (props.state === 'warning') {
+            classes.push(
+                'border-[#d6a800]',
+                'bg-[#fff7d6]',
+                'text-[#856800]',
+                'hover:border-[#f5b300]',
+                'hover:bg-[#fff2bc]',
+                'dark:border-[#ffda7a]',
+                'dark:bg-[#3f3310]',
+                'dark:text-[#ffeb99]',
+                'dark:hover:border-[#ffcf33]',
+                'dark:hover:bg-[#45350f]',
+            );
         } else if (props.active) {
             classes.push(
                 'border-[#f53003]',
@@ -53,6 +81,7 @@ const buttonClasses = computed(() => {
                 'dark:bg-[#FF4433]',
             );
         } else {
+            // default state
             classes.push(
                 'border-[#8a7f4f40]',
                 'bg-white',

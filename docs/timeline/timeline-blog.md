@@ -154,15 +154,43 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - cleanup the `resources/js/components/AppNav.vue` file, make components/composables of the login parts
 
+## DONE - add create/update/delete comments (when logged-in) - check `app/Http/Controllers/Api/Blog/CommentController.php` and the types for modifing for the correct data to send and receive
+
+- so update `resources/js/pages/blog/PostShowPage.vue`
+  - `create` `update` `delete`
+
 >HERE
+
+- resources/js/components/blog/CommentRow.vue move code to composable (or not)
+
+- use `<FontAwesomeIcon :icon="byPrefixAndName.fas['trash']" />` as delete button
+
+```txt
+https://fontawesome.com/icons/classic/solid/trash
+
+but we then have to implement fontawesome - use context 7 - to use fontAwesome with Vue3
+
+change `Delete` into the `FontAwesomeIcon .. ` icon
+```
+
+```php
+<Button
+    v-if="props.isOwner && !props.editing"
+    variant="bordered_normal"
+    state="danger"
+    size="sm"
+    @click="emit('delete')"
+    aria-label="Delete comment"
+>
+    Delete
+</Button>
+```
 
 - remove `is_admin` from the user object we have `role_label` for that
 
 >THEN
 
-## TODO - add create/update/delete comments (when logged-in) - check `app/Http/Controllers/Api/Blog/CommentController.php` and the types for modifing for the correct data to send and receive
-
->THEN
+## move user owner check from service to controller for both comment and post for store and update methods, more early gate
 
 - make the website visual responsive correct, use: desktop normal, tablet portrait, mobile portrait
 

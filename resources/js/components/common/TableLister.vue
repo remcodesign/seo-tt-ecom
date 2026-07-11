@@ -9,6 +9,7 @@ const props = withDefaults(defineProps<{
     columns?: string[];
     maxRows?: number;
     emptyText?: string;
+    rowProps?: Record<string, unknown>;
 }>(), {
     maxRows: 0,
     emptyText: 'No items available.',
@@ -35,9 +36,9 @@ const renderedItems = computed(() => {
 
                     <component
                         :is="props.rowComponent"
-                        v-bind="{ [props.rowPropName]: item, columns: props.columns }"
+                        v-bind="{ [props.rowPropName]: item, columns: props.columns, ...props.rowProps }"
                     />
-                    
+
                 </tr>
             </tbody>
         </table>

@@ -154,7 +154,7 @@ readonly class PostService
 
         if ($withComments) {
             $relations['comments'] = function ($query): void {
-                $query->with('user');
+                $query->with('user')->orderBy('created_at', 'desc');
             };
         }
 
