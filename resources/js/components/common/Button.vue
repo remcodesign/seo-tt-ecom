@@ -131,12 +131,28 @@ const buttonClasses = computed(() => {
             classes.push('text-lg');
         }
 
-        classes.push(
-            'text-[#1b1b18]',
-            'hover:text-[#f53003]',
-            'dark:text-[#EDEDEC]',
-            'dark:hover:text-[#FF4433]',
-        );
+        if (props.state === 'danger') {
+            classes.push(
+                'text-[#b31c1c]',
+                'hover:text-[#f53003]',
+                'dark:text-[#f8c8c8]',
+                'dark:hover:text-[#FF4433]',
+            );
+        } else if (props.state === 'warning') {
+            classes.push(
+                'text-[#856800]',
+                'hover:text-[#f5b300]',
+                'dark:text-[#ffeb99]',
+                'dark:hover:text-[#ffcf33]',
+            );
+        } else {
+            classes.push(
+                'text-[#1b1b18]',
+                'hover:text-[#f53003]',
+                'dark:text-[#EDEDEC]',
+                'dark:hover:text-[#FF4433]',
+            );
+        }
     }
 
     if (props.variant === 'text-underline') {

@@ -93,7 +93,7 @@ onMounted(async () => {
             </template>
         </TableLister>
 
-        <div v-if="!loading && !error && comments.length > 0" class="mt-8 flex flex-wrap items-center gap-3">
+        <div v-if="!loading && !error && comments.length > 0" class="mt-6 flex flex-wrap items-center gap-3">
             <Button variant="text-underline" size="sm" :active="true" :to="{ name: 'comments.index' }">
                 View all blog comments
             </Button>

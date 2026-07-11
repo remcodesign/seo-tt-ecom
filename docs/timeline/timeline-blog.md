@@ -159,32 +159,11 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 - so update `resources/js/pages/blog/PostShowPage.vue`
   - `create` `update` `delete`
 
+- resources/js/components/blog/CommentRow.vue move code to composable (or not) - !we did not move the state part to a separate composable. for a next more simple admin page, create a more simple state `CommentRow.vue` (in the admin context), but reuse the current `resources/js/composable/blog/usePostComments.ts`
+
+- use `<FontAwesomeIcon :icon="byPrefixAndName.fas['trash']" />` as delete button on `resources/js/components/blog/CommentRowActions.vue`
+
 >HERE
-
-- resources/js/components/blog/CommentRow.vue move code to composable (or not)
-
-- use `<FontAwesomeIcon :icon="byPrefixAndName.fas['trash']" />` as delete button
-
-```txt
-https://fontawesome.com/icons/classic/solid/trash
-
-but we then have to implement fontawesome - use context 7 - to use fontAwesome with Vue3
-
-change `Delete` into the `FontAwesomeIcon .. ` icon
-```
-
-```php
-<Button
-    v-if="props.isOwner && !props.editing"
-    variant="bordered_normal"
-    state="danger"
-    size="sm"
-    @click="emit('delete')"
-    aria-label="Delete comment"
->
-    Delete
-</Button>
-```
 
 - remove `is_admin` from the user object we have `role_label` for that
 

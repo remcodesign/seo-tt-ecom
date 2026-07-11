@@ -37,13 +37,14 @@ const emit = defineEmits<{
             <div>
                 <Button
                     v-if="props.isOwner && !props.editing"
-                    variant="bordered_normal"
+                    variant="text"
                     state="danger"
                     size="sm"
                     @click="emit('delete')"
                     aria-label="Delete comment"
+                    class="mt-1"
                 >
-                    Delete
+                    <font-awesome-icon icon="trash" class="h-4 w-4" />
                 </Button>
             </div>
         </div>

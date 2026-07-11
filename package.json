@@ -9,6 +9,11 @@
         "lint": "eslint \"resources/js/**/*.{js,ts,vue}\" --fix",
         "typecheck": "npx vue-tsc --noEmit --project tsconfig.json"
     },
+    "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^7.0.0",
+        "@fortawesome/free-solid-svg-icons": "^7.0.0",
+        "@fortawesome/vue-fontawesome": "^3.3.1"
+    },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "@tailwindcss/vite": "^4.0.0",

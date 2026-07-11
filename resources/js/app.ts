@@ -1,9 +1,15 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import App from './App.vue';
 import '../css/app.css';
 
 const app = createApp(App);
+
+library.add(faTrash);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 
 const router = createRouter({
     history: createWebHistory(),
