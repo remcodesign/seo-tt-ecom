@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'May Usaris',
             'email' => 'user@example.com',
             'password' => bcrypt('test'),
-            'is_admin' => false,
             'role_label' => RoleLabel::user,
         ]);
 
@@ -32,7 +31,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Clair Wright',
             'email' => 'clair@example.com',
             'password' => bcrypt('test'),
-            'is_admin' => false,
             'role_label' => RoleLabel::writer,
         ]);
 
@@ -40,7 +38,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'John Admantis',
             'email' => 'admin@example.com',
             'password' => bcrypt('test'),
-            'is_admin' => true,
             'role_label' => RoleLabel::admin,
         ]);
 

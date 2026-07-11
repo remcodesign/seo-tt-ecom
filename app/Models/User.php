@@ -18,11 +18,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
- * @property bool $is_admin
  * @property RoleLabel $role_label
  */
 #[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token', 'is_admin'])]
+#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -45,7 +44,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'boolean',
             'role_label' => RoleLabel::class,
         ];
     }

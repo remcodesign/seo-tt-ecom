@@ -35,14 +35,12 @@ final class BlogSeeder extends Seeder
         $writers = User::factory()
             ->count(2)
             ->create([
-                'is_admin' => false,
                 'role_label' => RoleLabel::writer,
             ]);
 
         $commenters = User::factory()
             ->count(5)
             ->create([
-                'is_admin' => false,
                 'role_label' => RoleLabel::user,
             ]);
 

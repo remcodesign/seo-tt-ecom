@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $blueprint): void {
             $blueprint->after('email', function (Blueprint $blueprint): void {
-                $blueprint->boolean('is_admin')->default(false);
                 $blueprint->enum('role_label', ['guest', 'user', 'writer', 'admin'])->default('guest');
             });
         });
@@ -25,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $blueprint): void {
-            $blueprint->dropColumn(['is_admin', 'role_label']);
+            $blueprint->dropColumn('role_label');
         });
     }
 };

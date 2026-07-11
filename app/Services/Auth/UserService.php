@@ -17,7 +17,7 @@ readonly class UserService
     }
 
     // (future) outside API usage :: only for admin users
-    public function createWith(RegisterData $registerData, RoleLabel $roleLabel, bool $isAdmin = false): User
+    public function createWith(RegisterData $registerData, RoleLabel $roleLabel): User
     {
         $user = User::create([
             'name' => $registerData->name,
@@ -26,7 +26,6 @@ readonly class UserService
         ]);
 
         $user->role_label = $roleLabel;
-        $user->is_admin = $isAdmin;
         $user->save();
 
         return $user;

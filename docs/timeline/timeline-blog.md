@@ -161,19 +161,30 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 - resources/js/components/blog/CommentRow.vue move code to composable (or not) - !we did not move the state part to a separate composable. for a next more simple admin page, create a more simple state `CommentRow.vue` (in the admin context), but reuse the current `resources/js/composable/blog/usePostComments.ts`
 
-- use `<FontAwesomeIcon :icon="byPrefixAndName.fas['trash']" />` as delete button on `resources/js/components/blog/CommentRowActions.vue`
-
->HERE
+- use `<FontAwesomeIcon :icon="byPrefixAndName.fas['trash']" />` as delete button on `resources/js/components/blog/CommentRowActions.vue
 
 - remove `is_admin` from the user object we have `role_label` for that
 
+>HERE
+
+- move user owner check from service to controller for both `comment` and `post` for `store` and `update` methods, more early gate
+
+- and update `docs/private/docs/comment-crud-system.md` to make it correct
+
+```
+
+app/Services/Blog/PostService.php
+app/Services/Blog/CommentService.php
+app/Http/Controllers/Api/Blog/PostController.php
+app/Http/Controllers/Api/Blog/CommentController.php
+
+```
+
 >THEN
 
-## move user owner check from service to controller for both comment and post for store and update methods, more early gate
+## TODO - add browser tests
 
-- make the website visual responsive correct, use: desktop normal, tablet portrait, mobile portrait
-
-- add browser tests
+## TODO - make the website visual responsive correct, use: desktop normal, tablet portrait, mobile portrait
 
 ## TODO - add policies, user roles/permissions, spatie/laravel-permission
 
