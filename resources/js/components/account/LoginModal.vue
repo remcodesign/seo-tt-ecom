@@ -74,7 +74,7 @@ const handleSubmit = async (): Promise<void> => {
 <template>
 
     <Modal :show="props.show" @close="close">
-        <div class="space-y-6 p-6">
+        <div class="space-y-6 p-6" data-test="login-modal">
             <!-- Header -->
             <div>
                 <h2 class="text-xl font-semibold text-[#111113] dark:text-[#EDEDEC]">Login</h2>
@@ -88,7 +88,7 @@ const handleSubmit = async (): Promise<void> => {
                 <div>
                     <label class="block text-sm font-medium text-[#111113] dark:text-[#EDEDEC]">
                         Email
-                        <input type="email" v-model="email" required
+                        <input type="email" data-test="login-email-input" v-model="email" required
                             class="mt-2 w-full rounded-xl border border-[#D6D6D1] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition focus:border-[#f53003] focus:ring-2 focus:ring-[#f5300350] dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC]" />
                     </label>
                     <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
@@ -98,7 +98,7 @@ const handleSubmit = async (): Promise<void> => {
                 <div>
                     <label class="block text-sm font-medium text-[#111113] dark:text-[#EDEDEC]">
                         Password
-                        <input type="password" v-model="password" required
+                        <input type="password" data-test="login-password-input" v-model="password" required
                             class="mt-2 w-full rounded-xl border border-[#D6D6D1] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition focus:border-[#f53003] focus:ring-2 focus:ring-[#f5300350] dark:border-[#3E3E3A] dark:bg-[#161615] dark:text-[#EDEDEC]" />
                     </label>
                     <p v-if="errors.password" class="mt-1 text-sm text-red-600">{{ errors.password }}</p>
@@ -118,12 +118,12 @@ const handleSubmit = async (): Promise<void> => {
                 <p v-if="errors.general" class="text-sm text-red-600">{{ errors.general }}</p>
 
                 <div class="flex justify-end">
-                    <Button :disabled="submitting" type="submit">
+                    <Button data-test="login-submit-button" :disabled="submitting" type="submit">
                         {{ submitting ? 'Signing in...' : 'Sign in' }}
                     </Button>
                 </div>
             </form>
         </div>
     </Modal>
-    
+
 </template>

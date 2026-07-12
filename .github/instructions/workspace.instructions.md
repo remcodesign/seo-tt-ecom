@@ -315,6 +315,28 @@ Route::get('/{any}', fn (): Factory|View => view('welcome'))
 
 All API calls go through `resources/js/api.ts` (a preconfigured axios instance). The Laravel API lives under `/api/*` and returns JSON. Frontend routes that match the catch-all are handled by Vue Router, which then calls the API to hydrate the page.
 
+### Frontend Browser Testing with Pest 4
+
+- Prefer browser tests for end-to-end UI coverage in `tests/Browser/`.
+- Use `data-test` attributes on Vue elements to decouple tests from styling and translations.
+- Select test elements in Pest 4 using standard CSS attribute selectors, for example:
+
+```php
+$page->fill('[data-test="login-email-input"]', 'user@example.com')
+     ->click('[data-test="login-submit-button"]');
+```
+
+- Add `data-test` to interactive controls that are important for flows, such as:
+  - login buttons and form fields
+  - comment input and submit controls
+  - comment edit/save/delete buttons
+
+- Avoid relying on visible text for selectors when the element has a stable `data-test` attribute.
+- Keeping these test tags short and consistent makes tests resilient to class changes, translations, and markup refactors.
+
+- `data-test` is preferred over non-standard attributes like `test="..."`, since it remains valid HTML5 and is clearly intended for test automation.
+- If you need a broader selector, use CSS wildcard selectors such as `[data-test*="submit"]` to match any attribute value containing `submit`.
+
 **Example — fetching posts on mount:**
 ```typescript
 import { onMounted, ref } from 'vue';

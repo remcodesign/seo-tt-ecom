@@ -33,3 +33,6 @@ docs/private.md
 # test coverage
 clover.xml
 public/coverage
+
+# Pest browser tests
+tests/Browser/Screenshots

@@ -61,7 +61,7 @@ const handleLogout = async (): Promise<void> => {
             </div>
         </div>
 
-        <Button variant="bordered_normal" size="md" class="relative z-30 px-4 py-2" @click="toggleDropdown">
+        <Button variant="bordered_normal" size="md" class="relative z-30 px-4 py-2" @click="toggleDropdown" data-test="account-menu-button">
             {{ auth.user.value?.name ?? 'Account' }}
         </Button>
     </div>

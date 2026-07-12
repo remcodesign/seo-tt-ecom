@@ -50,7 +50,7 @@ onMounted(async () => {
 
                 <template v-else>
                     <!-- Login Button -->
-                    <Button variant="bordered_normal" size="md" class="px-4 py-2" @click="showLoginModal = true">
+                    <Button data-test="nav-login-button" variant="bordered_normal" size="md" class="px-4 py-2" @click="showLoginModal = true">
                         Login
                     </Button>
                 </template>

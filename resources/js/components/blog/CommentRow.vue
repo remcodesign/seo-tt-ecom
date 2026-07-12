@@ -98,6 +98,7 @@ const confirmDelete = async (): Promise<void> => {
 
             <div v-else>
                 <textarea
+                    data-test="comment-edit-textarea"
                     v-model="draft"
                     rows="3"
                     class="w-full rounded-xl border border-[#d6d6d1] bg-[#fcfcfa] px-4 py-3 text-sm text-[#1b1b18] outline-none transition focus:border-[#f53003] focus:ring-2 focus:ring-[#f53003]/10 dark:border-[#3E3E3A] dark:bg-[#1a1a18] dark:text-[#EDEDEC]"

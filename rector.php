@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\DeadCode\Rector\FunctionLike\NarrowWideUnionReturnTypeRector;
 use RectorLaravel\Rector\Class_\AddExtendsAnnotationToModelFactoriesRector;
 use RectorLaravel\Rector\ClassMethod\AddGenericReturnTypeToRelationsRector;
 use RectorLaravel\Set\LaravelSetProvider;
@@ -46,4 +47,9 @@ return RectorConfig::configure()
     ->withRules([
         AddGenericReturnTypeToRelationsRector::class,
         AddExtendsAnnotationToModelFactoriesRector::class,
+    ])
+
+    // 5. Exclude specific rules for this project
+    ->withSkip([
+        NarrowWideUnionReturnTypeRector::class, // This rule is too aggressive and can cause issues
     ]);

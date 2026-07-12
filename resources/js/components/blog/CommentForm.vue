@@ -49,6 +49,7 @@ const handleSubmit = async (): Promise<void> => {
         <div class="space-y-4">
             <!-- Textarea -->
             <textarea
+                data-test="comment-input"
                 v-model="commentText"
                 rows="4"
                 class="w-full rounded-xl border border-[#d6d6d1] bg-[#fcfcfa] px-4 py-3 text-sm text-[#1b1b18] outline-none transition focus:border-[#f53003] focus:ring-2 focus:ring-[#f53003]/10 dark:border-[#3E3E3A] dark:bg-[#1a1a18] dark:text-[#EDEDEC]"
@@ -60,6 +61,7 @@ const handleSubmit = async (): Promise<void> => {
                 <p v-if="error" class="text-sm text-red-600 dark:text-red-400">{{ error }}</p>
 
                 <Button
+                    data-test="comment-submit-button"
                     variant="bordered_normal"
                     size="md"
                     :disabled="submitting"

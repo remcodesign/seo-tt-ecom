@@ -19,31 +19,26 @@ const emit = defineEmits<{
     <td class="px-4 py-4 align-top">
         <div class="space-y-2">
             <div v-if="props.isOwner && !props.editing" class="flex items-center gap-2">
-                <Button variant="text" size="sm" @click="emit('edit')">
+                <Button data-test="comment-edit-button" variant="text" size="sm" @click="emit('edit')">
                     Edit
                 </Button>
             </div>
 
             <div v-if="props.isOwner && props.editing" class="flex items-center gap-2">
-                <Button variant="bordered_normal" size="sm" :disabled="props.submitting" @click="emit('save')">
+                <Button data-test="comment-save-button" variant="bordered_normal" size="sm" :disabled="props.submitting"
+                    @click="emit('save')">
                     {{ props.submitting ? 'Saving…' : 'Save' }}
                 </Button>
 
-                <Button variant="text" size="sm" @click="emit('cancel')">
+                <Button data-test="comment-cancel-button" variant="text" size="sm" @click="emit('cancel')">
                     Cancel
                 </Button>
             </div>
 
             <div>
-                <Button
-                    v-if="props.isOwner && !props.editing"
-                    variant="text"
-                    state="danger"
-                    size="sm"
-                    @click="emit('delete')"
-                    aria-label="Delete comment"
-                    class="mt-1"
-                >
+                <Button v-if="props.isOwner && !props.editing" data-test="comment-delete-button" variant="text"
+                    state="danger" size="sm" @click="emit('delete')" aria-label="Delete comment" class="mt-1">
+                    <!-- Delete Button -->
                     <font-awesome-icon icon="trash" class="h-4 w-4" />
                 </Button>
             </div>

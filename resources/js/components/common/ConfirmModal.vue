@@ -45,12 +45,9 @@ const handleConfirm = (): void => {
                     {{ props.cancelLabel }}
                 </Button>
 
-                <Button
+                <Button data-test="confirm-button"
                     :variant="props.confirmState === 'danger' ? 'bordered_normal' : 'bordered_normal'"
-                    :state="props.confirmState === 'danger' ? 'danger' : undefined"
-                    size="md"
-                    @click="handleConfirm"
-                >
+                    :state="props.confirmState === 'danger' ? 'danger' : undefined" size="md" @click="handleConfirm">
                     {{ props.confirmLabel }}
                 </Button>
             </div>

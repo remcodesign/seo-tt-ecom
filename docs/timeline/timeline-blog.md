@@ -164,35 +164,25 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 - use `<FontAwesomeIcon :icon="byPrefixAndName.fas['trash']" />` as delete button on `resources/js/components/blog/CommentRowActions.vue
 
 - remove `is_admin` from the user object we have `role_label` for that
+- move user owner check from service to controller for both `comment` and `post` for `store` and `update` methods, more early gate
+
+## DONE - add browser tests - start with `pages/blog/PostShowPage.vue` the comments CRUD options for (non users, users, comment owners)
 
 >HERE
 
-- move user owner check from service to controller for both `comment` and `post` for `store` and `update` methods, more early gate
-
-- and update `docs/private/docs/comment-crud-system.md` to make it correct
-
-```
-
-app/Services/Blog/PostService.php
-app/Services/Blog/CommentService.php
-app/Http/Controllers/Api/Blog/PostController.php
-app/Http/Controllers/Api/Blog/CommentController.php
-
-```
+## TODO - add admin for user from `menu > admin item` - when loggedin as admin - Maybe use only Pure Blade (alpine.js) for this part, to test/implement this style
 
 >THEN
 
-## TODO - add browser tests
+## TODO - add admin for blog (crud posts)
+
+## TODO - add admin for blog (crud comments)
 
 ## TODO - make the website visual responsive correct, use: desktop normal, tablet portrait, mobile portrait
 
 ## TODO - add policies, user roles/permissions, spatie/laravel-permission
 
 docs/private/todo/policies-roles-permission.md
-
-## TODO - add admin for user from `menu > admin item` - when loggedin as admin
-
-## TODO - add admin for blog (crud post, comment and between)
 
 ## TODO - add blog categories, tags
 
