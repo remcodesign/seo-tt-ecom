@@ -8,40 +8,20 @@ use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\UpdateCommentData;
 use App\Data\Blog\Responses\CommentDataModifiedResponse;
 use App\Data\Blog\Responses\CommentDataResponse;
-use App\Enums\RoleLabel;
 use App\Http\Controllers\Api\Traits\HasOrderBy;
 use App\Http\Controllers\Api\Traits\HasPerPage;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
-use App\Models\User;
 use App\Services\Blog\CommentService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelData\PaginatedDataCollection;
 
-readonly class CommentController
+class CommentController extends Controller
 {
     use HasOrderBy;
     use HasPerPage;
 
     public function __construct(private CommentService $commentService) {}
-
-    private function user(): User
-    {
-        $user = Auth::user();
-        assert($user instanceof User);
-
-        return $user;
-    }
-
-    private function authorizeCommentOwnerOrAdmin(Comment $comment): void
-    {
-        $user = $this->user();
-
-        if ($user->isNot($comment->user) && $user->role_label !== RoleLabel::admin) {
-            abort(403, 'You are not authorized to modify this comment.');
-        }
-    }
 
     /**
      * Define the columns that are allowed for ordering in this controller.
