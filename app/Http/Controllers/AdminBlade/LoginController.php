@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\AdminBlade;
 
 use App\Enums\RoleLabel;
 use App\Models\User;
@@ -20,7 +20,7 @@ class LoginController extends Controller
             return redirect()->route('blade.admin.dashboard');
         }
 
-        return view('admin.auth.login');
+        return view('admin_blade.auth.login');
     }
 
     public function authenticate(Request $request): RedirectResponse

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\LoginController;
-use App\Http\Controllers\Admin\User\UserController;
+use App\Http\Controllers\AdminBlade\DashboardController;
+use App\Http\Controllers\AdminBlade\LoginController;
+use App\Http\Controllers\AdminBlade\User\UserController;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;

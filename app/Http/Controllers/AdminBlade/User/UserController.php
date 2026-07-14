@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin\User;
+namespace App\Http\Controllers\AdminBlade\User;
 
 use App\Data\Auth\RegisterData;
 use App\Data\Auth\UpdateUserData;
 use App\Enums\RoleLabel;
-use App\Http\Controllers\Admin\Controller;
+use App\Http\Controllers\AdminBlade\Controller;
 use App\Models\User;
 use App\Services\Auth\UserService;
 use Illuminate\Contracts\View\View;
@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $this->authorizeAdmin();
 
-        return view('admin.users.index', [
+        return view('admin_blade.users.index', [
             'users' => User::orderByDesc('created_at')->get(),
         ]);
     }
@@ -30,7 +30,7 @@ class UserController extends Controller
     {
         $this->authorizeAdmin();
 
-        return view('admin.users.form', [
+        return view('admin_blade.users.form', [
             'user' => new User,
             'roleLabels' => RoleLabel::cases(),
         ]);
@@ -50,7 +50,7 @@ class UserController extends Controller
     {
         $this->authorizeAdmin();
 
-        return view('admin.users.form', [
+        return view('admin_blade.users.form', [
             'user' => $user,
             'roleLabels' => RoleLabel::cases(),
         ]);

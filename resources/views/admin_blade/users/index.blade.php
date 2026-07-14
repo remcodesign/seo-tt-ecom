@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('admin_blade.layouts.app')
 
 @section('content')
     <div class="space-y-6">

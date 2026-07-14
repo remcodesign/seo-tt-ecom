@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\AdminBlade;
 
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
@@ -20,7 +20,7 @@ class DashboardController extends Controller
 
         $this->authorizeAdmin();
 
-        return view('admin.dashboard', [
+        return view('admin_blade.dashboard', [
             'userCount' => User::count(),
             'postCount' => Post::count(),
             'commentCount' => Comment::count(),

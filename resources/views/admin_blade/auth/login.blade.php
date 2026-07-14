@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('admin_blade.layouts.app')
 
 @section('content')
     <div class="mx-auto w-full max-w-md rounded-3xl bg-white p-8 shadow-lg ring-1 ring-slate-200">
