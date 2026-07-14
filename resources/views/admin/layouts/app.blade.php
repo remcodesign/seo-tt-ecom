@@ -10,7 +10,7 @@
     @vite('resources/js/app.ts')
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-900">
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
     <div class="min-h-screen">
         <header class="border-b border-slate-200 bg-white/80 backdrop-blur-sm">
             <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
@@ -28,7 +28,7 @@
                             @csrf
 
                             <button type="submit"
-                                class="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700">Logout</button>
+                                class="cursor-pointer rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700">Logout</button>
                         </form>
                     @endauth
                 </div>

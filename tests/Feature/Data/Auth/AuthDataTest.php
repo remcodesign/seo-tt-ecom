@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 use App\Data\Auth\RegisterData;
 use App\Data\Auth\UserDataResponse;
+use App\Enums\RoleLabel;
 use App\Models\User;
 
 it('hydrates RegisterData and converts it to an array', function (): void {
     $registerData = new RegisterData(
         name: 'Jane Doe',
         email: 'jane@example.com',
-        password: 'password',
+        password: 'password'
     );
 
     expect($registerData->name)->toBe('Jane Doe')
@@ -20,6 +21,7 @@ it('hydrates RegisterData and converts it to an array', function (): void {
             'name' => 'Jane Doe',
             'email' => 'jane@example.com',
             'password' => 'password',
+            'role_label' => null, // but will be set to RoleLabel::user in the UserService when creating a user
         ]);
 });
 
@@ -28,11 +30,13 @@ it('converts a User model into UserData', function (): void {
         'id' => 42,
         'name' => 'Jane Doe',
         'email' => 'jane@example.com',
+        'role_label' => RoleLabel::admin,
     ]);
 
     $userDataResponse = UserDataResponse::from($user);
 
     expect($userDataResponse)->toBeInstanceOf(UserDataResponse::class)
         ->and($userDataResponse->id)->toBe(42)
-        ->and($userDataResponse->name)->toBe('Jane Doe');
+        ->and($userDataResponse->name)->toBe('Jane Doe')
+        ->and($userDataResponse->role_label)->toBe(RoleLabel::admin);
 });

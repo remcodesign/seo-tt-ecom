@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LoginController;
+use App\Http\Controllers\Admin\User\UserController;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
@@ -17,12 +18,15 @@ Route::prefix('blade')->name('blade.')->group(function (): void {
         Route::post('/login', [LoginController::class, 'authenticate'])
             ->name('authenticate');
 
-        Route::get('/', [DashboardController::class, 'index'])
+        Route::get('/', DashboardController::class)
             ->name('dashboard');
 
         Route::middleware('auth')->group(function (): void {
             Route::post('/logout', [LoginController::class, 'logout'])
                 ->name('logout');
+
+            Route::resource('users', UserController::class)
+                ->except(['show']);
         });
     });
 });

@@ -82,6 +82,7 @@ export type RegisterData = {
     name: string;
     email: string;
     password: string;
+    role_label: RoleLabel | null;
 };
 export type RevokeTokenDataResponse = {
     message: string;
@@ -106,6 +107,12 @@ export type UpdatePostData = {
     title: string | null;
     body: string | null;
     published_on: string | null;
+};
+export type UpdateUserData = {
+    name: string;
+    email: string;
+    role_label: RoleLabel;
+    password: string | null;
 };
 export type UserDataResponse = {
     id: number;

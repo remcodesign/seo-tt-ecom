@@ -28,7 +28,7 @@
 
             {{-- Buttons for main entities CRUD actions --}}
             <div class="mt-10 grid gap-4 sm:grid-cols-3">
-                <a href="#" class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
+                <a href="{{ route('blade.admin.users.index') }}" class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                     <p class="text-sm font-semibold text-slate-900">Users</p>
                     <p class="mt-2 text-sm text-slate-600">Manage registered accounts.</p>
                 </a>

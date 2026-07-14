@@ -12,7 +12,7 @@ use Illuminate\Http\RedirectResponse;
 
 class DashboardController extends Controller
 {
-    public function index(): View|RedirectResponse
+    public function __invoke(): View|RedirectResponse
     {
         if (! auth()->check()) {
             return redirect()->route('blade.admin.login');
