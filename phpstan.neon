@@ -8,5 +8,6 @@ parameters:
         - config/
         - database/
         - routes/
+        - resources/views/livewire
 
     level: 9

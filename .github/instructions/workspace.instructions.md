@@ -12,6 +12,20 @@ applyTo: '**/*'
 - **Dependencies:** Do not add new ones unless explicitly requested.
 - **Scaffolding:** Prefer `php artisan make:*` when it fits project conventions.
 - **Alignment:** Keep `app/Models`, `database/migrations`, `database/factories` consistent.
+- **Livewire bindings:** In Livewire v3, `wire:model` is deferred by default and is not always the correct choice for form UI that must react immediately. Use `wire:model.live` for real-time filters and other interactive inputs that should trigger updates immediately, especially on lists and table filters.
+
+## Livewire
+
+- Prefer small, focused Livewire components rather than monolithic pages. Use nested partial components for filter/search controls, table rows, and isolated UI sections.
+- Pass props into nested Livewire components via `@livewire(SomeComponent::class, ['prop' => $value])` and keep the parent responsible for the shared state.
+- Extract form state and validation into a dedicated `Livewire\Form` sub-class (e.g. `app/Livewire/Admin/Users/UserForm.php`). Declare `public UserForm $form;` on the component and keep form fields inside the form class — this keeps the full-page component clean.
+- Use `#[Computed]` for derived properties that don't change during a request, like pre-computed filter options. This caches the result for the duration of the request. Example: `#[Computed] public function roleLabels(): array`.
+- Use `#[On('eventName')]` attribute on listener methods instead of the legacy `$listeners` array. This is the modern Livewire v3 syntax and keeps event wiring explicit at the method level.
+- In Livewire v3, use `dispatch('eventName', $payload)` in child components for events that should bubble up. In the parent component, use `#[On('eventName')]` to listen.
+- Use `updatedPropertyName()` lifecycle hooks only indirectly via `wire:model.live` or property changes, not by calling them directly in tests or controllers.
+- Keep state explicit: `public string $search = ''`, `public string $roleLabelFilter = 'all'`, and initialize prop lists in `mount()` when needed.
+- Use `wire:key` on repeated elements like option rows or table rows to preserve DOM stability and avoid render glitches.
+- Test Livewire components with `Livewire::test()` for both parent behavior and child event dispatching: use `assertDispatched()` for `dispatch()` events and use `assertSet()` / `assertSee()` for parent state changes.
 
 ---
 

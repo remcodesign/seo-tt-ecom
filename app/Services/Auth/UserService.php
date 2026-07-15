@@ -9,6 +9,7 @@ use App\Data\Auth\UpdateUserData;
 use App\Enums\RoleLabel;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 readonly class UserService
 {
@@ -35,6 +36,17 @@ readonly class UserService
 
     public function updateWith(User $user, UpdateUserData $updateUserData): User
     {
+        // Ensure email uniqueness, excluding the current user
+        $existing = User::where('email', $updateUserData->email)
+            ->where('id', '!=', $user->id)
+            ->first();
+
+        if ($existing !== null) {
+            throw ValidationException::withMessages([
+                'email' => ['The email has already been taken.'],
+            ]);
+        }
+
         $data = [
             'name' => $updateUserData->name,
             'email' => $updateUserData->email,

@@ -14,6 +14,7 @@ return RectorConfig::configure()
         __DIR__.'/database',
         __DIR__.'/routes',
         __DIR__.'/tests',
+        __DIR__.'/resources/views/livewire',
     ])
 
     // 1. Upgrade automatically to the current PHP version (PHP 8.4)

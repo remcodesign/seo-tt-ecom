@@ -10,6 +10,7 @@ use App\Services\Auth\UserService;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 uses(RefreshDatabase::class);
 
@@ -86,6 +87,7 @@ describe('UserService', function (): void {
             ]);
 
             $updatedUser = $userService->updateWith($user, new UpdateUserData(
+                id: $user->id,
                 name: 'Updated Name',
                 email: 'updated@example.com',
                 role_label: RoleLabel::user,
@@ -102,6 +104,7 @@ describe('UserService', function (): void {
             ]);
 
             $userService->updateWith($user, new UpdateUserData(
+                id: $user->id,
                 name: $user->name,
                 email: $user->email,
                 role_label: RoleLabel::user,
@@ -121,6 +124,7 @@ describe('UserService', function (): void {
             ]);
 
             $userService->updateWith($user, new UpdateUserData(
+                id: $user->id,
                 name: $user->name,
                 email: $user->email,
                 role_label: RoleLabel::user,
@@ -138,6 +142,7 @@ describe('UserService', function (): void {
             ]);
 
             $userService->updateWith($user, new UpdateUserData(
+                id: $user->id,
                 name: $user->name,
                 email: $user->email,
                 role_label: RoleLabel::admin,
@@ -146,6 +151,33 @@ describe('UserService', function (): void {
             $user->refresh();
 
             expect($user->role_label)->toBe(RoleLabel::admin);
+        });
+
+        it('throws when email is already taken by another user', function (): void {
+            $userService = app(UserService::class);
+            $existingUser = User::factory()->create(['email' => 'taken@example.com']);
+            $user = User::factory()->create();
+
+            expect(fn () => $userService->updateWith($user, new UpdateUserData(
+                id: $user->id,
+                name: $user->name,
+                email: 'taken@example.com',
+                role_label: RoleLabel::user,
+            )))->toThrow(ValidationException::class, 'The email has already been taken.');
+        });
+
+        it('allows updating to the same email', function (): void {
+            $userService = app(UserService::class);
+            $user = User::factory()->create(['email' => 'same@example.com']);
+
+            $updatedUser = $userService->updateWith($user, new UpdateUserData(
+                id: $user->id,
+                name: 'New Name',
+                email: 'same@example.com',
+                role_label: RoleLabel::admin,
+            ));
+
+            expect($updatedUser->email)->toBe('same@example.com');
         });
     });
 });

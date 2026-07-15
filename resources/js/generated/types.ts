@@ -109,6 +109,7 @@ export type UpdatePostData = {
     published_on: string | null;
 };
 export type UpdateUserData = {
+    id: number;
     name: string;
     email: string;
     role_label: RoleLabel;

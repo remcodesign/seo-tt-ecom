@@ -2,36 +2,42 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\AdminBlade\DashboardController;
-use App\Http\Controllers\AdminBlade\LoginController;
-use App\Http\Controllers\AdminBlade\User\UserController;
+use App\Http\Controllers\Admin\LogoutController;
+use App\Livewire\Admin\Dashboard as LivewireDashboard;
+use App\Livewire\Admin\Login as LivewireLogin;
+use App\Livewire\Admin\Users\Form as LivewireUserForm;
+use App\Livewire\Admin\Users\Index as LivewireUsersIndex;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn (): Factory|View => view('welcome'));
 
-Route::prefix('blade')->name('blade.')->group(function (): void {
-    Route::prefix('admin')->name('admin.')->group(function (): void {
-        Route::get('/login', [LoginController::class, 'showLoginForm'])
-            ->name('login');
-        Route::post('/login', [LoginController::class, 'authenticate'])
-            ->name('authenticate');
+// Route::prefix('livewire')->name('livewire.')->group(function (): void {
+Route::prefix('admin')->name('admin.')->group(function (): void {
+    Route::get('/login', LivewireLogin::class)
+        ->name('login');
 
-        Route::get('/', DashboardController::class)
-            ->name('dashboard');
+    Route::get('/', LivewireDashboard::class)
+        ->name('dashboard');
 
-        Route::middleware('auth')->group(function (): void {
-            Route::post('/logout', [LoginController::class, 'logout'])
-                ->name('logout');
+    Route::middleware('auth')->group(function (): void {
+        Route::post('/logout', LogoutController::class)
+            ->name('logout');
 
-            Route::resource('users', UserController::class)
-                ->except(['show']);
-        });
+        Route::get('/users', LivewireUsersIndex::class)
+            ->name('users.index');
+
+        Route::get('/users/create', LivewireUserForm::class)
+            ->name('users.create');
+
+        Route::get('/users/{user}/edit', LivewireUserForm::class)
+            ->name('users.edit');
     });
 });
+// });
 
 // Catch-all for Vue SPA — must be last, renders the app shell
 // so Vue Router can handle the route client-side.
 Route::get('/{any}', fn (): Factory|View => view('welcome'))
-    ->where('any', '.*');
+    ->where('any', '^(?!livewire).*$');

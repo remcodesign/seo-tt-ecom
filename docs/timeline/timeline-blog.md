@@ -168,9 +168,15 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 ## DONE - add browser tests - start with `pages/blog/PostShowPage.vue` the comments CRUD options for (non users, users, comment owners)
 
+## REMOVED - BLADE - (we now use livewire instead of pure BLADE) add admin for user from `menu > admin item` - when loggedin as admin - Maybe use only Pure Blade for this part, to test/implement this style
+
+## DONE - LIVEWIRE - add admin for user from `menu > admin item` - when loggedin as admin - Maybe use only Pure livewire V3 for this part, to test/implement this style
+
 >HERE
 
-## TODO - add admin for user from `menu > admin item` - when loggedin as admin - Maybe use only Pure Blade (alpine.js) for this part, to test/implement this style
+## TODO - convert livewire v3 to livewire v4 - and all the extra's?
+
+## TODO - use flux for the frontend components?
 
 >THEN
 

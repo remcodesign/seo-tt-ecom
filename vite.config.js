@@ -8,7 +8,15 @@ import path from 'path';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/app.ts'],
+            input: [
+                // Vue3 SPA files:
+                'resources/css/app.css',
+                'resources/js/app.ts',
+
+                // Livewire-only files:
+                'resources/css/livewire.css',
+                'resources/js/livewire.js',
+            ],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {
