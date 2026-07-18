@@ -17,6 +17,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+// todo make `role_label` fillable again to make the system more simple
 /**
  * @property RoleLabel $role_label
  */
