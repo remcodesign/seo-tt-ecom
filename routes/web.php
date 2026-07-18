@@ -15,23 +15,23 @@ Route::get('/', fn (): Factory|View => view('welcome'));
 
 // Route::prefix('livewire')->name('livewire.')->group(function (): void {
 Route::prefix('admin')->name('admin.')->group(function (): void {
-    Route::get('/login', LivewireLogin::class)
+    Route::livewire('/login', LivewireLogin::class)
         ->name('login');
 
-    Route::get('/', LivewireDashboard::class)
+    Route::livewire('/', LivewireDashboard::class)
         ->name('dashboard');
 
     Route::middleware('auth')->group(function (): void {
         Route::post('/logout', LogoutController::class)
             ->name('logout');
 
-        Route::get('/users', LivewireUsersIndex::class)
+        Route::livewire('/users', LivewireUsersIndex::class)
             ->name('users.index');
 
-        Route::get('/users/create', LivewireUserForm::class)
+        Route::livewire('/users/create', LivewireUserForm::class)
             ->name('users.create');
 
-        Route::get('/users/{user}/edit', LivewireUserForm::class)
+        Route::livewire('/users/{user}/edit', LivewireUserForm::class)
             ->name('users.edit');
     });
 });
