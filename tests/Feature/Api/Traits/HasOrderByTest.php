@@ -2,51 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\Traits\HasOrderBy;
 use Illuminate\Http\Request;
+use Tests\Feature\Api\Traits\Stubs\HasOrderByDefaultAllowedFieldsStub;
+use Tests\Feature\Api\Traits\Stubs\HasOrderByTestStub;
 
 // Uses the same pattern as HasOptionalIncludesTest — a plain PHP class with the trait
 // so we can test the trait methods in isolation. The request() helper needs the
 // request to be set in the container, which requires a feature-test environment.
-
-class HasOrderByTestStub
-{
-    use HasOrderBy;
-
-    public function __construct(
-        private array $allowedFields = [],
-    ) {}
-
-    public function allowedOrderByFieldsPublic(): array
-    {
-        return $this->allowedOrderByFields();
-    }
-
-    protected function allowedOrderByFields(): array
-    {
-        return $this->allowedFields;
-    }
-
-    public function getOrderByPublic(string $default = 'created_at', string $defaultDirection = 'desc'): array
-    {
-        return $this->getOrderBy($default, $defaultDirection);
-    }
-}
-
-class HasOrderByDefaultAllowedFieldsStub
-{
-    use HasOrderBy;
-
-    public function allowedOrderByFieldsPublic(): array
-    {
-        return $this->allowedOrderByFields();
-    }
-
-    public function getOrderByPublic(string $default = 'created_at', string $defaultDirection = 'desc'): array
-    {
-        return $this->getOrderBy($default, $defaultDirection);
-    }
-}
 
 beforeEach(function (): void {
     app()['request'] = Request::create('/', 'GET');

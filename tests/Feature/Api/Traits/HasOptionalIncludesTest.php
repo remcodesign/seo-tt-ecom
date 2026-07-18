@@ -2,81 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Spatie\LaravelData\Data;
-
-// more like a unit test than a feature test, but this is the only way to get the request() helper to work in Pest
-// currently not implemented anywhere else, but this is a good start to test the HasOptionalIncludes trait in isolation
-class HasOptionalIncludesTestStub
-{
-    use HasOptionalIncludes;
-
-    public function __construct(
-        private array $allowedIncludes = ['user', 'post'],
-    ) {}
-
-    protected function allowedIncludes(): array
-    {
-        return $this->allowedIncludes;
-    }
-
-    public function requestIncludedRelationsPublic(): array
-    {
-        return $this->requestIncludedRelations();
-    }
-
-    public function loadIncludesPublic(Model $model, array $includes): Model
-    {
-        return $this->loadIncludes($model, $includes);
-    }
-
-    public function applyIncludesPublic(Data $data, array $includes): void
-    {
-        $this->applyIncludes($data, $includes);
-    }
-
-    public function resolveOptionalIncludesPublic(Model $model): array
-    {
-        return $this->resolveOptionalIncludes($model);
-    }
-}
-
-class HasOptionalIncludesLoadMissingModel extends Model
-{
-    public array $loadedIncludes = [];
-
-    #[Override]
-    public function loadMissing($relations): self
-    {
-        $this->loadedIncludes = is_array($relations) ? $relations : [$relations];
-
-        return $this;
-    }
-}
-
-class HasOptionalIncludesDataStub extends Data
-{
-    public array $included = [];
-
-    public function include(string ...$includes): static
-    {
-        $this->included = $includes;
-
-        return $this;
-    }
-}
-
-class HasOptionalIncludesDefaultAllowedIncludesStub
-{
-    use HasOptionalIncludes;
-
-    public function requestIncludedRelationsPublic(): array
-    {
-        return $this->requestIncludedRelations();
-    }
-}
+use Tests\Feature\Api\Traits\Stubs\HasOptionalIncludesDataStub;
+use Tests\Feature\Api\Traits\Stubs\HasOptionalIncludesDefaultAllowedIncludesStub;
+use Tests\Feature\Api\Traits\Stubs\HasOptionalIncludesLoadMissingModel;
+use Tests\Feature\Api\Traits\Stubs\HasOptionalIncludesTestStub;
 
 beforeEach(function (): void {
     app()['request'] = Request::create('/', 'GET');

@@ -16,6 +16,9 @@ ddev composer require laravel/boost --dev
 
 ddev composer require spatie/laravel-data
 ddev composer require spatie/laravel-typescript-transformer
+
+ddev composer clear-cache
+ddev composer install
 ```
 
 ## > ddev

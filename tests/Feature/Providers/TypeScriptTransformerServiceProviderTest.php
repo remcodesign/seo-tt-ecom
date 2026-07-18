@@ -2,18 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Providers\TypeScriptTransformerServiceProvider;
 use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfigFactory;
 use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
-
-class TestableTypeScriptTransformerServiceProvider extends TypeScriptTransformerServiceProvider
-{
-    public function configurePublic(TypeScriptTransformerConfigFactory $typeScriptTransformerConfigFactory): void
-    {
-        $this->configure($typeScriptTransformerConfigFactory);
-    }
-}
+use Tests\Feature\Providers\Stubs\TestableTypeScriptTransformerServiceProvider;
 
 // only here for the 100% coverage, since the service provider is registered in config/app.php
 describe('TypeScriptTransformerServiceProvider', function (): void {
