@@ -47,8 +47,8 @@
                         </button>
                     </th>
                     <th class="px-6 py-4 text-left text-xs font-semibold  tracking-[0.24em] text-slate-500">
-                        
-                            Author
+
+                        Author
                     </th>
                     <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
                         <button type="button" wire:click="sortBy('created_at')"
@@ -78,14 +78,20 @@
                 @forelse ($posts as $post)
                     <tr wire:key="post-{{ $post->id }}">
                         <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">{{ $post->id }}</td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900">{{ $post->title }}</td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900">{{ $post->title }}
+                            
+                            @if ($post->comments_count > 0)
+                                <span class="ml-2 text-xs text-blue-400">({{ $post->comments_count }})</span>
+                            @endif
+
+                        </td>
                         <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">{{ $post->user->name }}</td>
                         <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">{{ $post->created_at }}</td>
                         <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">{{ $post->published_on }}</td>
                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                             <a href="{{ route('admin.blog.posts.edit', $post) }}"
                                 class="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-slate-700 transition hover:border-slate-300 hover:bg-slate-100">Edit</a>
-                           
+
 
                             <button type="button" wire:click="delete({{ $post->id }})"
                                 wire:confirm="Are you sure you want to delete this post?" wire:loading.attr="disabled"

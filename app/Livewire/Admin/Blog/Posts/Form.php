@@ -49,6 +49,8 @@ class Form extends Component
         $this->redirectRoute('admin.blog.posts.index');
     }
 
+    // todo add images via native laravel `First-Party Image Processing`
+    // https://laravel-news.com/laravel-13-20-0?utm_source=newsletter&utm_medium=email&utm_campaign=624&utm_content=weekly&bento_uuid=61000f95-fc3e-493e-a055-e04be3ca9074
     public function render(): View
     {
         return view('livewire.admin.blog.posts.form', [

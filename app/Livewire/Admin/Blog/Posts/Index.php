@@ -69,6 +69,8 @@ class Index extends Component
                 ->when($this->search !== '', fn ($query) => $query->where(function ($query): void {
                     $query->where('title', 'like', '%'.$this->search.'%');
                 }))
+                // with comment count to prevent N+1
+                ->withCount('comments')
                 ->orderBy($this->orderBy, $this->orderDirection === 'asc' ? 'asc' : 'desc')
                 ->paginate(8),
         ]);

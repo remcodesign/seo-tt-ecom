@@ -1,3 +1,5 @@
+@use(\App\Livewire\Components\Blog\Posts\CommentLister)
+
 <div class="mx-auto max-w-4xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
     <div class="space-y-3">
         <p class="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">
@@ -22,7 +24,7 @@
                 <select id="writer_id" wire:model="form.user_id" required
                     class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200">
                     <option value="">Select a writer</option>
-                    @foreach($writers as $id => $name)
+                    @foreach ($writers as $id => $name)
                         <option value="{{ $id }}">{{ $name }}</option>
                     @endforeach
                 </select>
@@ -35,28 +37,25 @@
         <div class="grid gap-6 sm:grid-cols-1">
             <div>
                 <label for="body" class="block text-sm font-medium text-slate-700">Body</label>
-                <textarea rows="4" id="body" wire:model="form.body" 
+                <textarea rows="4" id="body" wire:model="form.body"
                     class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200"></textarea>
-               
+
                 @error('form.body')
                     <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
                 @enderror
             </div>
         </div>
 
-
         <div class="grid gap-6 sm:grid-cols-2">
             <div>
                 <label for="published_on" class="block text-sm font-medium text-slate-700">Published On</label>
-                <input id="published_on" wire:model="form.published_on" type="date" 
+                <input id="published_on" wire:model="form.published_on" type="date"
                     class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200" />
                 @error('form.published_on')
                     <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
                 @enderror
             </div>
         </div>
-
-
 
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <a href="{{ route('admin.blog.posts.index') }}"
@@ -68,4 +67,7 @@
             </button>
         </div>
     </form>
+
+    {{-- comment lister section --}}
+    @livewire(CommentLister::class, ['post' => $form->post])
 </div>
