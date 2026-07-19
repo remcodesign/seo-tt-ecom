@@ -30,7 +30,8 @@
                 <label for="role_label" class="block text-sm font-medium text-slate-700">Role</label>
                 <select id="role_label" wire:model="form.role_label" required
                         class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200">
-                    @foreach ($roleLabels as $roleLabel)
+                   <option value="">Select a role</option>
+                        @foreach ($roleLabels as $roleLabel)
                         <option value="{{ $roleLabel->value }}">{{ ucfirst($roleLabel->value) }}</option>
                     @endforeach
                 </select>

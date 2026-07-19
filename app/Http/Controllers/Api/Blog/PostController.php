@@ -68,7 +68,7 @@ class PostController extends Controller
 
     public function store(StorePostData $storePostData): PostDataModifiedResponse
     {
-        $post = $this->postService->create($this->user(), $storePostData);
+        $post = $this->postService->create($storePostData);
 
         return PostDataModifiedResponse::from($post);
     }
@@ -77,7 +77,7 @@ class PostController extends Controller
     {
         $this->authorizePostOwnerOrAdmin($post);
 
-        $post = $this->postService->update($this->user(), $post, $updatePostData);
+        $post = $this->postService->update($post, $updatePostData);
 
         return PostDataModifiedResponse::from($post);
     }
@@ -85,7 +85,7 @@ class PostController extends Controller
     public function destroy(Post $post): JsonResponse
     {
         $this->authorizePostOwnerOrAdmin($post);
-        $this->postService->delete($this->user(), $post);
+        $this->postService->delete($post);
 
         return response()->json(null, 204);
     }

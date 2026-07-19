@@ -6,6 +6,7 @@ namespace App\Livewire\Admin\Users;
 
 use App\Enums\RoleLabel;
 use App\Models\User;
+use App\Services\Auth\UserService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -62,7 +63,7 @@ class Index extends Component
         $this->orderDirection = 'asc';
     }
 
-    public function delete(int $userId): void
+    public function delete(int $userId, UserService $userService): void
     {
         $user = User::findOrFail($userId);
 
@@ -72,7 +73,7 @@ class Index extends Component
             return;
         }
 
-        $user->delete();
+        $userService->delete($user);
 
         session()->flash('status', 'User deleted successfully.');
         $this->resetPage();

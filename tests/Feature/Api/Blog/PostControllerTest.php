@@ -156,9 +156,10 @@ describe('PostController (API)', function (): void {
 
     describe('store', function (): void {
         it('creates a new post for an authenticated user', function (): void {
-            Sanctum::actingAs($user = User::factory()->create());
+            Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
 
             $response = $this->postJson('/api/blog/posts', [
+                'user_id' => $user->id,
                 'title' => 'My New Post',
                 'body' => 'This is the body content.',
                 'published_on' => now()->toDateTimeString(),
@@ -196,10 +197,11 @@ describe('PostController (API)', function (): void {
 
     describe('update', function (): void {
         it('updates a post when the authenticated user is the owner', function (): void {
-            Sanctum::actingAs($user = User::factory()->create());
+            Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
             $post = Post::factory()->for($user)->create(['title' => 'Original Title']);
 
             $response = $this->putJson('/api/blog/posts/'.$post->id, [
+                'user_id' => $user->id,
                 'title' => 'Updated Title',
             ]);
 
@@ -217,18 +219,18 @@ describe('PostController (API)', function (): void {
 
             Sanctum::actingAs($other);
 
-            $this->putJson('/api/blog/posts/'.$post->id, ['title' => 'Hacked'])
+            $this->putJson('/api/blog/posts/'.$post->id, ['user_id' => $other->id, 'title' => 'Hacked'])
                 ->assertForbidden();
         });
 
-        it('allows an admin user to update any post', function (): void {
-            $owner = User::factory()->create();
+        it('allows an admin and the post owner to update any post', function (): void {
+            $owner = User::factory()->create(['role_label' => RoleLabel::writer]);
             $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
             $post = Post::factory()->for($owner)->create(['title' => 'Original']);
 
             Sanctum::actingAs($admin);
 
-            $this->putJson('/api/blog/posts/'.$post->id, ['title' => 'Admin Updated'])
+            $this->putJson('/api/blog/posts/'.$post->id, ['user_id' => $owner->id, 'title' => 'Admin Updated'])
                 ->assertSuccessful()
                 ->assertJson(['title' => 'Admin Updated']);
 
@@ -239,7 +241,7 @@ describe('PostController (API)', function (): void {
 
     describe('destroy', function (): void {
         it('deletes a post when the authenticated user is the owner', function (): void {
-            Sanctum::actingAs($user = User::factory()->create());
+            Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
             $post = Post::factory()->for($user)->create();
 
             $this->deleteJson('/api/blog/posts/'.$post->id)

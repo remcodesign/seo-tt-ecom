@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\LogoutController;
+use App\Livewire\Admin\Blog\Posts\Form as LivewirePostForm;
+use App\Livewire\Admin\Blog\Posts\Index as LivewirePostsIndex;
 use App\Livewire\Admin\Dashboard as LivewireDashboard;
 use App\Livewire\Admin\Login as LivewireLogin;
 use App\Livewire\Admin\Users\Form as LivewireUserForm;
@@ -25,14 +27,21 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('/logout', LogoutController::class)
             ->name('logout');
 
-        Route::livewire('/users', LivewireUsersIndex::class)
-            ->name('users.index');
+        // general
+        Route::prefix('users')->group(function (): void {
+            Route::livewire('/', LivewireUsersIndex::class)->name('users.index');
+            Route::livewire('/create', LivewireUserForm::class)->name('users.create');
+            Route::livewire('/{user}/edit', LivewireUserForm::class)->name('users.edit');
+        });
 
-        Route::livewire('/users/create', LivewireUserForm::class)
-            ->name('users.create');
-
-        Route::livewire('/users/{user}/edit', LivewireUserForm::class)
-            ->name('users.edit');
+        // blog
+        Route::prefix('blog')->name('blog.')->group(function (): void {
+            Route::prefix('posts')->group(function (): void {
+                Route::livewire('/', LivewirePostsIndex::class)->name('posts.index');
+                Route::livewire('/create', LivewirePostForm::class)->name('posts.create');
+                Route::livewire('/{post}/edit', LivewirePostForm::class)->name('posts.edit');
+            });
+        });
     });
 });
 // });

@@ -44,7 +44,7 @@
                 <p class="text-sm font-semibold text-slate-900">Categories ()</p>
                 <p class="mt-2 text-sm text-slate-600">Manage content categories.</p>
             </a>
-            <a href="#"
+            <a href="{{ route('admin.blog.posts.index') }}"
                 class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                 <p class="text-sm font-semibold text-slate-900">Posts ({{ $postCount }})</p>
                 <p class="mt-2 text-sm text-slate-600">Manage and publish content.</p>

@@ -12,19 +12,6 @@
                     class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200"
                     placeholder="Search by name or email" />
             </div>
-
-            {{-- roleLabel filter --}}
-            <div>
-                <label for="roleLabelFilter" class="block text-sm font-medium text-slate-700">Role</label>
-                
-                <select id="roleLabelFilter" wire:model.live.debounce.100ms="roleLabelFilter"
-                    class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200">
-                    <option value="all">All roles</option>
-                    @foreach ($roleLabels as $roleLabel)
-                        <option wire:key="role-label-{{ $roleLabel['value'] }}" value="{{ $roleLabel['value'] }}">{{ $roleLabel['label'] }}</option>
-                    @endforeach
-                </select>
-            </div>
         </div>
     </div>
 </div>

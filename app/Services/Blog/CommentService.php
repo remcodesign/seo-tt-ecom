@@ -24,10 +24,15 @@ readonly class CommentService
 
     public function update(User $user, Comment $comment, UpdateCommentData $updateCommentData): Comment
     {
+        // todo remove `$user` parameter once we have a DTO validation rule that ensures the user is authorized to update the comment.
+
         // Filter out null values to avoid overwriting existing fields with null
         $data = collect([
             'comment' => $updateCommentData->comment,
         ])->filter(static fn (mixed $value): bool => $value !== null)->all();
+
+        // todo covert to `$data = $updateCommentData->toArray();`
+        // .. and directly pass to `$comment->update($data)` once we have a DTO validation rule that ensures at least one field is present for update.
 
         if ($data !== []) {
             $comment->update($data);
@@ -39,7 +44,7 @@ readonly class CommentService
     /**
      * Delete the given comment.
      */
-    public function delete(User $user, Comment $comment): ?bool
+    public function delete(Comment $comment): ?bool
     {
         return $comment->delete();
     }

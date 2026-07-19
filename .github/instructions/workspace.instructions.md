@@ -164,16 +164,10 @@ public function scopeWithoutContentFields(Builder $builder): Builder
 ### DTO Style (Spatie Laravel Data)
 - Accept typed DTOs in services — no `array<string, mixed>` signatures.
 - Keep DTOs tiny: constructor-promoted public properties only, no business logic.
-- Use `#[WithCast(DateTimeInterfaceCast::class)]` for Carbon dates with global mapping in `config/data.php`.
+- Use strict types on DTO properties. Prefer `CarbonImmutable|null` for date fields and avoid broad unions like `CarbonImmutable|string|null` unless the DTO genuinely stores raw string input.
+- Use `#[WithCast(DateTimeInterfaceCast::class)]` only on date DTO properties, with explicit formats when required by multiple input sources.
 - Replace Carbon types in generated TypeScript via `TypeScriptTransformerServiceProvider`.
-- Map optional DTO properties to Eloquent payloads with Laravel collection filtering instead of raw `array_*` helpers:
-  ```php
-  $data = collect([
-      'title' => $dto->title,
-      'body' => $dto->body,
-      'published_on' => $dto->published_on,
-  ])->filter(static fn (?string $value): bool => $value !== null)->all();
-  ```
+- Keep DTOs responsible for representing the final payload shape and avoid service-side prefiltering when the DTO is already configured correctly.
 - Add `#[TypeScript]` above DTO classes for frontend type generation (`php artisan typescript:transform`).
 - Use nullable DTO properties for optional relations and response expansions. Keep default response payloads minimal by defining optional relation fields with default `null`, for example:
   ```php
@@ -185,6 +179,14 @@ public function scopeWithoutContentFields(Builder $builder): Builder
   ```
   This lets controllers return the full model by default and only include extra relation data when requested via `?include=`.
 - Reference pattern: `app/Data/Auth/RegisterData.php` → `RegisterUserController` → `UserService` → `UserData`.
+
+### Date handling for nullable form fields
+- For date inputs like `published_on`, normalize blank values to `null` before creating DTOs: use `filled($this->form->published_on) ? $this->form->published_on : null`.
+- Livewire form objects may store date fields as `string|null`; do not rely on the browser date input to preserve a Carbon instance.
+- Request DTOs should support both browser `Y-m-d` values and API/seed `Y-m-d H:i:s` values when the same field is used in multiple contexts.
+- Use `#[WithCast(DateTimeInterfaceCast::class, ['Y-m-d', 'Y-m-d H:i:s'])]` on date DTO properties when the value may arrive as either format.
+- In service updates, preserve explicit `published_on: null` in the payload so clearing a date really writes `NULL` instead of omitting the field.
+- Prefer `CarbonImmutable|string|null` on DTO date properties only when necessary to accept both raw strings and cast values. So first only CarbonImmutable, then add `string` if the same DTO is used for both API and form input. Otherwise, keep the type strict to avoid accidental string usage in services. > The DTO should represent the final cast value, not the raw input.
 
 ---
 

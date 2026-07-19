@@ -93,6 +93,7 @@ export type StoreCommentData = {
     comment: string;
 };
 export type StorePostData = {
+    user_id: number;
     title: string;
     body: string | null;
     published_on: string | null;
@@ -104,7 +105,8 @@ export type UpdateCommentData = {
     comment: string | null;
 };
 export type UpdatePostData = {
-    title: string | null;
+    user_id: number;
+    title: string;
     body: string | null;
     published_on: string | null;
 };

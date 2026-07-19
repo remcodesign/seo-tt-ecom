@@ -66,11 +66,11 @@ final class BlogSeeder extends Seeder
             assert($writer instanceof User);
 
             return $postService->create(
-                $writer,
                 new StorePostData(
+                    user_id: $writer->id,
                     title: $title,
                     body: $makeBody($generator),
-                    published_on: Carbon::now()->subDays(7 * ($index + 1))->toDateTimeString(),
+                    published_on: Carbon::now()->subDays(7 * ($index + 1))->toImmutable(),
                 ),
             );
         });
@@ -99,8 +99,8 @@ final class BlogSeeder extends Seeder
 
         // Create a draft post with a draft-only comment.
         $draftPost = $postService->create(
-            $writer,
             new StorePostData(
+                user_id: $writer->id,
                 title: 'Drafting the Next Big Feature',
                 body: $makeBody($generator),
             ),

@@ -18,6 +18,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 // todo make `role_label` fillable again to make the system more simple
+
 /**
  * @property RoleLabel $role_label
  */
@@ -63,5 +64,51 @@ class User extends Authenticatable
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public static function getUsers(): array
+    {
+        return self::query()
+            ->where('role_label', RoleLabel::user)
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public static function getWriters(): array
+    {
+        return self::query()
+            ->where('role_label', RoleLabel::writer)
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public static function getAdmins(): array
+    {
+        return self::query()
+            ->where('role_label', RoleLabel::admin)
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    public static function isWriter(User $user): bool
+    {
+        return $user->role_label === RoleLabel::writer;
+    }
+
+    public static function isAdmin(User $user): bool
+    {
+        return $user->role_label === RoleLabel::admin;
     }
 }

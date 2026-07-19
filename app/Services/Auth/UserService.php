@@ -61,4 +61,9 @@ readonly class UserService
 
         return $user;
     }
+
+    public function delete(User $user): ?bool
+    {
+        return $user->delete();
+    }
 }

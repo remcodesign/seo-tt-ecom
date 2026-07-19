@@ -83,7 +83,7 @@ class CommentController extends Controller
     public function destroy(Comment $comment): JsonResponse
     {
         $this->authorizeCommentOwnerOrAdmin($comment);
-        $this->commentService->delete($this->user(), $comment);
+        $this->commentService->delete($comment);
 
         return response()->json(null, 204);
     }

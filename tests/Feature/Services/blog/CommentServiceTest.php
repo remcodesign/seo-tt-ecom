@@ -56,7 +56,7 @@ describe('CommentService', function (): void {
             $comment = Comment::factory()->for($post)->for($user)->create();
             $commentService = app(CommentService::class);
 
-            $commentService->delete($user, $comment);
+            $commentService->delete($comment);
 
             expect(Comment::find($comment->id))->toBeNull();
         });

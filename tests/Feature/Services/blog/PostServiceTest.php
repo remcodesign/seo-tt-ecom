@@ -25,13 +25,14 @@ namespace {
     describe('PostService', function (): void {
         describe('create', function (): void {
             it('creates a post with auto-generated slug from title', function (): void {
-                $user = User::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
 
-                $post = $postService->create($user, new StorePostData(
+                $post = $postService->create(new StorePostData(
+                    user_id: $user->id,
                     title: 'My New Post',
                     body: 'Post body content',
-                    published_on: now()->toDateString(),
+                    published_on: now()->toImmutable(),
                 ));
 
                 expect($post)->toBeInstanceOf(Post::class)
@@ -43,35 +44,38 @@ namespace {
             });
 
             it('generates a unique slug when title collides', function (): void {
-                $user = User::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
 
-                $post = $postService->create($user, new StorePostData(
+                $post = $postService->create(new StorePostData(
+                    user_id: $user->id,
                     title: 'My Post',
                     body: 'Body',
-                    published_on: now()->toDateString(),
+                    published_on: now()->toImmutable(),
                 ));
 
                 expect($post->slug)->toBe('my-post');
 
-                $second = $postService->create($user, new StorePostData(
+                $second = $postService->create(new StorePostData(
+                    user_id: $user->id,
                     title: 'My Post',
                     body: 'Another body',
-                    published_on: now()->toDateString(),
+                    published_on: now()->toImmutable(),
                 ));
 
                 expect($second->slug)->toBe('my-post-1');
             });
 
             it('falls back to a random slug after 3 numeric collisions', function (): void {
-                $user = User::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
 
                 for ($i = 0; $i < 5; $i++) {
-                    $post = $postService->create($user, new StorePostData(
+                    $post = $postService->create(new StorePostData(
+                        user_id: $user->id,
                         title: 'Collision Test',
                         body: 'Body '.$i,
-                        published_on: now()->toDateString(),
+                        published_on: now()->toImmutable(),
                     ));
 
                     if ($i < 4) {
@@ -83,34 +87,37 @@ namespace {
             });
 
             it('throws when a random fallback collides after multiple attempts', function (): void {
-                $user = User::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
 
                 Post::factory()->for($user)->create(['title' => 'Collision Test', 'slug' => 'collision-test-123456']);
 
                 for ($i = 0; $i < 4; $i++) {
-                    $postService->create($user, new StorePostData(
+                    $postService->create(new StorePostData(
+                        user_id: $user->id,
                         title: 'Collision Test',
                         body: 'Body '.$i,
-                        published_on: now()->toDateString(),
+                        published_on: now()->toImmutable(),
                     ));
                 }
 
-                expect(fn () => $postService->create($user, new StorePostData(
+                expect(fn () => $postService->create(new StorePostData(
+                    user_id: $user->id,
                     title: 'Collision Test',
                     body: 'Final body',
-                    published_on: now()->toDateString(),
+                    published_on: now()->toImmutable(),
                 )))->toThrow(RuntimeException::class, 'Unable to generate a unique slug for title "Collision Test" after multiple attempts. Choose a more unique title.');
             });
         });
 
         describe('update', function (): void {
             it('updates a post with valid data', function (): void {
-                $user = User::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
                 $post = Post::factory()->for($user)->create(['title' => 'Original']);
                 $postService = app(PostService::class);
 
-                $result = $postService->update($user, $post, new UpdatePostData(
+                $result = $postService->update($post, new UpdatePostData(
+                    user_id: $user->id,
                     title: 'Updated',
                 ));
 
@@ -121,12 +128,14 @@ namespace {
             });
 
             it('keeps the existing slug when title does not change', function (): void {
-                $user = User::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
                 $post = Post::factory()->for($user)->create(['title' => 'Original']);
                 $originalSlug = $post->slug;
                 $postService = app(PostService::class);
 
-                $postService->update($user, $post, new UpdatePostData(
+                $postService->update($post, new UpdatePostData(
+                    user_id: $user->id,
+                    title: 'Original',
                     body: 'Only body update',
                 ));
 
@@ -136,11 +145,11 @@ namespace {
 
         describe('delete', function (): void {
             it('deletes a post', function (): void {
-                $user = User::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
                 $post = Post::factory()->for($user)->create();
                 $postService = app(PostService::class);
 
-                $postService->delete($user, $post);
+                $postService->delete($post);
 
                 expect(Post::find($post->id))->toBeNull();
             });

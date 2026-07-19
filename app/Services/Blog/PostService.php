@@ -13,24 +13,23 @@ use Illuminate\Support\Str;
 
 readonly class PostService
 {
-    public function create(User $user, StorePostData $storePostData): Post
+    public function create(StorePostData $storePostData): Post
     {
+        $user = $this->resolvePostWriter($storePostData->user_id);
+
         $data = $storePostData->toArray();
         $data['slug'] = $this->generateUniqueSlug($storePostData->title);
 
         return $user->posts()->create($data);
     }
 
-    public function update(User $user, Post $post, UpdatePostData $updatePostData): Post
+    public function update(Post $post, UpdatePostData $updatePostData): Post
     {
-        // Filter out null values to avoid overwriting existing fields with null
-        $data = collect([
-            'title' => $updatePostData->title,
-            'body' => $updatePostData->body,
-            'published_on' => $updatePostData->published_on,
-        ])->filter(static fn (?string $value): bool => $value !== null)->all();
+        $this->resolvePostWriter($updatePostData->user_id);
 
-        if ($updatePostData->title !== null && $updatePostData->title !== $post->title) {
+        $data = $updatePostData->toArray();
+
+        if ($updatePostData->title !== $post->title) {
             $data['slug'] = $this->generateUniqueSlug($updatePostData->title, $post);
             // TODO: If slug changes and old URLs were shared externally,
             // .. consider adding a redirects table to map old slugs → new slugs (301 redirects).
@@ -44,7 +43,7 @@ readonly class PostService
     /**
      * Delete the given post.
      */
-    public function delete(User $user, Post $post): ?bool
+    public function delete(Post $post): ?bool
     {
         return $post->delete();
     }
@@ -108,6 +107,22 @@ readonly class PostService
         }
 
         return $query->exists();
+    }
+
+    /**
+     * Ensure the given user ID belongs to a writer user.
+     *
+     * @throws \RuntimeException if the user is not a writer
+     */
+    private function resolvePostWriter(int $userId): User
+    {
+        $user = User::findOrFail($userId);
+
+        if (! $user::isWriter($user)) {
+            throw new \RuntimeException('Post User must be a writer.');
+        }
+
+        return $user;
     }
 
     /**
