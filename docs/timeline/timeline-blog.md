@@ -172,9 +172,13 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 ## DONE - LIVEWIRE - add admin for user from `menu > admin item` - when loggedin as admin - Maybe use only Pure livewire V3 for this part, to test/implement this style
 
+## DONE - convert livewire v3 to livewire v4 - and all the extra's?
+
+## DONE - Add admin blog post crud with comments lister+delete on edit
+
 >HERE
 
-## TODO - convert livewire v3 to livewire v4 - and all the extra's?
+## TODO - create feature test for the admin blog posts + comments
 
 ## TODO - use flux for the frontend components?
 

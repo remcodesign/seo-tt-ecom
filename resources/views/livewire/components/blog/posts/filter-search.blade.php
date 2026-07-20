@@ -10,7 +10,7 @@
                 <label for="search" class="block text-sm font-medium text-slate-700">Search</label>
                 <input id="search" wire:model.live.debounce.250ms="search"
                     class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200"
-                    placeholder="Search by name or email" />
+                    placeholder="Blog title" />
             </div>
         </div>
     </div>

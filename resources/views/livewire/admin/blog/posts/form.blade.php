@@ -1,4 +1,5 @@
 @use(\App\Livewire\Components\Blog\Posts\CommentLister)
+@use(\App\Models\Blog\Post)
 
 <div class="mx-auto max-w-4xl rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
     <div class="space-y-3">
@@ -69,5 +70,5 @@
     </form>
 
     {{-- comment lister section --}}
-    @livewire(CommentLister::class, ['post' => $form->post])
+    @livewire(CommentLister::class, ['post' => $form->post ?? new Post()])
 </div>

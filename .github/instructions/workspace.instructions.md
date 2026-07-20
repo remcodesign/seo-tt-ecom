@@ -26,6 +26,7 @@ applyTo: '**/*'
 - Keep state explicit: `public string $search = ''`, `public string $roleLabelFilter = 'all'`, and initialize prop lists in `mount()` when needed.
 - Use `wire:key` on repeated elements like option rows or table rows to preserve DOM stability and avoid render glitches.
 - Test Livewire components with `Livewire::test()` for both parent behavior and child event dispatching: use `assertDispatched()` for `dispatch()` events and use `assertSet()` / `assertSee()` for parent state changes.
+- When asserting raw HTML markup or Livewire attributes in component output, prefer `assertSeeHtml()` rather than `assertSee()`. `assertSee()` escapes HTML, so markup like `wire:click="delete(1)"` should be asserted with `assertSeeHtml()`.
 
 ---
 
