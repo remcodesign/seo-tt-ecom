@@ -23,6 +23,31 @@ namespace {
     uses(RefreshDatabase::class);
 
     describe('PostService', function (): void {
+        describe('create + update', function (): void {
+            it('throws when a non-writer user is used to create a post', function (): void {
+                $user = User::factory()->create(['role_label' => 'admin']);
+                $postService = app(PostService::class);
+
+                expect(fn () => $postService->create(new StorePostData(
+                    user_id: $user->id,
+                    title: 'My New Post',
+                    body: 'Post body content',
+                    published_on: now()->toImmutable(),
+                )))->toThrow(RuntimeException::class, 'User must have the "writer" role to create or update posts.');
+            });
+
+            it('throws when a non-writer user is used to update a post', function (): void {
+                $user = User::factory()->create(['role_label' => 'admin']);
+                $post = Post::factory()->for(User::factory(['role_label' => 'writer']))->create();
+                $postService = app(PostService::class);
+
+                expect(fn () => $postService->update($post, new UpdatePostData(
+                    user_id: $user->id,
+                    title: 'Updated Title',
+                )))->toThrow(RuntimeException::class, 'User must have the "writer" role to create or update posts.');
+            });
+        });
+
         describe('create', function (): void {
             it('creates a post with auto-generated slug from title', function (): void {
                 $user = User::factory()->create(['role_label' => 'writer']);
@@ -218,7 +243,6 @@ namespace {
                 $ids = $lengthAwarePaginator->pluck('id')->all();
                 expect($ids)->toBe([$latest->id, $older->id]);
             });
-
         });
     });
 }

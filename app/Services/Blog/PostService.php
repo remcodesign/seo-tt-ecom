@@ -119,7 +119,7 @@ readonly class PostService
         $user = User::findOrFail($userId);
 
         if (! $user::isWriter($user)) {
-            throw new \RuntimeException('Post User must be a writer.');
+            throw new \RuntimeException('User must have the "writer" role to create or update posts.');
         }
 
         return $user;

@@ -13,6 +13,8 @@ class PostForm extends LivewireForm
 
     public string $title = '';
 
+    public string $slug = '';
+
     public int $user_id = 0;
 
     public ?string $body = '';
@@ -23,6 +25,7 @@ class PostForm extends LivewireForm
     {
         $this->post = $post;
         $this->title = $post->title;
+        $this->slug = $post->slug;
         $this->user_id = $post->user_id;
         $this->body = $post->body;
         $this->published_on = $post->published_on?->toDateString();

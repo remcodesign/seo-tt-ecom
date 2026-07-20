@@ -11,18 +11,7 @@ class FilterSearch extends Component
 {
     public string $search = '';
 
-    /**
-     * @var array<int, array{value:string, label:string}>
-     */
-    public array $roleLabels = [];
-
-    /**
-     * @param  array<int, array{value:string, label:string}>  $roleLabels
-     */
-    public function mount(array $roleLabels = []): void
-    {
-        $this->roleLabels = $roleLabels;
-    }
+    public function mount(): void {}
 
     public function updatedSearch(): void
     {

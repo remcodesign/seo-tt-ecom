@@ -35,10 +35,32 @@
             </div>
         </div>
 
+        @if ($form->post?->exists)
+            <div class="grid gap-6 sm:grid-cols-2">
+                <div>
+                    <span class="block text-sm font-medium text-slate-700">
+
+                        Slug <strong>(Not editable)</strong>
+                        @if ($form->slug && $form->published_on && $form->published_on <= now()->toDateString())
+                            <a href="/blog/posts/{{ $form->slug }}" target="_blank"
+                                rel="noreferrer"
+                                class="ml-2 inline-block text-sm font-medium text-slate-500 hover:text-slate-700">
+                                View on frontend
+                            </a>
+                        @else
+                            <span class="ml-2 inline-block text-sm text-slate-500">Post is not published</span>
+                        @endif
+                    </span>
+                    <input disabled wire:model="form.slug" type="text"
+                        class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200" />
+                </div>
+            </div>
+        @endif
+
         <div class="grid gap-6 sm:grid-cols-1">
             <div>
                 <label for="body" class="block text-sm font-medium text-slate-700">Body</label>
-                <textarea rows="4" id="body" wire:model="form.body"
+                <textarea rows="6" id="body" wire:model="form.body"
                     class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200"></textarea>
 
                 @error('form.body')

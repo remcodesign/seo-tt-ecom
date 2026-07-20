@@ -15,20 +15,31 @@ class CommentLister extends Component
 
     public Post $post;
 
+    public ?string $errorMessage = null;
+
     public function mount(Post $post): void
     {
         $this->post = $post;
     }
 
-    public function deleteComment(int $commentId): void
+    public function delete(int $commentId): void
     {
         if (! $this->post->exists) {
-            session()->flash('error', 'Cannot delete comment: Post does not exist.');
+            $this->errorMessage = 'Cannot delete comment: Post does not exist.';
 
             return;
         }
 
-        $this->post->comments()->findOrFail($commentId)->delete();
+        $comment = $this->post->comments()->find($commentId);
+
+        if (! $comment) {
+            $this->errorMessage = 'Cannot delete comment: Comment does not exist.';
+
+            return;
+        }
+
+        $comment->delete();
+        $this->errorMessage = null;
         $this->resetPage();
     }
 

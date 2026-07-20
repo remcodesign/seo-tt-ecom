@@ -12,7 +12,7 @@
                 <p class="mt-1 text-sm text-slate-800">{{ $comment->comment }}</p>
 
                 <div class="text-right">
-                    <button type="button" wire:click="deleteComment({{ $comment->id }})"
+                    <button type="button" wire:click="delete({{ $comment->id }})"
                         wire:confirm="Are you sure you want to delete this comment?" wire:loading.attr="disabled"
                         class="mt-3 cursor-pointer  text-rose-700 transition  hover:text-rose-300">
                         Delete
@@ -23,6 +23,12 @@
             <p class="text-sm text-slate-500">No comments yet.</p>
         @endforelse
     </div>
+
+    @if ($errorMessage)
+        <div class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {{ $errorMessage }}
+        </div>
+    @endif
 
     @if ($comments->hasPages())
         <div class="mt-4 pt-6">
