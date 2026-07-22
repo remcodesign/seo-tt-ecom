@@ -146,9 +146,11 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 docs/private/todo/done/10-category-polymorphic-plan.md
 
+## DONE (DEV) add `Debugbar for Laravel` - <https://github.com/fruitcake/laravel-debugbar>
+
 >HERE
 
-## TODO (DEV) add `Debugbar for Laravel` - <https://github.com/fruitcake/laravel-debugbar>
+## TODO - try to use `app/Data/Poly/CategoryIdsData.php` as the category DTO
 
 ## TODO - create Admin Categories CRUD
 
