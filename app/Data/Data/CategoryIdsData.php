@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data\Poly;
+namespace App\Data\Data;
 
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;

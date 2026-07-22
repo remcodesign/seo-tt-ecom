@@ -160,6 +160,7 @@ readonly class PostService
     private function resolveCategoryIds(array $categoryIds): array
     {
         // todo (future) create category service to handle this logic, and move this logic to that service)
+        // add caching for the "Uncategorized" category to avoid repeated DB queries in a single request
         $uncategorized = Category::firstOrCreate(
             ['slug' => 'uncategorized'],
             ['name' => '[Uncategorized]'],
