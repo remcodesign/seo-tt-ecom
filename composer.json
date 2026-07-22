@@ -80,12 +80,20 @@
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
+        "db_refresh": [
+            "@php artisan migrate:refresh",
+            "@php artisan db:seed"
+        ],
         "pint": "vendor/bin/pint",
         "rector": "vendor/bin/rector process",
         "phpstan": "vendor/bin/phpstan analyse",
         "stan": "@phpstan",
-        "pest": "vendor/bin/pest --compact",
+        "pest": [
+            "@php artisan config:clear --ansi @no_additional_args",
+            "vendor/bin/pest --compact"
+        ],
         "coverage": [
+            "@php artisan config:clear --ansi @no_additional_args",
             "@php -r \"is_dir('public/coverage') && system('rm -rf public/coverage');\"",
             "XDEBUG_MODE=coverage vendor/bin/pest --compact --parallel --coverage-html public/coverage --coverage-clover clover.xml"
         ],

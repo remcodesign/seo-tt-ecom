@@ -95,6 +95,7 @@ export type StoreCommentData = {
 export type StorePostData = {
     user_id: number;
     title: string;
+    category_ids: number[];
     body: string | null;
     published_on: string | null;
 };
@@ -107,6 +108,7 @@ export type UpdateCommentData = {
 export type UpdatePostData = {
     user_id: number;
     title: string;
+    category_ids: number[];
     body: string | null;
     published_on: string | null;
 };

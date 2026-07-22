@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Blog;
 
+use App\Models\Category;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Database\Factories\Blog\PostFactory;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -68,6 +70,14 @@ class Post extends BlogRootModel
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * @return MorphToMany<Category, $this>
+     */
+    public function categories(): MorphToMany
+    {
+        return $this->morphToMany(Category::class, 'categorizable')->withTimestamps();
     }
 
     /**

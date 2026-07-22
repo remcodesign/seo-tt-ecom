@@ -20,7 +20,7 @@
     @endif
 
     {{-- filter / search section --}}
-    @livewire(FilterSearch::class)
+    @livewire(FilterSearch::class, ['categories' => $categories])
 
     {{-- lister --}}
     <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
@@ -35,6 +35,12 @@
                             @if ($orderBy === 'id')
                                 <span aria-hidden="true">{{ $orderDirection === 'asc' ? '▲' : '▼' }}</span>
                             @endif
+                        </button>
+                    </th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+                        <button type="button" wire:click="sortBy('category')"
+                            class="cursor-pointer inline-flex items-center gap-2 text-slate-500 transition hover:text-slate-900">
+                            Category
                         </button>
                     </th>
                     <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
@@ -78,8 +84,10 @@
                 @forelse ($posts as $post)
                     <tr wire:key="post-{{ $post->id }}">
                         <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500">{{ $post->id }}</td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900">
+                            {{ $post->categories->pluck('name')->join(', ') ?: '[Uncategorized]' }}</td>
                         <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-900">{{ $post->title }}
-                            
+
                             @if ($post->comments_count > 0)
                                 <span class="ml-2 text-xs text-blue-400">({{ $post->comments_count }})</span>
                             @endif
@@ -102,7 +110,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-sm text-slate-500">
+                        <td colspan="7" class="px-6 py-8 text-center text-sm text-slate-500">
                             No posts found.
                         </td>
                     </tr>

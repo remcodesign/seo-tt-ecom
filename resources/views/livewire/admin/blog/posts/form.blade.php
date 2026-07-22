@@ -10,6 +10,24 @@
     </div>
 
     <form wire:submit="save" class="mt-8 space-y-6">
+
+        {{-- categories --}}
+        <div class="grid gap-6 sm:grid-cols-2">
+            <div>
+                <label for="category_ids" class="block text-sm font-medium text-slate-700">Categories</label>
+                <select id="category_ids" wire:model="form.category_ids" multiple
+                    class="mt-2 block w-full min-h-56 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200">
+                    @foreach ($categories as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+                @error('form.category_ids')
+                    <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
+        {{-- title + writer --}}
         <div class="grid gap-6 sm:grid-cols-2">
             <div>
                 <label for="title" class="block text-sm font-medium text-slate-700">Title</label>
@@ -36,14 +54,14 @@
         </div>
 
         @if ($form->post?->exists)
+            {{-- slug (readonly) --}}
             <div class="grid gap-6 sm:grid-cols-2">
                 <div>
                     <span class="block text-sm font-medium text-slate-700">
 
                         Slug <strong>(Not editable)</strong>
                         @if ($form->slug && $form->published_on && $form->published_on <= now()->toDateString())
-                            <a href="/blog/posts/{{ $form->slug }}" target="_blank"
-                                rel="noreferrer"
+                            <a href="/blog/posts/{{ $form->slug }}" target="_blank" rel="noreferrer"
                                 class="ml-2 inline-block text-sm font-medium text-slate-500 hover:text-slate-700">
                                 View on frontend
                             </a>
@@ -57,10 +75,11 @@
             </div>
         @endif
 
+        {{-- body --}}
         <div class="grid gap-6 sm:grid-cols-1">
             <div>
                 <label for="body" class="block text-sm font-medium text-slate-700">Body</label>
-                <textarea rows="6" id="body" wire:model="form.body"
+                <textarea rows="8" id="body" wire:model="form.body"
                     class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:ring-4 focus:ring-slate-200"></textarea>
 
                 @error('form.body')
@@ -69,6 +88,7 @@
             </div>
         </div>
 
+        {{-- published on --}}
         <div class="grid gap-6 sm:grid-cols-2">
             <div>
                 <label for="published_on" class="block text-sm font-medium text-slate-700">Published On</label>
@@ -80,6 +100,7 @@
             </div>
         </div>
 
+        {{-- actions --}}
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <a href="{{ route('admin.blog.posts.index') }}"
                 class="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-100">Cancel</a>
@@ -89,6 +110,7 @@
                 {{ $form->post?->exists ? 'Save changes' : 'Create post' }}
             </button>
         </div>
+
     </form>
 
     {{-- comment lister section --}}

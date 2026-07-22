@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\RoleLabel;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -157,9 +158,11 @@ describe('PostController (API)', function (): void {
     describe('store', function (): void {
         it('creates a new post for an authenticated user', function (): void {
             Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
+            $category = Category::factory()->create();
 
             $response = $this->postJson('/api/blog/posts', [
                 'user_id' => $user->id,
+                'category_ids' => [$category->id],
                 'title' => 'My New Post',
                 'body' => 'This is the body content.',
                 'published_on' => now()->toDateTimeString(),
@@ -193,15 +196,51 @@ describe('PostController (API)', function (): void {
                 ->assertUnprocessable()
                 ->assertJsonValidationErrors(['title']);
         });
+
+        it('defaults to Uncategorized when no category is provided - 1', function (): void {
+            Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
+            // Create the "Uncategorized" category explicitly for this test
+            $uncategorized = Category::factory()->create(['slug' => 'uncategorized']);
+
+            $response = $this->postJson('/api/blog/posts', [
+                'user_id' => $user->id,
+                'category_ids' => [],
+                'title' => 'Uncategorized Post',
+                'body' => 'Body',
+            ]);
+
+            $response->assertCreated();
+
+            $post = Post::where('title', 'Uncategorized Post')->first();
+            expect($post->categories()->first()->id)->toBe($uncategorized->id);
+        });
+
+        it('defaults to Uncategorized when no category is provided - 2', function (): void {
+            Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
+            // no creation of the "Uncategorized" category, the system should create it automatically
+            $response = $this->postJson('/api/blog/posts', [
+                'user_id' => $user->id,
+                'category_ids' => [],
+                'title' => 'Uncategorized Post',
+                'body' => 'Body',
+            ]);
+
+            $response->assertCreated();
+
+            $post = Post::where('title', 'Uncategorized Post')->first();
+            expect($post->categories()->first()->slug)->toBe('uncategorized');
+        });
     });
 
     describe('update', function (): void {
         it('updates a post when the authenticated user is the owner', function (): void {
             Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
             $post = Post::factory()->for($user)->create(['title' => 'Original Title']);
+            $category = Category::factory()->create();
 
             $response = $this->putJson('/api/blog/posts/'.$post->id, [
                 'user_id' => $user->id,
+                'category_ids' => [$category->id],
                 'title' => 'Updated Title',
             ]);
 
@@ -216,10 +255,11 @@ describe('PostController (API)', function (): void {
             $owner = User::factory()->create();
             $other = User::factory()->create();
             $post = Post::factory()->for($owner)->create();
+            $category = Category::factory()->create();
 
             Sanctum::actingAs($other);
 
-            $this->putJson('/api/blog/posts/'.$post->id, ['user_id' => $other->id, 'title' => 'Hacked'])
+            $this->putJson('/api/blog/posts/'.$post->id, ['user_id' => $other->id, 'category_ids' => [$category->id], 'title' => 'Hacked'])
                 ->assertForbidden();
         });
 
@@ -227,10 +267,11 @@ describe('PostController (API)', function (): void {
             $owner = User::factory()->create(['role_label' => RoleLabel::writer]);
             $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
             $post = Post::factory()->for($owner)->create(['title' => 'Original']);
+            $category = Category::factory()->create();
 
             Sanctum::actingAs($admin);
 
-            $this->putJson('/api/blog/posts/'.$post->id, ['user_id' => $owner->id, 'title' => 'Admin Updated'])
+            $this->putJson('/api/blog/posts/'.$post->id, ['user_id' => $owner->id, 'category_ids' => [$category->id], 'title' => 'Admin Updated'])
                 ->assertSuccessful()
                 ->assertJson(['title' => 'Admin Updated']);
 

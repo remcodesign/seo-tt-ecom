@@ -7,6 +7,7 @@ namespace App\Livewire\Admin\Blog\Posts;
 use App\Data\Blog\Requests\StorePostData;
 use App\Data\Blog\Requests\UpdatePostData;
 use App\Models\Blog\Post;
+use App\Models\Category;
 use App\Models\User;
 use App\Services\Blog\PostService;
 use Illuminate\Contracts\View\View;
@@ -21,6 +22,7 @@ class Form extends Component
     public function mount(?Post $post = null): void
     {
         if ($post instanceof Post && $post->exists) {
+            $post->loadMissing('categories');
             $this->form->setPost($post);
         }
     }
@@ -55,6 +57,7 @@ class Form extends Component
     {
         return view('livewire.admin.blog.posts.form', [
             'writers' => User::getWriters(),
+            'categories' => Category::query()->orderBy('name')->pluck('name', 'id')->toArray(),
         ]);
     }
 }

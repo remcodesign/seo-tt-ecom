@@ -28,10 +28,26 @@ final class StorePostData extends Data
         #[Required, StringType, Max(255)]
         public string $title,
 
+        /** @var array<int> */
+        #[Sometimes, IntegerType]
+        public array $category_ids,
+
         #[Sometimes, Nullable, StringType]
         public ?string $body = null,
 
         #[Sometimes, Nullable, Date, WithCast(DateTimeInterfaceCast::class, ['Y-m-d', 'Y-m-d H:i:s'])]
         public ?CarbonImmutable $published_on = null,
     ) {}
+
+    /**
+     * @param  mixed  $context
+     * @return array<string, array<int, string>>
+     */
+    public static function rules($context = null): array
+    {
+        return [
+            'category_ids' => ['present', 'array'],
+            'category_ids.*' => ['integer', 'distinct', 'exists:categories,id'],
+        ];
+    }
 }

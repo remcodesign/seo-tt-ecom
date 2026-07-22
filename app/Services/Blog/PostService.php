@@ -7,8 +7,10 @@ namespace App\Services\Blog;
 use App\Data\Blog\Requests\StorePostData;
 use App\Data\Blog\Requests\UpdatePostData;
 use App\Models\Blog\Post;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 readonly class PostService
@@ -17,17 +19,33 @@ readonly class PostService
     {
         $user = $this->resolvePostWriter($storePostData->user_id);
 
-        $data = $storePostData->toArray();
-        $data['slug'] = $this->generateUniqueSlug($storePostData->title);
+        $categoryIds = $this->resolveCategoryIds($storePostData->category_ids);
 
-        return $user->posts()->create($data);
+        $data = [
+            'title' => $storePostData->title,
+            'body' => $storePostData->body,
+            'published_on' => $storePostData->published_on,
+            'slug' => $this->generateUniqueSlug($storePostData->title),
+        ];
+
+        $post = $user->posts()->create($data);
+        $post->categories()->sync($categoryIds);
+
+        return $post;
     }
 
     public function update(Post $post, UpdatePostData $updatePostData): Post
     {
         $this->resolvePostWriter($updatePostData->user_id);
 
-        $data = $updatePostData->toArray();
+        $categoryIds = $this->resolveCategoryIds($updatePostData->category_ids);
+
+        $data = [
+            'user_id' => $updatePostData->user_id,
+            'title' => $updatePostData->title,
+            'body' => $updatePostData->body,
+            'published_on' => $updatePostData->published_on,
+        ];
 
         if ($updatePostData->title !== $post->title) {
             $data['slug'] = $this->generateUniqueSlug($updatePostData->title, $post);
@@ -36,6 +54,7 @@ readonly class PostService
         }
 
         $post->update($data);
+        $post->categories()->sync($categoryIds);
 
         return $post;
     }
@@ -123,6 +142,44 @@ readonly class PostService
         }
 
         return $user;
+    }
+
+    /**
+     * Resolve the category IDs for a post, applying the "Uncategorized" fallback.
+     *
+     * If no category IDs are provided, defaults to the "Uncategorized" category.
+     *
+     * If the "Uncategorized" category was selected alongside real categories,
+     * it is removed so that only real categories are assigned.
+     *
+     * (PHPStan) The "Uncategorized" category is guaranteed to exist via the CategorySeeder
+     *
+     * @param  array<int>  $categoryIds
+     * @return array<int>
+     */
+    private function resolveCategoryIds(array $categoryIds): array
+    {
+        $categoryIds = array_map(intval(...), $categoryIds);
+
+        // todo (future) create category service to handle this logic, and move this logic to that service)
+        $uncategorized = Category::firstOrCreate(
+            ['slug' => 'uncategorized'],
+            ['name' => '[Uncategorized]'],
+        );
+
+        if ($categoryIds === []) {
+            return [$uncategorized->id];
+        }
+
+        // If a real category was also selected, remove the "Uncategorized" fallback
+        if (count($categoryIds) > 1 && in_array($uncategorized->id, $categoryIds, true)) {
+            return Collection::make($categoryIds)
+                ->filter(static fn (int $id): bool => $id !== $uncategorized->id)
+                ->values()
+                ->all();
+        }
+
+        return $categoryIds;
     }
 
     /**

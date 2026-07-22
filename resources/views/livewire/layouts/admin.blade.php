@@ -14,7 +14,7 @@
 <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
     <div class="min-h-screen">
         <header class="border-b border-slate-200 bg-white/80 backdrop-blur-sm">
-            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <div class="mx-auto flex max-w-8xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                 <div>
                     <a href="{{ route('admin.dashboard') }}"
                         class="text-lg font-semibold text-slate-900">{{ config('app.name', 'Laravel') }} Admin</a>
@@ -34,7 +34,7 @@
             </div>
         </header>
 
-        <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <main class="mx-auto max-w-8xl px-4 py-10 sm:px-6 lg:px-8">
             {{ $slot }}
         </main>
     </div>

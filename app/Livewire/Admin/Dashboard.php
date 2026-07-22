@@ -9,6 +9,7 @@ use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -27,9 +28,17 @@ class Dashboard extends Component
 
     public function render(): View
     {
+        $postCategoryCount = DB::table('categorizables')
+            ->where('categorizable_type', Post::class)
+            ->distinct('category_id')
+            ->count('category_id');
+
         return view('livewire.admin.dashboard', [
             'userCount' => User::count(),
+
+            'postCategoryCount' => $postCategoryCount,
             'postCount' => Post::count(),
+
             'commentCount' => Comment::count(),
         ]);
     }

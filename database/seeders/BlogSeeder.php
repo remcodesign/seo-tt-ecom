@@ -8,6 +8,7 @@ use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\StorePostData;
 use App\Enums\RoleLabel;
 use App\Models\Blog\Post;
+use App\Models\Category;
 use App\Models\User;
 use App\Services\Blog\CommentService;
 use App\Services\Blog\PostService;
@@ -22,6 +23,8 @@ final class BlogSeeder extends Seeder
 
     public function run(): void
     {
+        $this->call(CategorySeeder::class);
+
         $generator = app(Faker::class);
 
         $makeBody = static function (Faker $faker): string {
@@ -60,15 +63,44 @@ final class BlogSeeder extends Seeder
 
         $commentCounts = [1, 2, 3, 4, 1, 3, 2];
 
+        // Fetch the "Uncategorized" category (seeded by CategorySeeder) and add more categories
+        $categoriesList = [];
+        // 'uncategorized' should be guaranteed to exist via the CategorySeeder,
+        // failing if it does not exist. This is a PHPStan guarantee, so that the seeder can be run in any order without worrying about the "Uncategorized" category not existing.
+        $categoriesList[] = Category::query()->where('slug', 'uncategorized')->firstOrFail();
+        $categoriesList[] = Category::factory()->create(['name' => 'DB Migrations', 'slug' => 'db-migrations']);
+        $categoriesList[] = Category::factory()->create(['name' => 'Laravel Testing', 'slug' => 'laravel-testing']);
+        $categoriesList[] = Category::factory()->create(['name' => 'Frontend Development', 'slug' => 'frontend-development']);
+
         // Create published posts with comments
-        $publishedPosts = collect($publishedTitles)->map(function (string $title, int $index) use ($writers, $postService, $generator, $makeBody): Post {
+        $publishedPosts = collect($publishedTitles)->map(function (string $title, int $index) use ($writers, $postService, $generator, $makeBody, $categoriesList): Post {
+            /** @var User $writer */
             $writer = $writers->get($index % $writers->count());
-            assert($writer instanceof User);
+
+            // choose 2 random categories or "Uncategorized" from the list of categories
+            $randChoice = random_int(0, 1);
+            if ($randChoice === 0) {
+                do {
+                    $categoriesRaw = array_rand($categoriesList, 2);
+                    /** @var Category[] $categories */
+                    $categories = [$categoriesList[$categoriesRaw[0]], $categoriesList[$categoriesRaw[1]]];
+                } while (
+                    collect($categories)->pluck('name')->contains('[Uncategorized]')
+                );
+            } else {
+                /** @var Category[] $categories */
+                $categories = [$categoriesList[0]]; // "Uncategorized" category
+            }
+
+            // categories has many rows, convert to array of IDs for the DTO `category_ids`
+            /** @var array<int> $categoryIds */
+            $categoryIds = collect($categories)->pluck('id')->all();
 
             return $postService->create(
                 new StorePostData(
                     user_id: $writer->id,
                     title: $title,
+                    category_ids: $categoryIds,
                     body: $makeBody($generator),
                     published_on: Carbon::now()->subDays(7 * ($index + 1))->toImmutable(),
                 ),
@@ -80,8 +112,8 @@ final class BlogSeeder extends Seeder
             $commentCount = $commentCounts[$index] ?? 2;
 
             for ($commentIndex = 0; $commentIndex < $commentCount; $commentIndex++) {
+                /** @var User $commenter */
                 $commenter = $commenters->get(($index + $commentIndex) % $commenters->count());
-                assert($commenter instanceof User);
 
                 $commentService->create(
                     $commenter,
@@ -94,20 +126,24 @@ final class BlogSeeder extends Seeder
             }
         }
 
+        /** @var User $writer */
         $writer = $writers->get(1);
-        assert($writer instanceof User);
 
         // Create a draft post with a draft-only comment.
+        /** @var Category $draftCategory */
+        $draftCategory = $categoriesList[array_rand($categoriesList, 1)];
+
         $draftPost = $postService->create(
             new StorePostData(
                 user_id: $writer->id,
                 title: 'Drafting the Next Big Feature',
+                category_ids: [$draftCategory->id],
                 body: $makeBody($generator),
             ),
         );
 
+        /** @var User $draftCommenter */
         $draftCommenter = $commenters->first();
-        assert($draftCommenter instanceof User);
 
         // Create a comment for the draft post, which should not be visible in the public API.
         $commentService->create(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Admin\Blog\Posts;
 
 use App\Models\Blog\Post;
+use App\Models\Category;
 use App\Services\Blog\PostService;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -26,6 +27,9 @@ class Index extends Component
 
     public string $search = '';
 
+    // string for 'all' category, int for specific category ID
+    public int|string $category = 'all';
+
     /** @var string[] */
     public array $allowableOrderColumns = ['id', 'title', 'published_on', 'created_at'];
 
@@ -33,6 +37,13 @@ class Index extends Component
     public function setSearch(string $search): void
     {
         $this->search = $search;
+        $this->resetPage();
+    }
+
+    #[On('categoryFilterUpdated')]
+    public function setCategory(int|string $category): void
+    {
+        $this->category = $category;
         $this->resetPage();
     }
 
@@ -64,15 +75,20 @@ class Index extends Component
 
     public function render(): View
     {
+        $lengthAwarePaginator = Post::query()
+            ->when($this->search !== '', fn ($query) => $query->where(function ($query): void {
+                $query->where('title', 'like', '%'.$this->search.'%');
+            }))
+            ->when(is_numeric($this->category), fn ($query) => $query->whereHas('categories', fn ($query) => $query->where('categories.id', (int) $this->category)))
+            ->with('user')
+            ->with('categories')
+            ->withCount('comments')
+            ->orderBy($this->orderBy, $this->orderDirection === 'asc' ? 'asc' : 'desc')
+            ->paginate(8);
+
         return view('livewire.admin.blog.posts.index', [
-            'posts' => Post::query()
-                ->when($this->search !== '', fn ($query) => $query->where(function ($query): void {
-                    $query->where('title', 'like', '%'.$this->search.'%');
-                }))
-                // with comment count to prevent N+1
-                ->withCount('comments')
-                ->orderBy($this->orderBy, $this->orderDirection === 'asc' ? 'asc' : 'desc')
-                ->paginate(8),
+            'posts' => $lengthAwarePaginator,
+            'categories' => Category::query()->orderBy('name')->pluck('name', 'id')->toArray(),
         ]);
     }
 }

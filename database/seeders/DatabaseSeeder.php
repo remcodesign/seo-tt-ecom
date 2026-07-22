@@ -41,6 +41,10 @@ class DatabaseSeeder extends Seeder
             'role_label' => RoleLabel::admin,
         ]);
 
-        $this->call(BlogSeeder::class);
+        // Seed the category data
+        $this->call([
+            CategorySeeder::class,
+            BlogSeeder::class,
+        ]);
     }
 }

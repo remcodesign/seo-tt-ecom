@@ -11,11 +11,30 @@ class FilterSearch extends Component
 {
     public string $search = '';
 
-    public function mount(): void {}
+    // string for 'all' category, int for specific category ID
+    public int|string $category = 'all';
+
+    /**
+     * @var array<int, string>
+     */
+    public array $categories = [];
+
+    /**
+     * @param  array<int, string>  $categories
+     */
+    public function mount(array $categories = []): void
+    {
+        $this->categories = $categories;
+    }
 
     public function updatedSearch(): void
     {
         $this->dispatch('searchUpdated', $this->search);
+    }
+
+    public function updatedCategory(): void
+    {
+        $this->dispatch('categoryFilterUpdated', $this->category);
     }
 
     public function render(): View

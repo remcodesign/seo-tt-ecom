@@ -8,6 +8,7 @@ use App\Livewire\Admin\Blog\Posts\Index;
 use App\Livewire\Components\Blog\Posts\CommentLister;
 use App\Livewire\Components\Blog\Posts\FilterSearch;
 use App\Models\Blog\Post;
+use App\Models\Category;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -89,10 +90,37 @@ describe('Livewire admin blog posts', function (): void {
                 ->assertDontSee(Post::where('id', '!=', $postToSearch->id)->first()->title);
         });
 
+        it('filters posts by category', function (): void {
+            $writer = User::factory()->create([
+                'role_label' => RoleLabel::writer,
+            ]);
+
+            $category1 = Category::factory()->create();
+            $category2 = Category::factory()->create();
+
+            $post1 = Post::factory()->for($writer)->create();
+            $post1->categories()->sync([$category1->id]);
+
+            $post2 = Post::factory()->for($writer)->create();
+            $post2->categories()->sync([$category2->id]);
+
+            Livewire::test(Index::class)
+                ->set('category', (string) $category1->id)
+                ->call('setCategory', (string) $category1->id)
+                ->assertSee($post1->title)
+                ->assertDontSee($post2->title);
+        });
+
         it('dispatches searchUpdated when the search input changes', function (): void {
             Livewire::test(FilterSearch::class)
                 ->set('search', 'test')
                 ->assertDispatched('searchUpdated', 'test');
+        });
+
+        it('dispatches categoryFilterUpdated when the category filter changes', function (): void {
+            Livewire::test(FilterSearch::class)
+                ->set('category', 'test')
+                ->assertDispatched('categoryFilterUpdated', 'test');
         });
 
         it('sorts posts by title', function (): void {
@@ -150,14 +178,20 @@ describe('Livewire admin blog posts', function (): void {
                 'role_label' => RoleLabel::writer,
             ]);
 
+            $category = Category::factory()->create();
+
             Livewire::test(Form::class)
                 ->set('form.title', 'New Post Title')
-                ->set('form.content', 'New Post Content')
+                ->set('form.body', 'New Post Content')
                 ->set('form.user_id', $writer->id)
+                ->set('form.category_ids', [$category->id])
                 ->call('save')
                 ->assertRedirectToRoute('admin.blog.posts.index');
 
-            expect(Post::where('title', 'New Post Title')->exists())->toBeTrue();
+            $post = Post::where('title', 'New Post Title')->first();
+
+            expect($post)->not->toBeNull();
+            expect($post->categories()->first()->id)->toBe($category->id);
         });
 
         it('creates a new post with published_on', function (): void {
@@ -165,18 +199,63 @@ describe('Livewire admin blog posts', function (): void {
                 'role_label' => RoleLabel::writer,
             ]);
 
+            $category = Category::factory()->create();
             $publishedOn = now()->addDay()->toDateString();
 
             Livewire::test(Form::class)
                 ->set('form.title', 'New Post Title')
-                ->set('form.content', 'New Post Content')
+                ->set('form.body', 'New Post Content')
                 ->set('form.user_id', $writer->id)
+                ->set('form.category_ids', [$category->id])
                 ->set('form.published_on', $publishedOn)
                 ->call('save')
                 ->assertRedirectToRoute('admin.blog.posts.index');
 
-            expect(Post::where('title', 'New Post Title')->exists())->toBeTrue();
-            expect(Post::where('title', 'New Post Title')->first()->published_on?->toDateString())->toBe($publishedOn);
+            $post = Post::where('title', 'New Post Title')->first();
+
+            expect($post)->not->toBeNull();
+            expect($post->published_on?->toDateString())->toBe($publishedOn);
+            expect($post->categories()->first()->id)->toBe($category->id);
+        });
+
+        it('creates a new post and defaults to Uncategorized when no category is selected - 1', function (): void {
+            // create the "Uncategorized" category first
+            $uncategorized = Category::factory()->create(['slug' => 'uncategorized']);
+            $writer = User::factory()->create([
+                'role_label' => RoleLabel::writer,
+            ]);
+
+            Livewire::test(Form::class)
+                ->set('form.title', 'Uncategorized Post')
+                ->set('form.body', 'No category set')
+                ->set('form.user_id', $writer->id)
+                ->call('save')
+                ->assertRedirectToRoute('admin.blog.posts.index');
+
+            $post = Post::where('title', 'Uncategorized Post')->first();
+
+            expect($post)->not->toBeNull();
+            expect($post->categories()->first()->id)->toBe($uncategorized->id);
+            expect($post->categories()->first()->slug)->toBe('uncategorized');
+        });
+
+        it('creates a new post and defaults to Uncategorized when no category is selected - 2', function (): void {
+            // no creation of the "Uncategorized" category, the system should create it automatically
+            $writer = User::factory()->create([
+                'role_label' => RoleLabel::writer,
+            ]);
+
+            Livewire::test(Form::class)
+                ->set('form.title', 'Uncategorized Post')
+                ->set('form.body', 'No category set')
+                ->set('form.user_id', $writer->id)
+                ->call('save')
+                ->assertRedirectToRoute('admin.blog.posts.index');
+
+            $post = Post::where('title', 'Uncategorized Post')->first();
+
+            expect($post)->not->toBeNull();
+            expect($post->categories()->first()->slug)->toBe('uncategorized');
         });
     });
 
@@ -258,10 +337,13 @@ describe('Livewire admin blog posts', function (): void {
 
             $newPublishedOn = now()->addDay()->toDateString();
 
+            $category = Category::factory()->create();
+
             Livewire::test(Form::class, ['post' => $post])
                 ->set('form.title', 'Updated Title')
                 ->set('form.body', 'Updated Body')
                 ->set('form.user_id', $newWriter->id)
+                ->set('form.category_ids', [$category->id])
                 ->set('form.published_on', $newPublishedOn)
                 ->call('save')
                 ->assertRedirectToRoute('admin.blog.posts.index');
@@ -271,11 +353,13 @@ describe('Livewire admin blog posts', function (): void {
             expect($post->title)->toBe('Updated Title');
             expect($post->body)->toBe('Updated Body');
             expect($post->user_id)->toBe($newWriter->id);
+            expect($post->categories()->first()->id)->toBe($category->id);
             expect($post->published_on?->toDateString())->toBe($newPublishedOn);
         });
 
         it('renders the edit post form with published_on prefilled', function (): void {
             $writer = User::factory()->create();
+            $category = Category::factory()->create();
 
             $post = Post::factory()
                 ->for($writer)
@@ -283,9 +367,12 @@ describe('Livewire admin blog posts', function (): void {
                     'published_on' => now()->subDay()->toDateString(),
                 ]);
 
+            $post->categories()->sync([$category->id]);
+
             Livewire::test(Form::class, ['post' => $post])
                 ->assertSuccessful()
-                ->assertSet('form.published_on', $post->published_on?->toDateString());
+                ->assertSet('form.published_on', $post->published_on?->toDateString())
+                ->assertSet('form.category_ids', [$category->id]);
         });
 
         it('persists an edited published_on date', function (): void {
@@ -293,16 +380,21 @@ describe('Livewire admin blog posts', function (): void {
                 'role_label' => RoleLabel::writer,
             ]);
 
+            $category = Category::factory()->create();
+
             $post = Post::factory()
                 ->for($writer)
                 ->create([
                     'published_on' => now()->subDays(2)->toDateString(),
                 ]);
 
+            $post->categories()->sync([$category->id]);
+
             $newPublishedOn = now()->addDay()->toDateString();
 
             Livewire::test(Form::class, ['post' => $post])
                 ->set('form.title', 'Updated Title')
+                ->set('form.category_ids', [$category->id])
                 ->set('form.published_on', $newPublishedOn)
                 ->call('save')
                 ->assertRedirectToRoute('admin.blog.posts.index');
@@ -315,13 +407,18 @@ describe('Livewire admin blog posts', function (): void {
                 'role_label' => RoleLabel::writer,
             ]);
 
+            $category = Category::factory()->create();
+
             $post = Post::factory()
                 ->for($writer)
                 ->create([
                     'published_on' => now()->subDays(5)->toDateString(),
                 ]);
 
+            $post->categories()->sync([$category->id]);
+
             Livewire::test(Form::class, ['post' => $post])
+                ->set('form.category_ids', [$category->id])
                 ->set('form.published_on', '')
                 ->call('save')
                 ->assertRedirectToRoute('admin.blog.posts.index');

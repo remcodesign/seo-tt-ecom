@@ -17,6 +17,11 @@ class PostForm extends LivewireForm
 
     public int $user_id = 0;
 
+    /**
+     * @var array<int>
+     */
+    public array $category_ids = [];
+
     public ?string $body = '';
 
     public ?string $published_on = null;
@@ -27,6 +32,11 @@ class PostForm extends LivewireForm
         $this->title = $post->title;
         $this->slug = $post->slug;
         $this->user_id = $post->user_id;
+
+        /** @var array<int> $rawCategoryIds */
+        $rawCategoryIds = $post->categories->pluck('id')->all();
+        $this->category_ids = $rawCategoryIds;
+
         $this->body = $post->body;
         $this->published_on = $post->published_on?->toDateString();
     }
@@ -40,6 +50,7 @@ class PostForm extends LivewireForm
     {
         return [
             'user_id' => $this->user_id,
+            'category_ids' => $this->category_ids,
             'title' => $this->title,
             'body' => $this->body,
             'published_on' => filled($this->published_on) ? $this->published_on : null,

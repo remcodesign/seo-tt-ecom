@@ -41,7 +41,7 @@
         <div class="mt-4 grid gap-4 sm:grid-cols-3 md:grid-cols-4">
             <a href="#"
                 class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
-                <p class="text-sm font-semibold text-slate-900">Categories ()</p>
+                <p class="text-sm font-semibold text-slate-900">Categories ({{ $postCategoryCount }})</p>
                 <p class="mt-2 text-sm text-slate-600">Manage content categories.</p>
             </a>
             <a href="{{ route('admin.blog.posts.index') }}"

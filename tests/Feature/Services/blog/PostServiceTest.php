@@ -15,6 +15,7 @@ namespace {
     use App\Data\Blog\Requests\UpdatePostData;
     use App\Models\Blog\Comment;
     use App\Models\Blog\Post;
+    use App\Models\Category;
     use App\Models\User;
     use App\Services\Blog\PostService;
     use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,8 +29,11 @@ namespace {
                 $user = User::factory()->create(['role_label' => 'admin']);
                 $postService = app(PostService::class);
 
+                $category = Category::factory()->create();
+
                 expect(fn () => $postService->create(new StorePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'My New Post',
                     body: 'Post body content',
                     published_on: now()->toImmutable(),
@@ -41,8 +45,11 @@ namespace {
                 $post = Post::factory()->for(User::factory(['role_label' => 'writer']))->create();
                 $postService = app(PostService::class);
 
+                $category = Category::factory()->create();
+
                 expect(fn () => $postService->update($post, new UpdatePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'Updated Title',
                 )))->toThrow(RuntimeException::class, 'User must have the "writer" role to create or update posts.');
             });
@@ -53,8 +60,11 @@ namespace {
                 $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
 
+                $category = Category::factory()->create();
+
                 $post = $postService->create(new StorePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'My New Post',
                     body: 'Post body content',
                     published_on: now()->toImmutable(),
@@ -72,8 +82,11 @@ namespace {
                 $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
 
+                $category = Category::factory()->create();
+
                 $post = $postService->create(new StorePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'My Post',
                     body: 'Body',
                     published_on: now()->toImmutable(),
@@ -83,6 +96,7 @@ namespace {
 
                 $second = $postService->create(new StorePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'My Post',
                     body: 'Another body',
                     published_on: now()->toImmutable(),
@@ -94,11 +108,13 @@ namespace {
             it('falls back to a random slug after 3 numeric collisions', function (): void {
                 $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
+                $category = Category::factory()->create();
 
                 for ($i = 0; $i < 5; $i++) {
                     $post = $postService->create(new StorePostData(
                         user_id: $user->id,
-                        title: 'Collision Test',
+                        category_ids: [$category->id],
+                        title: 'collision-test',
                         body: 'Body '.$i,
                         published_on: now()->toImmutable(),
                     ));
@@ -114,12 +130,14 @@ namespace {
             it('throws when a random fallback collides after multiple attempts', function (): void {
                 $user = User::factory()->create(['role_label' => 'writer']);
                 $postService = app(PostService::class);
+                $category = Category::factory()->create();
 
                 Post::factory()->for($user)->create(['title' => 'Collision Test', 'slug' => 'collision-test-123456']);
 
                 for ($i = 0; $i < 4; $i++) {
                     $postService->create(new StorePostData(
                         user_id: $user->id,
+                        category_ids: [$category->id],
                         title: 'Collision Test',
                         body: 'Body '.$i,
                         published_on: now()->toImmutable(),
@@ -128,6 +146,7 @@ namespace {
 
                 expect(fn () => $postService->create(new StorePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'Collision Test',
                     body: 'Final body',
                     published_on: now()->toImmutable(),
@@ -141,8 +160,11 @@ namespace {
                 $post = Post::factory()->for($user)->create(['title' => 'Original']);
                 $postService = app(PostService::class);
 
+                $category = Category::factory()->create();
+
                 $result = $postService->update($post, new UpdatePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'Updated',
                 ));
 
@@ -158,8 +180,11 @@ namespace {
                 $originalSlug = $post->slug;
                 $postService = app(PostService::class);
 
+                $category = Category::factory()->create();
+
                 $postService->update($post, new UpdatePostData(
                     user_id: $user->id,
+                    category_ids: [$category->id],
                     title: 'Original',
                     body: 'Only body update',
                 ));
@@ -177,6 +202,58 @@ namespace {
                 $postService->delete($post);
 
                 expect(Post::find($post->id))->toBeNull();
+            });
+        });
+
+        describe('category resolution', function (): void {
+            it('defaults to "Uncategorized" when no category IDs are provided and the category exists', function (): void {
+                $uncategorized = Category::factory()->create(['slug' => 'uncategorized']);
+                $user = User::factory()->create(['role_label' => 'writer']);
+                $postService = app(PostService::class);
+
+                $post = $postService->create(new StorePostData(
+                    user_id: $user->id,
+                    category_ids: [],
+                    title: 'No Category Selected',
+                    body: 'Body',
+                    published_on: now()->toImmutable(),
+                ));
+
+                expect($post->categories()->first()->id)->toBe($uncategorized->id);
+            });
+
+            it('removes "Uncategorized" when real categories are also selected', function (): void {
+                $uncategorized = Category::factory()->create(['slug' => 'uncategorized']);
+                $realCategory = Category::factory()->create();
+                $user = User::factory()->create(['role_label' => 'writer']);
+                $postService = app(PostService::class);
+
+                $post = $postService->create(new StorePostData(
+                    user_id: $user->id,
+                    category_ids: [$uncategorized->id, $realCategory->id],
+                    title: 'Mixed Categories',
+                    body: 'Body',
+                    published_on: now()->toImmutable(),
+                ));
+
+                $assignedIds = $post->categories->pluck('id')->all();
+                expect($assignedIds)->toBe([$realCategory->id]);
+            });
+
+            it('only assigns "Uncategorized" when it is the only category selected', function (): void {
+                $uncategorized = Category::factory()->create(['slug' => 'uncategorized']);
+                $user = User::factory()->create(['role_label' => 'writer']);
+                $postService = app(PostService::class);
+
+                $post = $postService->create(new StorePostData(
+                    user_id: $user->id,
+                    category_ids: [$uncategorized->id],
+                    title: 'Only Uncategorized',
+                    body: 'Body',
+                    published_on: now()->toImmutable(),
+                ));
+
+                expect($post->categories()->first()->id)->toBe($uncategorized->id);
             });
         });
 

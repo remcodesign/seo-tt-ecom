@@ -6,87 +6,51 @@
 
 docs/private/todo/done/1-blog-main-migration.md
 
--------------
-
 ## DONE - create blog post service + tests
 
 docs/private/todo/done/2-blog-post-service-test.md
-
--------------
 
 ## DONE - create blog post-comment service + tests
 
 docs/private/todo/done/3-blog-comment-service-test.md
 
--------------
-
 ## DONE - create blog post routes/request validation classes + controlers - no test
 
 docs/private/todo/done/4-blog-route-validation-controller-no-test.md
-
--------------
 
 ## DONE - add 'Laravel Sanctum' auth + custom user registration (API only)
 
 docs/private/todo/done/5-sanctum-user-reg-controller-guard-test.md
 
--------------
-
 ## DONE - model casts, `datetime` to `immutable_datetime` - this for no side-effects with carbon > CarbonImmutable and change default in `AppServiceProvider`
 
 docs/private/todo/done/6-default-immutable-carbon-classes.md
 
--------------
-
 ## DONE - fixed ddev db port
-
--------------
 
 ## DONE - `app/Http/Controllers/Api/Blog/PostController.php` using `Auth::user()` instead of the request object
 
--------------
-
 ## DONE - adding code coverage check
-
--------------
 
 ## DONE - prepent `blog` before `post / comments` tables
 
--------------
-
 ## DONE - prepent `blog` before `post` and `comment` classes/routes
-
--------------
 
 ## DONE - goto phpstan level 9 and use `spatie/laravel-data` DTO's for the whole stack - no RAW array passing anymore
 
 docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
--------------
-
 ## DONE - adding `comments` controller + tests - with the same style as the `post` controller
-
--------------
 
 ## DONE - make `blog` `post` and `comments` methods `index` and `show` public in the routes and tests
 
--------------
-
 ## DONE - seed the full blog (post + comments + users)
-
--------------
 
 ## DONE - blog post slug should be used for the show method
 
--------------
-
 ## DONE - user add fields `is_admin(bool)` `role_label(varchar)` to store a short label + change tests + seeder to use these fields + role_label ENUM
 
--------------
-
 ## DONE - blog post `published_on = null` should not be visible with the public index and show api calls
-
--------------
 
 <!-- ## TODO - postman test + sanctum > send full post/comment objects -->
 
@@ -176,13 +140,35 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 ## DONE - Add admin blog post crud with comments lister+delete on edit
 
+## DONE - create feature test for the admin blog posts + comments
+
+## DONE - add category as a Polymorphic model - currently 1 level (has already multiselect 1 level) - no Categories CRUD yet (blog)
+
+docs/private/todo/done/10-category-polymorphic-plan.md
+
 >HERE
 
-## TODO - create feature test for the admin blog posts + comments
+## TODO (DEV) add `Debugbar for Laravel` - <https://github.com/fruitcake/laravel-debugbar>
 
-## TODO - use flux for the frontend components?
+## TODO - create Admin Categories CRUD
+
+- create config for the name of the `['name' => '[Uncategorized]']` - so we can control it on one location
+- check if we can delete category without deleting the post - so no cascading
+- Use `app/Data/Poly/CategoryIdsData.php` to make data passing more clear and stable
+  - this in `app/Data/Blog/Requests/UpdatePostData.php + app/Data/Blog/Requests/StorePostData.php` and the rest, after that
+
+## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
+
+- create new tags on post edit
+- check if we can delete tags without deleting the post - so no cascading
+
+## TODO - make category multi level - also select 1 or many categories over the levels - currently already multiselect
 
 >THEN
+
+## TODO - render post categories on Vue 3 SPA frontend
+
+## TODO - use flux for the frontend components?
 
 ## TODO - add admin for blog (crud posts)
 
