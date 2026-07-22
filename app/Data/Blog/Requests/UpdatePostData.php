@@ -29,8 +29,8 @@ final class UpdatePostData extends Data
         public string $title,
 
         /** @var array<int> */
-        #[Sometimes, IntegerType]
-        public array $category_ids,
+        #[Sometimes]
+        public array $category_ids = [],
 
         #[Sometimes, Nullable, StringType]
         public ?string $body = null,

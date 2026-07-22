@@ -1,3 +1,6 @@
+export type CategoryIdsData = {
+    category_ids: number[];
+};
 export type CommentDataModifiedResponse = {
     id: number;
     post_id: number;

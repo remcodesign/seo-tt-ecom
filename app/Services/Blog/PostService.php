@@ -159,8 +159,6 @@ readonly class PostService
      */
     private function resolveCategoryIds(array $categoryIds): array
     {
-        $categoryIds = array_map(intval(...), $categoryIds);
-
         // todo (future) create category service to handle this logic, and move this logic to that service)
         $uncategorized = Category::firstOrCreate(
             ['slug' => 'uncategorized'],

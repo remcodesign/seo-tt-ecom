@@ -33,8 +33,8 @@ namespace {
 
                 expect(fn () => $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'My New Post',
+                    category_ids: [$category->id],
                     body: 'Post body content',
                     published_on: now()->toImmutable(),
                 )))->toThrow(RuntimeException::class, 'User must have the "writer" role to create or update posts.');
@@ -49,8 +49,8 @@ namespace {
 
                 expect(fn () => $postService->update($post, new UpdatePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'Updated Title',
+                    category_ids: [$category->id],
                 )))->toThrow(RuntimeException::class, 'User must have the "writer" role to create or update posts.');
             });
         });
@@ -64,8 +64,8 @@ namespace {
 
                 $post = $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'My New Post',
+                    category_ids: [$category->id],
                     body: 'Post body content',
                     published_on: now()->toImmutable(),
                 ));
@@ -86,8 +86,8 @@ namespace {
 
                 $post = $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'My Post',
+                    category_ids: [$category->id],
                     body: 'Body',
                     published_on: now()->toImmutable(),
                 ));
@@ -96,8 +96,8 @@ namespace {
 
                 $second = $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'My Post',
+                    category_ids: [$category->id],
                     body: 'Another body',
                     published_on: now()->toImmutable(),
                 ));
@@ -113,8 +113,8 @@ namespace {
                 for ($i = 0; $i < 5; $i++) {
                     $post = $postService->create(new StorePostData(
                         user_id: $user->id,
-                        category_ids: [$category->id],
                         title: 'collision-test',
+                        category_ids: [$category->id],
                         body: 'Body '.$i,
                         published_on: now()->toImmutable(),
                     ));
@@ -137,8 +137,8 @@ namespace {
                 for ($i = 0; $i < 4; $i++) {
                     $postService->create(new StorePostData(
                         user_id: $user->id,
-                        category_ids: [$category->id],
                         title: 'Collision Test',
+                        category_ids: [$category->id],
                         body: 'Body '.$i,
                         published_on: now()->toImmutable(),
                     ));
@@ -146,8 +146,8 @@ namespace {
 
                 expect(fn () => $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'Collision Test',
+                    category_ids: [$category->id],
                     body: 'Final body',
                     published_on: now()->toImmutable(),
                 )))->toThrow(RuntimeException::class, 'Unable to generate a unique slug for title "Collision Test" after multiple attempts. Choose a more unique title.');
@@ -164,8 +164,8 @@ namespace {
 
                 $result = $postService->update($post, new UpdatePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'Updated',
+                    category_ids: [$category->id],
                 ));
 
                 expect($result->title)->toBe('Updated');
@@ -184,8 +184,8 @@ namespace {
 
                 $postService->update($post, new UpdatePostData(
                     user_id: $user->id,
-                    category_ids: [$category->id],
                     title: 'Original',
+                    category_ids: [$category->id],
                     body: 'Only body update',
                 ));
 
@@ -213,8 +213,8 @@ namespace {
 
                 $post = $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [],
                     title: 'No Category Selected',
+                    category_ids: [],
                     body: 'Body',
                     published_on: now()->toImmutable(),
                 ));
@@ -230,8 +230,8 @@ namespace {
 
                 $post = $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [$uncategorized->id, $realCategory->id],
                     title: 'Mixed Categories',
+                    category_ids: [$uncategorized->id, $realCategory->id],
                     body: 'Body',
                     published_on: now()->toImmutable(),
                 ));
@@ -247,8 +247,8 @@ namespace {
 
                 $post = $postService->create(new StorePostData(
                     user_id: $user->id,
-                    category_ids: [$uncategorized->id],
                     title: 'Only Uncategorized',
+                    category_ids: [$uncategorized->id],
                     body: 'Body',
                     published_on: now()->toImmutable(),
                 ));
