@@ -3,7 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "ddev composer typescript && npm run lint && vite build",
+        "build": "composer typescript && vite build",
+        "build_d": "ddev composer typescript && npm run lint && vite build",
         "dev": "vite",
 
         "lint": "eslint \"resources/js/**/*.{js,ts,vue}\" --fix",

@@ -5,6 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    {{-- this website is for testing purposes only --}}
+    <meta name="robots" content="noindex, nofollow">
+
     <title>{{ $title ?? config('app.name', 'Laravel') . ' Admin' }}</title>
 
     @vite(['resources/css/livewire.css', 'resources/js/livewire.js'])
