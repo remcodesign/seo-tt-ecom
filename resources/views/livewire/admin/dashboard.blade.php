@@ -40,7 +40,7 @@
 
         <div class="mt-4 grid gap-4 sm:grid-cols-3 md:grid-cols-4">
             <a href="#"
-                class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
+                class="opacity-50 cursor-not-allowed rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                 <p class="text-sm font-semibold text-slate-900">Categories ({{ $postCategoryCount }})</p>
                 <p class="mt-2 text-sm text-slate-600">Manage content categories.</p>
             </a>
@@ -50,12 +50,12 @@
                 <p class="mt-2 text-sm text-slate-600">Manage and publish content.</p>
             </a>
             <a href="#"
-                class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
+                class="opacity-50 cursor-not-allowed rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                 <p class="text-sm font-semibold text-slate-900">Comments ({{ $commentCount }})</p>
                 <p class="mt-2 text-sm text-slate-600">Manage user comments.</p>
             </a>
             <a href="#"
-                class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
+                class="opacity-50 cursor-not-allowed rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                 <p class="text-sm font-semibold text-slate-900">Tags ()</p>
                 <p class="mt-2 text-sm text-slate-600">Manage content tags.</p>
             </a>
@@ -66,17 +66,17 @@
         <div class="mt-4 grid gap-4 sm:grid-cols-3 md:grid-cols-4">
         
             <a href="#"
-                class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
+                class="opacity-50 cursor-not-allowed  rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                 <p class="text-sm font-semibold text-slate-900">Categories</p>
                 <p class="mt-2 text-sm text-slate-600">Manage webshop categories.</p>
             </a>
             <a href="#"
-                class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
+                class="opacity-50 cursor-not-allowed rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                 <p class="text-sm font-semibold text-slate-900">Products</p>
                 <p class="mt-2 text-sm text-slate-600">Manage webshop products.</p>
             </a>
             <a href="#"
-                class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
+                class="opacity-50 cursor-not-allowed rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center transition hover:border-slate-300 hover:bg-slate-100">
                 <p class="text-sm font-semibold text-slate-900">Orders</p>
                 <p class="mt-2 text-sm text-slate-600">Manage webshop orders.</p>
             </a>
