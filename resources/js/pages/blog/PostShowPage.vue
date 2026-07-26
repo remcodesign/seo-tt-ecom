@@ -21,14 +21,12 @@ const error = ref<string | null>(null);
 type CommentColumn = keyof typeof commentColumnLabels;
 
 const commentColumnLabels = {
-    user: 'Author',
     comment: 'Comment',
-    created_at: 'Created',
     actions: 'Actions',
 } as const;
 
 const commentColumns = computed<CommentColumn[]>(() => {
-    const baseColumns: CommentColumn[] = ['user', 'comment', 'created_at'];
+    const baseColumns: CommentColumn[] = ['comment'];
 
     return auth.isAuthenticated.value ? [...baseColumns, 'actions'] : baseColumns;
 });

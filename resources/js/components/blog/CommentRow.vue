@@ -15,6 +15,8 @@ const props = defineProps<{
     onDelete?: (id: number) => Promise<void> | void;
 }>();
 
+let showFullCommentMode = ref(false);
+
 const displayComment = computed(() => {
     if (props.maxCommentLength && props.maxCommentLength > 0) {
         if (props.comment.comment.length <= props.maxCommentLength) {
@@ -24,6 +26,7 @@ const displayComment = computed(() => {
         return `${props.comment.comment.substring(0, props.maxCommentLength)}…`;
     }
 
+    showFullCommentMode.value = true;
     return props.comment.comment;
 });
 
@@ -112,48 +115,56 @@ const confirmDelete = async (): Promise<void> => {
 <template>
     <td class="px-4 py-4 align-top" v-if="columns?.includes('user') ?? true">
         <div class="flex flex-col gap-1">
-            <p class="text-sm font-semibold text-[#111113] dark:text-[#EDEDEC]">{{ props.comment.user.name ?? 'Unknown user' }}</p>
+            <p class="text-sm font-semibold text-[#111113] dark:text-[#EDEDEC]">
+                {{ props.comment.user.name ?? 'Unknown user' }}
+            </p>
         </div>
     </td>
 
     <td class="px-4 py-4 align-top" v-if="columns?.includes('comment') ?? true">
         <div>
             <div v-if="!editing" class="space-y-2">
-                <div
-                    ref="contentEl"
+
+                <!-- author and date -->
+                <div v-if="showFullCommentMode">
+                    <p class="mb-3 text-xs font-semibold text-[#111113] dark:text-[#EDEDEC]">
+                        {{ props.comment.user.name ?? 'Unknown user' }}
+
+                        -
+
+                        {{ props.comment.created_at ? new Date(props.comment.created_at).toLocaleDateString('nl-NL',
+                            {
+                                year: 'numeric',
+                                month: 'short', day: 'numeric'
+                            }) : '—'
+                        }}
+                    </p>
+                </div>
+
+                <!-- content -->
+                <div ref="contentEl"
                     class="text-sm whitespace-pre-wrap text-[#1b1b18] dark:text-[#EDEDEC] overflow-hidden"
                     :class="{ 'transition-all duration-300 ease-in-out': hasMeasured }"
-                    :style="contentHeight ? { maxHeight: isTruncated && !showFull ? clampedHeight + 'px' : contentHeight + 'px' } : undefined"
-                >
+                    :style="contentHeight ? { maxHeight: isTruncated && !showFull ? clampedHeight + 'px' : contentHeight + 'px' } : undefined">
                     {{ displayComment }}
                 </div>
-                <button
-                    v-if="isTruncated && !showFull"
-                    class="cursor-pointer text-xs font-medium text-[#f53003] hover:underline"
-                    @click="expand"
-                >
+                <button v-if="isTruncated && !showFull"
+                    class="cursor-pointer text-xs font-medium text-[#f53003] hover:underline" @click="expand">
                     Read more
                 </button>
             </div>
 
             <div v-else>
-                <textarea
-                    data-test="comment-edit-textarea"
-                    v-model="draft"
-                    rows="9"
-                    class="w-full rounded-xl border border-[#d6d6d1] bg-[#fcfcfa] px-4 py-3 text-sm text-[#1b1b18] outline-none transition focus:border-[#f53003] focus:ring-2 focus:ring-[#f53003]/10 dark:border-[#3E3E3A] dark:bg-[#1a1a18] dark:text-[#EDEDEC]"
-                ></textarea>
+                <textarea data-test="comment-edit-textarea" v-model="draft" rows="9"
+                    class="w-full rounded-xl border border-[#d6d6d1] bg-[#fcfcfa] px-4 py-3 text-sm text-[#1b1b18] outline-none transition focus:border-[#f53003] focus:ring-2 focus:ring-[#f53003]/10 dark:border-[#3E3E3A] dark:bg-[#1a1a18] dark:text-[#EDEDEC]"></textarea>
                 <p v-if="error" class="text-sm text-red-600 dark:text-red-400">{{ error }}</p>
             </div>
         </div>
     </td>
 
     <td class="px-4 py-4 align-top" v-if="columns?.includes('post')">
-        <Button
-            v-if="comment.post?.slug"
-            variant="text-underline"
-            :to="{ name: 'posts.show', params: { slug: comment.post.slug } }"
-        >
+        <Button v-if="comment.post?.slug" variant="text-underline"
+            :to="{ name: 'posts.show', params: { slug: comment.post.slug } }">
             {{ comment.post.title ?? 'Unknown post' }}
         </Button>
         <span v-else class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
@@ -161,8 +172,14 @@ const confirmDelete = async (): Promise<void> => {
         </span>
     </td>
 
-    <td class="px-4 py-4 align-top text-xs text-[#6C6C66] dark:text-[#A1A19A]" v-if="columns?.includes('created_at') ?? true">
-        {{ props.comment.created_at ? new Date(props.comment.created_at).toLocaleDateString('nl-NL', { year: 'numeric', month: 'short', day: 'numeric' }) : '—' }}
+    <td class="px-4 py-4 align-top text-xs text-[#6C6C66] dark:text-[#A1A19A]"
+        v-if="columns?.includes('created_at') ?? true">
+        {{ props.comment.created_at ? new Date(props.comment.created_at).toLocaleDateString('nl-NL',
+            {
+                year: 'numeric',
+                month: 'short', day: 'numeric'
+            }) : '—'
+        }}
     </td>
 
     <CommentRowActions
