@@ -159,7 +159,7 @@ readonly class PostService
      */
     private function resolveCategoryIds(array $categoryIds): array
     {
-        // todo (future) create category service to handle this logic, and move this logic to that service)
+        // todo (future) create category 'poly-model' service to handle this logic, and move this logic to that service)
         // add caching for the "Uncategorized" category to avoid repeated DB queries in a single request
         $uncategorized = Category::firstOrCreate(
             ['slug' => 'uncategorized'],
@@ -171,7 +171,7 @@ readonly class PostService
         }
 
         // If a real category was also selected, remove the "Uncategorized" fallback
-        if (count($categoryIds) > 1 && in_array($uncategorized->id, $categoryIds, true)) {
+        if (count($categoryIds) > 1 && in_array($uncategorized->id, $categoryIds)) {
             return Collection::make($categoryIds)
                 ->filter(static fn (int $id): bool => $id !== $uncategorized->id)
                 ->values()
