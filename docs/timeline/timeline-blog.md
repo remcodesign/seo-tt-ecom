@@ -154,9 +154,11 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 - shorter comments rendering on the index pages - and full on blog.post.show
 
->HERE
+- render new line breaks of comments on blog.post.show
 
-- TODO render new line breaks of comments on blog.post.show - maybe also add read more after 8 lines and slide open for the rest
+- comments max init show (8 lines) - also add read more after 8 lines and slide open for the rest
+
+>HERE
 
 - TODO render selected categories on blog pages
 

@@ -4,6 +4,7 @@ import type { CommentDataResponse } from '@types';
 import CommentRowActions from '@/components/blog/CommentRowActions.vue';
 import ConfirmModal from '@/components/common/ConfirmModal.vue';
 import Button from '@/components/common/Button.vue';
+import { useSlideDown } from '@/composable/common/useSlideDown';
 
 const props = defineProps<{
     comment: CommentDataResponse;
@@ -15,16 +16,27 @@ const props = defineProps<{
 }>();
 
 const displayComment = computed(() => {
-    if (!props.maxCommentLength || props.maxCommentLength <= 0) {
-        return props.comment.comment;
+    if (props.maxCommentLength && props.maxCommentLength > 0) {
+        if (props.comment.comment.length <= props.maxCommentLength) {
+            return props.comment.comment;
+        }
+
+        return `${props.comment.comment.substring(0, props.maxCommentLength)}…`;
     }
 
-    if (props.comment.comment.length <= props.maxCommentLength) {
-        return props.comment.comment;
-    }
-
-    return `${props.comment.comment.substring(0, props.maxCommentLength)}…`;
+    return props.comment.comment;
 });
+
+const contentEl = ref<HTMLElement | null>(null);
+const {
+    isTruncated,
+    showFull,
+    hasMeasured,
+    clampedHeight,
+    contentHeight,
+    expand,
+    recheck,
+} = useSlideDown(contentEl, { lines: 8 });
 
 const editing = ref(false);
 const draft = ref(props.comment.comment);
@@ -33,8 +45,9 @@ const error = ref<string | null>(null);
 
 const isOwner = computed(() => props.currentUserId !== null && props.currentUserId === props.comment.user.id);
 
-watchEffect(() => {
+watchEffect(async () => {
     draft.value = props.comment.comment;
+    await recheck();
 });
 
 const handleEdit = (): void => {
@@ -104,9 +117,23 @@ const confirmDelete = async (): Promise<void> => {
     </td>
 
     <td class="px-4 py-4 align-top" v-if="columns?.includes('comment') ?? true">
-        <div class="space-y-2">
-            <div v-if="!editing" class="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
-                {{ displayComment }}
+        <div>
+            <div v-if="!editing" class="space-y-2">
+                <div
+                    ref="contentEl"
+                    class="text-sm whitespace-pre-wrap text-[#1b1b18] dark:text-[#EDEDEC] overflow-hidden"
+                    :class="{ 'transition-all duration-300 ease-in-out': hasMeasured }"
+                    :style="contentHeight ? { maxHeight: isTruncated && !showFull ? clampedHeight + 'px' : contentHeight + 'px' } : undefined"
+                >
+                    {{ displayComment }}
+                </div>
+                <button
+                    v-if="isTruncated && !showFull"
+                    class="cursor-pointer text-xs font-medium text-[#f53003] hover:underline"
+                    @click="expand"
+                >
+                    Read more
+                </button>
             </div>
 
             <div v-else>
