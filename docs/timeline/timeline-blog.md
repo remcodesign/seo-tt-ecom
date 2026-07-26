@@ -148,9 +148,19 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 ## DONE (DEV) add `Debugbar for Laravel` - <https://github.com/fruitcake/laravel-debugbar>
 
+## SKIP - try to use `app/Data/Poly/CategoryIdsData.php` as the category DTO (keep the related DTO's 1 level and simple, spatie data + phpstan will get very complex! and unworkable)
+
+## DONE - make the website visual responsive correct, use: desktop normal, tablet portrait, mobile portrait
+
+- shorter comments rendering on the index pages - and full on blog.post.show
+
 >HERE
 
-## TODO - try to use `app/Data/Poly/CategoryIdsData.php` as the category DTO
+- TODO render new line breaks of comments on blog.post.show - maybe also add read more after 8 lines and slide open for the rest
+
+- TODO render selected categories on blog pages
+
+## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
 
 ## TODO - create Admin Categories CRUD
 
@@ -158,8 +168,6 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 - check if we can delete category without deleting the post - so no cascading
 - Use `app/Data/Poly/CategoryIdsData.php` to make data passing more clear and stable
   - this in `app/Data/Blog/Requests/UpdatePostData.php + app/Data/Blog/Requests/StorePostData.php` and the rest, after that
-
-## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
 
 - create new tags on post edit
 - check if we can delete tags without deleting the post - so no cascading
@@ -175,8 +183,6 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 ## TODO - add admin for blog (crud posts)
 
 ## TODO - add admin for blog (crud comments)
-
-## TODO - make the website visual responsive correct, use: desktop normal, tablet portrait, mobile portrait
 
 ## TODO - add policies, user roles/permissions, spatie/laravel-permission
 

@@ -182,6 +182,17 @@ describe('CommentController (API)', function (): void {
                 ->assertUnprocessable()
                 ->assertJsonValidationErrors(['comment']);
         });
+
+        it('fails validation when comment exceeds maximum length', function (): void {
+            Sanctum::actingAs(User::factory()->create());
+            $post = Post::factory()->for(User::factory())->create();
+
+            $this->postJson('/api/blog/comments', [
+                'post_id' => $post->id,
+                'comment' => str_repeat('a', 5001),
+            ])->assertUnprocessable()
+                ->assertJsonValidationErrors(['comment']);
+        });
     });
 
     describe('update', function (): void {
@@ -219,6 +230,17 @@ describe('CommentController (API)', function (): void {
                 ->assertJson(['comment' => 'Admin Updated']);
 
             expect($comment->fresh()->comment)->toBe('Admin Updated');
+        });
+
+        it('fails validation when update comment exceeds maximum length', function (): void {
+            $user = User::factory()->create();
+            Sanctum::actingAs($user);
+            $comment = Comment::factory()->for(Post::factory()->for($user))->for($user)->create();
+
+            $this->putJson('/api/blog/comments/'.$comment->id, [
+                'comment' => str_repeat('a', 5001),
+            ])->assertUnprocessable()
+                ->assertJsonValidationErrors(['comment']);
         });
     });
 

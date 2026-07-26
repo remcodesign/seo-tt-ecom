@@ -148,6 +148,7 @@ onMounted(() => {
                 :columns="commentColumns"
                 :max-rows="0"
                 empty-text="No comments available."
+                :row-props="{ maxCommentLength: 160 }"
             >
                 <template #header>
                     <tr

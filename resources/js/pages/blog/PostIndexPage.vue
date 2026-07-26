@@ -14,8 +14,6 @@ import PostCard from '@/components/blog/PostCard.vue';
 import SectionHeaderControls from '@/components/common/SectionHeaderControls.vue';
 import { usePagination } from '@/composable/common/usePagination';
 
-
-
 const route = useRoute();
 
 // Main data for the page

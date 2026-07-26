@@ -19,7 +19,7 @@ final class StoreCommentData extends Data
         #[Required, IntegerType, Exists('blog_posts', 'id')]
         public int $post_id,
 
-        #[Required, StringType, Max(65535)]
+        #[Required, StringType, Max(5000)]
         public string $comment,
     ) {}
 }

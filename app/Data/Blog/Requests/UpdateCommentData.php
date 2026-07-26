@@ -14,7 +14,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 final class UpdateCommentData extends Data
 {
     public function __construct(
-        #[Sometimes, StringType, Max(65535)]
+        #[Sometimes, StringType, Max(5000)]
         public ?string $comment = null,
     ) {}
 }

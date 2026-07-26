@@ -81,6 +81,7 @@ onMounted(async () => {
             :columns="commentColumns"
             :max-rows="props.maxRows"
             :empty-text="props.emptyText"
+            :row-props="{ maxCommentLength: 120 }"
         >
             <template #header>
                 <tr

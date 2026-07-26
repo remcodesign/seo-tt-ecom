@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "composer typescript && vite build",
+        "build": "vite build",
         "build_d": "ddev composer typescript && npm run lint && vite build",
         "dev": "vite",
 

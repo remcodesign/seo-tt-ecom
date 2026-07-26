@@ -9,9 +9,22 @@ const props = defineProps<{
     comment: CommentDataResponse;
     columns?: string[];
     currentUserId?: number | null;
+    maxCommentLength?: number;
     onUpdate?: (payload: { id: number; comment: string }) => Promise<void> | void;
     onDelete?: (id: number) => Promise<void> | void;
 }>();
+
+const displayComment = computed(() => {
+    if (!props.maxCommentLength || props.maxCommentLength <= 0) {
+        return props.comment.comment;
+    }
+
+    if (props.comment.comment.length <= props.maxCommentLength) {
+        return props.comment.comment;
+    }
+
+    return `${props.comment.comment.substring(0, props.maxCommentLength)}…`;
+});
 
 const editing = ref(false);
 const draft = ref(props.comment.comment);
@@ -93,14 +106,14 @@ const confirmDelete = async (): Promise<void> => {
     <td class="px-4 py-4 align-top" v-if="columns?.includes('comment') ?? true">
         <div class="space-y-2">
             <div v-if="!editing" class="text-sm text-[#1b1b18] dark:text-[#EDEDEC]">
-                {{ props.comment.comment }}
+                {{ displayComment }}
             </div>
 
             <div v-else>
                 <textarea
                     data-test="comment-edit-textarea"
                     v-model="draft"
-                    rows="3"
+                    rows="9"
                     class="w-full rounded-xl border border-[#d6d6d1] bg-[#fcfcfa] px-4 py-3 text-sm text-[#1b1b18] outline-none transition focus:border-[#f53003] focus:ring-2 focus:ring-[#f53003]/10 dark:border-[#3E3E3A] dark:bg-[#1a1a18] dark:text-[#EDEDEC]"
                 ></textarea>
                 <p v-if="error" class="text-sm text-red-600 dark:text-red-400">{{ error }}</p>
