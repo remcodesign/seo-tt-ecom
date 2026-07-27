@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Auth\RegisterUserController;
 use App\Http\Controllers\Api\Auth\RevokeTokenController;
 use App\Http\Controllers\Api\Blog\CommentController;
 use App\Http\Controllers\Api\Blog\PostController;
+use App\Http\Controllers\Api\Poly\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/sanctum/token', CreateTokenController::class);
@@ -28,5 +29,9 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::prefix('blog')->group(function (): void {
         Route::apiResource('posts', PostController::class)->except(['index', 'show']);
         Route::apiResource('comments', CommentController::class)->except(['index', 'show']);
+    });
+
+    Route::prefix('poly')->group(function (): void {
+        Route::apiResource('categories', CategoryController::class)->only(['index']);
     });
 });

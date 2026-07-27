@@ -57,7 +57,7 @@ class Form extends Component
     {
         return view('livewire.admin.blog.posts.form', [
             'writers' => User::getWriters(),
-            'categories' => Category::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'categories' => Category::query()->orderBy('name')->pluck('name', 'id')->toArray(), // full collection of categories for the select input, ordered by name
         ]);
     }
 }

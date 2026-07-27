@@ -158,9 +158,17 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 - comments max init show (8 lines) - also add read more after 8 lines and slide open for the rest
 
+- render selected categories on blog pages
+
 >HERE
 
-- TODO render selected categories on blog pages
+- add a category controller:index on the api side - filterable on `categorizable_type`
+
+- add category filter pills on blog.post.index (add selected filter on to the url params, this way we can have a category page (future))
+
+- make mobile nav menu (hamburger) - besides the current desktop menu
+
+- add category index page via the blog.post.index page filters - no need for an extra page
 
 ## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
 
