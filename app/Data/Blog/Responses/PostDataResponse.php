@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Data\Blog\Responses;
 
 use App\Data\Auth\UserDataResponse;
+use App\Data\Poly\Responses\CategoryDataResponse;
 use Carbon\CarbonImmutable;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
@@ -13,6 +14,7 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 final class PostDataResponse extends Data
 {
     /**
+     * @param  CategoryDataResponse[]|null  $categories
      * @param  CommentDataResponse[]|null  $comments
      */
     public function __construct(
@@ -22,9 +24,10 @@ final class PostDataResponse extends Data
         public string $slug,
 
         public UserDataResponse $user, // relation
-        public ?string $body = null,
-        public ?array $comments = null, // relation
         public int $comments_count = 0,
+        public ?array $categories = null, // relation
+        public ?array $comments = null, // relation
+        public ?string $body = null,
 
         public ?CarbonImmutable $published_on = null,
         public ?CarbonImmutable $created_at = null,

@@ -25,18 +25,14 @@ onMounted(async () => {
 </script>
 
 <template>
+    
+    <!-- desktop -->
     <nav class="relative">
         <ul class="flex items-center gap-2">
             <li v-for="link in links" :key="link.route">
                 <router-link :to="{ name: link.route }" custom>
                     <template #default="{ navigate, isActive }">
-                        <Button
-                            variant="nav"
-                            size="md"
-                            :active="isActive"
-                            class="px-4 py-2"
-                            @click="navigate"
-                        >
+                        <Button variant="nav" size="md" :active="isActive" class="px-4 py-2" @click="navigate">
                             {{ link.label }}
                         </Button>
                     </template>
@@ -50,7 +46,8 @@ onMounted(async () => {
 
                 <template v-else>
                     <!-- Login Button -->
-                    <Button data-test="nav-login-button" variant="bordered_normal" size="md" class="px-4 py-2" @click="showLoginModal = true">
+                    <Button data-test="nav-login-button" variant="bordered_normal" size="md" class="px-4 py-2"
+                        @click="showLoginModal = true">
                         Login
                     </Button>
                 </template>
@@ -59,4 +56,6 @@ onMounted(async () => {
 
         <LoginModal :show="showLoginModal" @close="showLoginModal = false" @login-success="handleLoginSuccess" />
     </nav>
+    <!-- End desktop -->
+
 </template>

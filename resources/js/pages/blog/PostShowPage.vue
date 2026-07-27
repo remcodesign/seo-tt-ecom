@@ -74,9 +74,10 @@ onMounted(async () => {
 
             <!-- Post Header -->
             <header class="mb-8">
-                <h1 class="mb-4 text-3xl font-bold tracking-tight">
+                <h1 class="mb-2 text-3xl font-bold tracking-tight">
                     {{ post.title }}
                 </h1>
+                <h6 class="mb-6 text-xs">{{ post.categories?.map(category => category.name).join(', ') }}</h6>
 
                 <div class="flex items-center gap-3">
                     <div

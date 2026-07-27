@@ -1,3 +1,10 @@
+export type CategoryDataResponse = {
+    id: number;
+    name: string;
+    slug: string;
+    created_at: string | null;
+    updated_at: string | null;
+};
 export type CategoryIdsData = {
     category_ids: number[];
 };
@@ -64,9 +71,10 @@ export type PostDataResponse = {
     title: string;
     slug: string;
     user: UserDataResponse;
-    body: string | null;
-    comments: CommentDataResponse[] | null;
     comments_count: number;
+    categories: CategoryDataResponse[] | null;
+    comments: CommentDataResponse[] | null;
+    body: string | null;
     published_on: string | null;
     created_at: string | null;
     updated_at: string | null;

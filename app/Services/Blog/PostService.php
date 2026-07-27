@@ -212,7 +212,7 @@ readonly class PostService
      */
     public function find(Post $post, bool $withComments = false): Post
     {
-        $relations = ['user'];
+        $relations = ['user', 'categories'];
 
         if ($withComments) {
             $relations['comments'] = function ($query): void {
