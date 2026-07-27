@@ -116,19 +116,10 @@ onMounted(() => {
 
 <template>
     <div>
-        <SectionHeaderControls
-            title="Comments"
-            description="Browse all comments across blog posts."
-            :order-by="orderBy"
-            :per-page="perPage"
-            :total="meta.total"
-            :show-order="true"
-            :show-items="true"
-            :order-options="orderOptions"
-            :items-options="perPageOptions"
-            @update:orderBy="(value) => orderBy = value"
-            @update:perPage="(value) => perPage = value"
-        />
+        <SectionHeaderControls title="Comments" description="Browse all comments across blog posts." :order-by="orderBy"
+            :per-page="perPage" :total="meta.total" :show-order="true" :show-items="true" :order-options="orderOptions"
+            :items-options="perPageOptions" @update:orderBy="(value) => orderBy = value"
+            @update:perPage="(value) => perPage = value" class="mb-8" />
 
         <!-- Loading, Error, and Content -->
         <div v-if="loading" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
@@ -141,19 +132,11 @@ onMounted(() => {
 
         <div v-else>
             <!-- Content -->
-            <TableLister
-                :items="comments"
-                row-prop-name="comment"
-                :row-component="CommentRow"
-                :columns="commentColumns"
-                :max-rows="0"
-                empty-text="No comments available."
-                :row-props="{ maxCommentLength: 160 }"
-            >
+            <TableLister :items="comments" row-prop-name="comment" :row-component="CommentRow" :columns="commentColumns"
+                :max-rows="0" empty-text="No comments available." :row-props="{ maxCommentLength: 160 }">
                 <template #header>
                     <tr
-                        class="bg-[#f7f6f3] text-xs uppercase tracking-[0.16em] text-[#6C6C66] dark:bg-[#262624] dark:text-[#9B9B92]"
-                    >
+                        class="bg-[#f7f6f3] text-xs uppercase tracking-[0.16em] text-[#6C6C66] dark:bg-[#262624] dark:text-[#9B9B92]">
                         <th v-for="column in commentColumns" :key="column" class="px-4 py-3">
                             {{ commentColumnLabels[column] }}
                         </th>

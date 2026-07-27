@@ -304,21 +304,39 @@ namespace {
                 expect($ids)->toBe([$older->id, $newer->id]);
             });
 
-            it('orders by multiple column-direction combinations', function (): void {
-                $user = User::factory()->create();
-                $latest = Post::factory()->for($user)->create(['updated_at' => now()]);
-                $older = Post::factory()->for($user)->create(['updated_at' => now()->subDay()]);
+            it('filters by category IDs', function (): void {
+                $user = User::factory()->create(['role_label' => 'writer']);
+                $categoryA = Category::factory()->create();
+                $categoryB = Category::factory()->create();
+
+                $postA = Post::factory()->for($user)->create(['published_on' => now()]);
+                $postA->categories()->attach($categoryA);
+
+                $postB = Post::factory()->for($user)->create(['published_on' => now()]);
+                $postB->categories()->attach($categoryB);
+
+                $postC = Post::factory()->for($user)->create(['published_on' => now()]);
+                $postC->categories()->attach([$categoryA->id, $categoryB->id]);
+
                 $postService = app(PostService::class);
 
-                $lengthAwarePaginator = $postService->query(
-                    withComments: false,
-                    perPage: 15,
-                    orderByColumn: 'updated_at',
-                    orderByDirection: 'desc',
-                );
+                $lengthAwarePaginator = $postService->query(perPage: 15, categoryIds: [$categoryA->id]);
 
-                $ids = $lengthAwarePaginator->pluck('id')->all();
-                expect($ids)->toBe([$latest->id, $older->id]);
+                expect($lengthAwarePaginator->total())->toBe(2)
+                    ->and($lengthAwarePaginator->pluck('id')->all())->toEqualCanonicalizing([$postA->id, $postC->id]);
+            });
+
+            it('returns no posts when category IDs filter matches nothing', function (): void {
+                $user = User::factory()->create(['role_label' => 'writer']);
+                $category = Category::factory()->create();
+                $post = Post::factory()->for($user)->create(['published_on' => now()]);
+                $post->categories()->attach($category);
+
+                $postService = app(PostService::class);
+
+                $lengthAwarePaginator = $postService->query(perPage: 15, categoryIds: [999]);
+
+                expect($lengthAwarePaginator->total())->toBe(0);
             });
         });
     });

@@ -160,15 +160,21 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 - render selected categories on blog pages
 
->HERE
-
 - add a category controller:index on the api side - filterable on `categorizable_type`
 
-- add category filter pills on blog.post.index (add selected filter on to the url params, this way we can have a category page (future))
+- add category filter pills on blog.post.index (add selected filter on to the url params, i will filter the blog.post.index directly
+
+- SKIP - still needed, we got direct filtering on `blog.post.index` - add category index page via the blog.post.index page filters - no need for an extra page
+
+- change `blog.post.index` 'none' category handling, where none does not show any post, this could slow the post rendering, because of the waiting for the ?selected categories - so the default is always send categories id's or maybe only a hard override when we clicked the 'none' button send `show-zero` like a value of `-1`
+
+>HERE
+
+- add `blog.post.index` category selection to url - so we can share it
+
+- add `blog.post.index` frontend tests for filters/order/page
 
 - make mobile nav menu (hamburger) - besides the current desktop menu
-
-- add category index page via the blog.post.index page filters - no need for an extra page
 
 ## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
 

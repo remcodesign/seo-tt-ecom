@@ -6,15 +6,12 @@ use App\Models\Blog\Post;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 
 uses(RefreshDatabase::class);
 
 describe('CategoryController (API)', function (): void {
     describe('index', function (): void {
         it('returns paginated categories filtered by type', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $category = Category::factory()->create();
             $post = Post::factory()->for($user)->create();
@@ -35,8 +32,6 @@ describe('CategoryController (API)', function (): void {
         });
 
         it('excludes categories not linked to the given type', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $linkedCategory = Category::factory()->create();
             $unlinkedCategory = Category::factory()->create();
@@ -52,22 +47,16 @@ describe('CategoryController (API)', function (): void {
         });
 
         it('returns 422 when type parameter is missing', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $this->getJson('/api/poly/categories')
                 ->assertStatus(422);
         });
 
         it('returns 422 when type parameter is invalid', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $this->getJson('/api/poly/categories?type=invalid')
                 ->assertStatus(422);
         });
 
         it('respects the per_page query parameter', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $categories = Category::factory()->count(5)->create();
             foreach ($categories as $category) {
@@ -84,8 +73,6 @@ describe('CategoryController (API)', function (): void {
         });
 
         it('clamps per_page to the maximum allowed value', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $categories = Category::factory()->count(30)->create();
             foreach ($categories as $category) {
@@ -101,8 +88,6 @@ describe('CategoryController (API)', function (): void {
         });
 
         it('clamps per_page to a minimum of 1', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $category = Category::factory()->create();
             $post = Post::factory()->for($user)->create();
@@ -114,8 +99,6 @@ describe('CategoryController (API)', function (): void {
         });
 
         it('orders by name ascending by default', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $categoryB = Category::factory()->create(['name' => 'Beta']);
             $categoryA = Category::factory()->create(['name' => 'Alpha']);
@@ -134,8 +117,6 @@ describe('CategoryController (API)', function (): void {
         });
 
         it('orders by name desc when orderby has _desc suffix', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $categoryB = Category::factory()->create(['name' => 'Beta']);
             $categoryA = Category::factory()->create(['name' => 'Alpha']);
@@ -154,8 +135,6 @@ describe('CategoryController (API)', function (): void {
         });
 
         it('falls back to default ordering for an invalid orderby value', function (): void {
-            Sanctum::actingAs(User::factory()->create());
-
             $user = User::factory()->create();
             $category = Category::factory()->create();
             $post = Post::factory()->for($user)->create();
@@ -164,11 +143,6 @@ describe('CategoryController (API)', function (): void {
             $this->getJson('/api/poly/categories?type=blog_post&orderby=invalid_column')
                 ->assertSuccessful()
                 ->assertJsonPath('meta.total', 1);
-        });
-
-        it('rejects unauthenticated requests', function (): void {
-            $this->getJson('/api/poly/categories?type=blog_post')
-                ->assertUnauthorized();
         });
     });
 });

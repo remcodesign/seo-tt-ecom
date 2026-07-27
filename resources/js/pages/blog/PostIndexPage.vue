@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import type {
+    CategoryIdsData,
     PaginationLinkData,
     PaginationMetaData,
     PaginatedResponseData,
@@ -9,6 +10,7 @@ import type {
 } from '@types';
 import api from '@/api';
 import CardLister from '@/components/common/CardLister.vue';
+import CategoryFilter from '@/components/common/CategoryFilter.vue';
 import PaginationLinks from '@/components/common/PaginationLinks.vue';
 import PostCard from '@/components/blog/PostCard.vue';
 import SectionHeaderControls from '@/components/common/SectionHeaderControls.vue';
@@ -31,6 +33,9 @@ const orderOptions = [
 
 const orderBy = ref(String(route.query.orderby ?? 'published_on_desc'));
 const perPageOptions = [3, 6, 9, 12] as const;
+
+// Category filter state
+const categoryIds = ref<CategoryIdsData['category_ids']>([]);
 
 // Used for the pagination composable
 const {
@@ -69,13 +74,17 @@ const fetchPosts = async (): Promise<void> => {
     });
 
     try {
-        const response = await api.get<PaginatedResponseData<PostDataResponse>>('/blog/posts', {
-            params: {
-                page: page.value,
-                per_page: perPage.value,
-                orderby: orderBy.value,
-            },
-        });
+        const params: Record<string, string | number> = {
+            page: page.value,
+            per_page: perPage.value,
+            orderby: orderBy.value,
+        };
+
+        if (categoryIds.value.length > 0) {
+            params.category_ids = categoryIds.value.join(',');
+        }
+
+        const response = await api.get<PaginatedResponseData<PostDataResponse>>('/blog/posts', { params });
 
         posts.value = response.data.data;
         links.value = response.data.links;
@@ -85,6 +94,22 @@ const fetchPosts = async (): Promise<void> => {
     } finally {
         loading.value = false;
     }
+};
+
+const onCategoryChange = (ids: number[]): void => {
+    if (ids.length === 0) {
+        // If no categories are selected, we can either fetch all posts or none. Here, we choose to fetch none.
+        posts.value = [];
+        meta.value.total = 0;
+        links.value = [];
+        categoryIds.value = [0];
+        return;
+    } else {
+        categoryIds.value = ids;
+    }
+    
+    page.value = 1;
+    void fetchPosts();
 };
 
 // Watchers to refetch posts when relevant parameters change
@@ -105,19 +130,12 @@ onMounted(() => {
 
 <template>
     <div>
-        <SectionHeaderControls
-            title="Blog Posts"
-            description="Browse recent blog posts."
-            :order-by="orderBy"
-            :per-page="perPage"
-            :total="meta.total"
-            :show-order="true"
-            :show-items="true"
-            :order-options="orderOptions"
-            :items-options="perPageOptions"
-            @update:orderBy="(value) => orderBy = value"
-            @update:perPage="(value) => perPage = value"
-        />
+        <SectionHeaderControls title="Blog Posts" description="Browse recent blog posts." :order-by="orderBy"
+            :per-page="perPage" :total="meta.total" :show-order="true" :show-items="true" :order-options="orderOptions"
+            :items-options="perPageOptions" @update:orderBy="(value) => orderBy = value"
+            @update:perPage="(value) => perPage = value" class="mb-6" />
+
+        <CategoryFilter type="blog_post" @change="onCategoryChange" class="mb-6" />
 
         <!-- Loading, Error, and Content -->
         <div v-if="loading" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">

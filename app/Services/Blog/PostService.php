@@ -182,9 +182,10 @@ readonly class PostService
     }
 
     /**
-     * Query posts with pagination, optional comment loading, and order-by support, preventing N+1.
+     * Query posts with pagination, optional comment loading, order-by support, and category filtering.
      *
      * @param  'asc'|'desc'  $orderByDirection
+     * @param  array<int>  $categoryIds  Filter posts that belong to any of these category IDs.
      * @return LengthAwarePaginator<int, Post>
      */
     public function query(
@@ -192,6 +193,7 @@ readonly class PostService
         int $perPage = 15,
         string $orderByColumn = 'published_on',
         string $orderByDirection = 'desc',
+        array $categoryIds = [],
     ): LengthAwarePaginator {
         $builder = Post::query()
             ->published()
@@ -202,6 +204,13 @@ readonly class PostService
             $builder->with(['comments' => function ($query): void {
                 $query->with('user');
             }]);
+        }
+
+        if ($categoryIds !== []) {
+            // Filter posts that belong to any of the given category IDs
+            $builder->whereHas('categories', function ($query) use ($categoryIds): void {
+                $query->whereIn('categories.id', $categoryIds);
+            });
         }
 
         return $builder->orderBy($orderByColumn, $orderByDirection)->paginate($perPage);

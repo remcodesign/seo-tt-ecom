@@ -21,6 +21,10 @@ Route::prefix('blog')->group(function (): void {
     Route::apiResource('comments', CommentController::class)->only(['index', 'show']);
 });
 
+Route::prefix('poly')->group(function (): void {
+    Route::apiResource('categories', CategoryController::class)->only(['index']);
+});
+
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', CurrentUserController::class);
 
@@ -29,9 +33,5 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::prefix('blog')->group(function (): void {
         Route::apiResource('posts', PostController::class)->except(['index', 'show']);
         Route::apiResource('comments', CommentController::class)->except(['index', 'show']);
-    });
-
-    Route::prefix('poly')->group(function (): void {
-        Route::apiResource('categories', CategoryController::class)->only(['index']);
     });
 });

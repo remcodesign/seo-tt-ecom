@@ -55,7 +55,7 @@ const totalLabel = computed(() => {
 </script>
 
 <template>
-    <Card class="mb-8">
+    <Card>
         <div class="flex flex-col gap-6 p-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
 

@@ -18,7 +18,7 @@ use Spatie\LaravelData\PaginatedDataCollection;
 
 class PostController extends Controller
 {
-    use HasOptionalIncludes; // currently not used, but kept for phpstan dead code detection
+    use HasOptionalIncludes; // (future) currently not used, but kept for phpstan dead code detection
     use HasOrderBy;
     use HasPerPage;
 
@@ -41,12 +41,19 @@ class PostController extends Controller
     {
         [$orderByColumn, $orderByDirection] = $this->getOrderBy('published_on', 'desc');
 
+        $categoryIds = collect(explode(',', (string) request()->query('category_ids', '')))
+            ->filter()
+            ->map(fn (string $id): int => (int) trim($id))
+            ->values()
+            ->all();
+
         return PostDataResponse::collect(
             $this->postService->query(
                 withComments: false,
                 perPage: $this->getPerPage(default: 6, max: 12),
                 orderByColumn: $orderByColumn,
                 orderByDirection: $orderByDirection,
+                categoryIds: $categoryIds,
             ),
             PaginatedDataCollection::class
         );
@@ -54,9 +61,6 @@ class PostController extends Controller
 
     public function show(Post $post): PostDataResponse
     {
-        // todo use the optional includes for the index and show methods, not for store and update
-        // ?maybe also remove index and show methods from the PostService, and just use the query method for both index and show, with the optional includes applied
-
         if ($post->published_on === null) {
             abort(404, 'Post not found.');
         }
