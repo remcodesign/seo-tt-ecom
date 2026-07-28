@@ -14,9 +14,7 @@ it('1. visits the page and shows posts', function (): void {
     $user = User::factory()->create();
     Post::factory(3)->for($user)->create();
 
-    $page = visit('/blog/posts');
-
-    $page
+    visit('/blog/posts')
         ->assertSee('Blog Posts')
         ->assertCount('[data-test="post"]', 3)
         ->assertCount('[data-test="empty-state"]', 0)
@@ -24,9 +22,7 @@ it('1. visits the page and shows posts', function (): void {
 });
 
 it('2. shows empty state when no posts exist', function (): void {
-    $page = visit('/blog/posts');
-
-    $page
+    visit('/blog/posts')
         ->assertSee('No posts available.')
         ->assertCount('[data-test="post"]', 0)
         ->assertNoJavaScriptErrors();
@@ -111,26 +107,29 @@ it('4. changes items per page', function (): void {
 it('5.1 via URL, filters posts by interacting with category buttons', function (): void {
     // create user, categories, and posts
     $user = User::factory()->create();
+
     $catA = Category::factory()->create(['name' => 'Tech']);
     $catB = Category::factory()->create(['name' => 'Design']);
+
     $postA = Post::factory()->for($user)->create(['title' => 'Tech Post']);
     $postB = Post::factory()->for($user)->create(['title' => 'Design Post']);
     $postC = Post::factory()->for($user)->create(['title' => 'Other Post']);
+
     $postA->categories()->attach($catA);
     $postB->categories()->attach($catB);
 
     // visit the page with category filter applied, check for catA and catB posts, and ensure other posts are not displayed
-    visit('/blog/posts?category_ids=' . $catA->id . ',' . $catB->id)
+    visit('/blog/posts?category_ids='.$catA->id.','.$catB->id)
         ->assertSee('Tech Post')
         ->assertSee('Design Post')
         ->assertDontSee('Other Post')
         ->assertCount('[data-test="post"]', 2)
         // check query string has category_ids for catA and catB
-        ->assertQueryStringHas('category_ids', $catA->id . ',' . $catB->id)
+        ->assertQueryStringHas('category_ids', $catA->id.','.$catB->id)
         ->assertNoJavaScriptErrors();
 
     // visit the page with category filter applied, check for catA post, and ensure other posts are not displayed
-    visit('/blog/posts?category_ids=' . $catA->id)
+    visit('/blog/posts?category_ids='.$catA->id)
         ->assertSee('Tech Post')
         ->assertDontSee('Design Post')
         ->assertDontSee('Other Post')
@@ -140,7 +139,7 @@ it('5.1 via URL, filters posts by interacting with category buttons', function (
         ->assertNoJavaScriptErrors();
 
     // no category filter applied, check for all posts
-    visit('/blog/posts')/*  */
+    visit('/blog/posts')/* */
         ->assertSee('Tech Post')
         ->assertSee('Design Post')
         ->assertSee('Other Post')
@@ -152,9 +151,12 @@ it('5.1 via URL, filters posts by interacting with category buttons', function (
 it('5.2 via buttons, category filter handling from `All` and `Clear` states', function (): void {
     // add user, post and 2 categories, and attach the post to both categories
     $user = User::factory()->create();
+
     $catA = Category::factory()->create(['name' => 'Tech']);
     $catB = Category::factory()->create(['name' => 'Design']);
+
     $post = Post::factory()->for($user)->create();
+
     $post->categories()->attach([$catA->id, $catB->id]);
 
     // start with click on `Clear` category filter button
@@ -164,7 +166,7 @@ it('5.2 via buttons, category filter handling from `All` and `Clear` states', fu
         ->wait(1)
         ->assertQueryStringMissing('category_ids')
         ->assertCount('[data-test="post"]', 1)
-        ->click('[data-test="category-filter-cat-' . $catA->id . '"]')
+        ->click('[data-test="category-filter-cat-'.$catA->id.'"]')
         ->wait(1)
         ->assertQueryStringHas('category_ids', (string) $catA->id)
         ->assertNoJavaScriptErrors();
@@ -176,7 +178,7 @@ it('5.2 via buttons, category filter handling from `All` and `Clear` states', fu
         ->wait(1)
         ->assertQueryStringHas('category_ids')
         ->assertCount('[data-test="post"]', 1)
-        ->click('[data-test="category-filter-cat-' . $catA->id . '"]')
+        ->click('[data-test="category-filter-cat-'.$catA->id.'"]')
         ->wait(1)
         ->assertQueryStringHas('category_ids', (string) $catB->id)
         ->assertNoJavaScriptErrors();
@@ -199,23 +201,37 @@ it('6. paginates through posts', function (): void {
 
 it('7. combines order-by, per-page, category filter, and pagination', function (): void {
     $user = User::factory()->create();
-    $cat = Category::factory()->create(['name' => 'Work']);
-    Post::factory(5)->for($user)->create();
-    $post = Post::factory()->for($user)->create(['title' => 'Work Post', 'published_on' => '2025-01-01']);
-    $post->categories()->attach($cat);
 
-    visit('/blog/posts?orderby=published_on_desc&per_page=3&category_ids=' . $cat->id)
+    $cat = Category::factory()->create(['name' => 'Work']);
+
+    $postA = Post::factory()->for($user)->create(['title' => 'Alpha', 'published_on' => '2025-03-01']);
+    $postB = Post::factory()->for($user)->create(['title' => 'Beta', 'published_on' => '2025-02-01']);
+    $postC = Post::factory()->for($user)->create(['title' => 'Gamma', 'published_on' => '2025-01-01']);
+
+    $postA->categories()->attach($cat);
+    $postB->categories()->attach($cat);
+    $postC->categories()->attach($cat);
+
+    visit('/blog/posts?orderby=published_on_desc&per_page=3&category_ids='.$cat->id)
         ->assertQueryStringHas('orderby', 'published_on_desc')
         ->assertQueryStringHas('per_page', '3')
         ->assertQueryStringHas('category_ids', (string) $cat->id)
+        ->assertCount('[data-test="post"]', 3)
+        ->assertScript(
+            "Array.from(document.querySelectorAll('[data-test=\"post-title-link\"]')).map(el => el.textContent.trim()).join(',')",
+            'Alpha,Beta,Gamma'
+        )
         ->assertNoJavaScriptErrors();
 });
 
 it('8. correct URL query parameters when applying filters', function (): void {
     $user = User::factory()->create();
+
     $cat = Category::factory()->create(['name' => 'Tech']);
+
     $post = Post::factory()->for($user)->create(['title' => 'Tech Post']);
     $post->categories()->attach($cat);
+
     Post::factory(5)->for($user)->create();
 
     visit('/blog/posts')
@@ -223,7 +239,7 @@ it('8. correct URL query parameters when applying filters', function (): void {
         ->assertQueryStringHas('orderby', 'published_on_desc')
         ->assertQueryStringHas('per_page', '6')
         ->assertCount('[data-test="post"]', 6)
-        
+
         // change orderby
         ->select('[data-test="orderby-select"]', 'published_on')
         ->wait(1)
@@ -248,7 +264,7 @@ it('9. correct URL query parameters when filtering by category', function (): vo
     ]);
     $post->categories()->attach($cat);
 
-    visit('/blog/posts?orderby=updated_at&per_page=6&page=1&category_ids=' . $cat->id)
+    visit('/blog/posts?orderby=updated_at&per_page=6&page=1&category_ids='.$cat->id)
         ->assertSee('How to Seed Test Content the Right Way')
         ->assertCount('[data-test="post"]', 1)
 
@@ -256,7 +272,7 @@ it('9. correct URL query parameters when filtering by category', function (): vo
         ->assertSourceHas('orderby=updated_at')
         ->assertSourceHas('per_page=6')
         ->assertSourceHas('page=1')
-        ->assertSourceHas('category_ids=' . $cat->id)
+        ->assertSourceHas('category_ids='.$cat->id)
 
         // click the link and verify the show page has the params
         ->click('[data-test="post-title-link"]')
