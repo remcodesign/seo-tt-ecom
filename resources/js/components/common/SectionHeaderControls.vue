@@ -84,6 +84,7 @@ const totalLabel = computed(() => {
                                 </label>
 
                                 <select id="orderby" v-model="orderByValue"
+                                    data-test="orderby-select"
                                     class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]">
                                     <option v-for="option in orderOptions" :key="option.value" :value="option.value">
                                         {{ option.label }}
@@ -100,6 +101,7 @@ const totalLabel = computed(() => {
                                 </label>
 
                                 <select id="per-page" v-model.number="perPageValue"
+                                    data-test="per-page-select"
                                     class="rounded-md border border-[#19140035] bg-white px-3 py-2 text-sm text-[#1b1b18] outline-none transition-colors focus:border-[#f53003] dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:text-[#EDEDEC]">
                                     <option v-for="size in itemsOptions" :key="size" :value="size">
                                         {{ size }} per page

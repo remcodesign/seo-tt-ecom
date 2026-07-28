@@ -94,6 +94,7 @@ onMounted(() => {
             variant="bordered_normal"
             size="sm"
             :active="selectedIds.size === categories.length"
+            data-test="category-filter-all"
             @click="selectAll"
         >
             All
@@ -102,6 +103,7 @@ onMounted(() => {
         <Button
             variant="bordered_normal"
             size="sm"
+            data-test="category-filter-clear"
             @click="selectNone"
         >
             Clear
@@ -115,6 +117,7 @@ onMounted(() => {
             variant="bordered_normal"
             size="sm"
             :active="selectedIds.has(category.id)"
+            :data-test="`category-filter-cat-${category.id}`"
             @click="toggleCategory(category.id)"
         >
             {{ category.name }}

@@ -28,7 +28,7 @@ const renderedItems = computed(() => {
         </Card>
     </div>
 
-    <p v-else class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
+    <p v-else data-test="empty-state" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
         {{ props.emptyText }}
     </p>
 </template>

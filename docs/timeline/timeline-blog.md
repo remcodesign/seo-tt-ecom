@@ -170,9 +170,9 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 - add `blog.post.index` category selection to url - so we can share it, also set categoryFilter from url params
 
->HERE
-
 - add `blog.post.index` frontend tests for category-filter / order / paging (per page, page) and add url-params to post.show urls, and when return back to the previous page, the current settings are still active/preserved
+
+>HERE
 
 - make mobile nav menu (hamburger) - besides the current desktop menu
 

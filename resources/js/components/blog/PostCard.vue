@@ -36,9 +36,9 @@ const linkQuery = computed(() => {
 </script>
 
 <template>
-    <div class="flex flex-1 flex-col p-5">
+    <div class="flex flex-1 flex-col p-5" data-test="post">
         <h3 class="mb-2 leading-snug tracking-tight">
-            <Button variant="text" class="font-semibold"
+            <Button variant="text" class="font-semibold" data-test="post-title-link"
                 :to="{ name: 'posts.show', params: { slug: post.slug }, query: linkQuery }">
                 {{ post.title }}
             </Button>

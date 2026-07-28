@@ -143,7 +143,7 @@ onMounted(() => {
         <CategoryFilter type="blog_post" :selected-ids="categoryIds" @change="onCategoryChange" class="mb-6" />
 
         <!-- Loading, Error, and Content -->
-        <div v-if="loading" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
+        <div v-if="loading" data-test="loading-state" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">
             Loading posts…
         </div>
 
