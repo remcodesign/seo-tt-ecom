@@ -31,13 +31,25 @@ const orderOptions = [
     { label: 'Updated (Z→A)', value: 'updated_at_desc' },
 ] as const;
 
-const orderBy = ref(String(route.query.orderby ?? 'published_on_desc'));
+// Pagination options
 const perPageOptions = [3, 6, 9, 12] as const;
 
-// Category filter state
-const categoryIds = ref<CategoryIdsData['category_ids']>([]);
+// Query parameters from the route (specific paging parameters are handled by the pagination composable below)
+const orderBy = ref(String(route.query.orderby ?? 'published_on_desc'));
+const categoryIds = ref<CategoryIdsData['category_ids']>(
+    (() => {
+        // Parse category_ids from the route query parameters
+        const raw = route.query.category_ids;
 
-// Used for the pagination composable
+        if (typeof raw === 'string' && raw.length > 0) {
+            return raw.split(',').map(Number).filter((n) => !isNaN(n));
+        }
+
+        return [];
+    })(),
+);
+
+// Pagination composable
 const {
     page,
     perPage,
@@ -63,6 +75,7 @@ const {
     },
 });
 
+// Fetch posts based on current filters and pagination
 const fetchPosts = async (): Promise<void> => {
     loading.value = true;
     error.value = null;
@@ -71,6 +84,7 @@ const fetchPosts = async (): Promise<void> => {
         page: page.value,
         per_page: perPage.value,
         orderby: orderBy.value,
+        ...(categoryIds.value.length > 0 ? { category_ids: categoryIds.value.join(',') } : {}),
     });
 
     try {
@@ -96,18 +110,9 @@ const fetchPosts = async (): Promise<void> => {
     }
 };
 
+// Handle category filter changes
 const onCategoryChange = (ids: number[]): void => {
-    if (ids.length === 0) {
-        // If no categories are selected, we can either fetch all posts or none. Here, we choose to fetch none.
-        posts.value = [];
-        meta.value.total = 0;
-        links.value = [];
-        categoryIds.value = [0];
-        return;
-    } else {
-        categoryIds.value = ids;
-    }
-    
+    categoryIds.value = ids;
     page.value = 1;
     void fetchPosts();
 };
@@ -135,7 +140,7 @@ onMounted(() => {
             :items-options="perPageOptions" @update:orderBy="(value) => orderBy = value"
             @update:perPage="(value) => perPage = value" class="mb-6" />
 
-        <CategoryFilter type="blog_post" @change="onCategoryChange" class="mb-6" />
+        <CategoryFilter type="blog_post" :selected-ids="categoryIds" @change="onCategoryChange" class="mb-6" />
 
         <!-- Loading, Error, and Content -->
         <div v-if="loading" class="text-sm text-[#6C6C66] dark:text-[#A1A19A]">

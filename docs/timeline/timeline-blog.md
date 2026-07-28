@@ -168,13 +168,21 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 - change `blog.post.index` 'none' category handling, where none does not show any post, this could slow the post rendering, because of the waiting for the ?selected categories - so the default is always send categories id's or maybe only a hard override when we clicked the 'none' button send `show-zero` like a value of `-1`
 
+- add `blog.post.index` category selection to url - so we can share it, also set categoryFilter from url params
+
 >HERE
 
-- add `blog.post.index` category selection to url - so we can share it
-
-- add `blog.post.index` frontend tests for filters/order/page
+- add `blog.post.index` frontend tests for category-filter / order / paging (per page, page) and add url-params to post.show urls, and when return back to the previous page, the current settings are still active/preserved
 
 - make mobile nav menu (hamburger) - besides the current desktop menu
+
+## TODO - image seeding and presenting on the frontend (gallery[])
+
+- admin image gallery[]
+
+- admin image gallery[] ordering
+
+- admin image gallery[] check single main image per post
 
 ## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
 

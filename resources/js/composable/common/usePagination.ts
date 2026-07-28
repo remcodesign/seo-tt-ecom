@@ -52,12 +52,8 @@ export function usePagination<TLink, TMeta>({
     };
 
     const updateRoute = (query: LocationQueryRaw): void => {
-        router.replace({
-            query: {
-                ...route.query,
-                ...query,
-            },
-        });
+        // fresh update, no stale query parameters are preserved
+        router.replace({ query });
     };
 
     watch(

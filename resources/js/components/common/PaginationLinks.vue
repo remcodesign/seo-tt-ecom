@@ -28,7 +28,7 @@ const handlePageClick = (page: number | null): void => {
                     :active="link.active"
                     variant="bordered_normal"
                     size="sm"
-                    class="min-w-[3rem]"
+                    class="min-w-12"
                     @click="handlePageClick(link.page)"
                 >
                     <span v-if="/previous/i.test(link.label)">←</span>

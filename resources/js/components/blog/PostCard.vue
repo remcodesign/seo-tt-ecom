@@ -27,6 +27,10 @@ const linkQuery = computed(() => {
         query.page = route.query.page;
     }
 
+    if (typeof route.query.category_ids === 'string') {
+        query.category_ids = route.query.category_ids;
+    }
+
     return query;
 });
 </script>

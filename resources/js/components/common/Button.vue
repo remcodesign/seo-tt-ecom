@@ -27,7 +27,7 @@ const buttonClasses = computed(() => {
     const classes: string[] = ['inline-flex items-center justify-center transition-colors'];
 
     if (props.variant === 'bordered_normal') {
-        classes.push('rounded-md border text-sm cursor-pointer hover:shadow-md');
+        classes.push('type_bordered_normal rounded-md border text-sm cursor-pointer hover:shadow-md');
 
         if (props.size === 'sm') {
             classes.push('px-2 py-1');
@@ -98,7 +98,7 @@ const buttonClasses = computed(() => {
     }
 
     if (props.variant === 'nav') {
-        classes.push('rounded-md text-sm cursor-pointer');
+        classes.push('type_nav rounded-md text-sm cursor-pointer');
 
         if (props.size === 'md') {
             classes.push('px-3 py-2');
@@ -123,7 +123,7 @@ const buttonClasses = computed(() => {
     }
 
     if (props.variant === 'text') {
-        classes.push('font-medium cursor-pointer');
+        classes.push('type_text font-medium cursor-pointer');
 
         if (props.size === 'xs') {
             classes.push('text-xs');
@@ -156,7 +156,7 @@ const buttonClasses = computed(() => {
     }
 
     if (props.variant === 'text-underline') {
-        classes.push('underline decoration-dotted underline-offset-2 cursor-pointer');
+        classes.push('type_text_underline underline decoration-dotted underline-offset-2 cursor-pointer');
 
         if (props.size === 'xs') {
             classes.push('text-xs');

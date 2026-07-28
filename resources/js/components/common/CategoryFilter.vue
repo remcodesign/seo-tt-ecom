@@ -71,6 +71,10 @@ const emitChange = (): void => {
     emit('change', [...selectedIds.value] as CategoryIdsData['category_ids']);
 };
 
+watch(() => props.selectedIds, (ids) => {
+    selectedIds.value = new Set(ids);
+}, { deep: true });
+
 watch(() => props.type, () => {
     void fetchCategories();
 });
@@ -100,7 +104,7 @@ onMounted(() => {
             size="sm"
             @click="selectNone"
         >
-            None
+            Clear
         </Button>
 
         ::
