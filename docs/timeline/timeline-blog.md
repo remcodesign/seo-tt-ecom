@@ -172,17 +172,17 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 - add `blog.post.index` frontend tests for category-filter / order / paging (per page, page) and add url-params to post.show urls, and when return back to the previous page, the current settings are still active/preserved
 
+- make mobile nav menu (hamburger) - besides the current desktop menu - and some other styling touch-ups
+
 >HERE
 
-- make mobile nav menu (hamburger) - besides the current desktop menu
+## TODO - POLY model :: image seeding and presenting on the frontend (gallery[])
 
-## TODO - image seeding and presenting on the frontend (gallery[])
+- admin image gallery[] on post
 
-- admin image gallery[]
+- admin image gallery[] ordering (first in main image)
 
-- admin image gallery[] ordering
-
-- admin image gallery[] check single main image per post
+- admin image gallery[] check single main image per post - still needed?
 
 ## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
 

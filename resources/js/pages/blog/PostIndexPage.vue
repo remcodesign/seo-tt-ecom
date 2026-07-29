@@ -135,7 +135,7 @@ onMounted(() => {
 
 <template>
     <div>
-        <SectionHeaderControls title="Blog Posts" description="Browse recent blog posts." :order-by="orderBy"
+        <SectionHeaderControls title="Blog Posts" description="" :order-by="orderBy"
             :per-page="perPage" :total="meta.total" :show-order="true" :show-items="true" :order-options="orderOptions"
             :items-options="perPageOptions" @update:orderBy="(value) => orderBy = value"
             @update:perPage="(value) => perPage = value" class="mb-6" />

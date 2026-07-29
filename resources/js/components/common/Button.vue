@@ -27,7 +27,7 @@ const buttonClasses = computed(() => {
     const classes: string[] = ['inline-flex items-center justify-center transition-colors'];
 
     if (props.variant === 'bordered_normal') {
-        classes.push('type_bordered_normal rounded-md border text-sm cursor-pointer hover:shadow-md');
+        classes.push('type_bordered_normal rounded-md border text-sm cursor-pointer hover:shadow-lg hover:shadow-[#f53003]/20 dark:hover:shadow-[#FF4433]/30');
 
         if (props.size === 'sm') {
             classes.push('px-2 py-1');
@@ -44,6 +44,7 @@ const buttonClasses = computed(() => {
                 'dark:disabled:border-[#3A3A36]',
                 'dark:disabled:bg-[#1f1f1d]',
                 'dark:disabled:text-[#5D5D57]',
+                'hover:shadow-xs',
             );
         } else if (props.state === 'danger') {
             classes.push(

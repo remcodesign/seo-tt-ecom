@@ -116,7 +116,7 @@ onMounted(() => {
 
 <template>
     <div>
-        <SectionHeaderControls title="Comments" description="Browse all comments across blog posts." :order-by="orderBy"
+        <SectionHeaderControls title="Comments" description="" :order-by="orderBy"
             :per-page="perPage" :total="meta.total" :show-order="true" :show-items="true" :order-options="orderOptions"
             :items-options="perPageOptions" @update:orderBy="(value) => orderBy = value"
             @update:perPage="(value) => perPage = value" class="mb-8" />
