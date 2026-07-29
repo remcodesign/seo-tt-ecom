@@ -176,6 +176,8 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 >HERE
 
+- create frontend test for the header nav menu : admin menu, login/logout (move this to a general test file, so we can reuse the login part in other test), items visible (?login) - test in both desktop and mobile mode
+
 ## TODO - POLY model :: image seeding and presenting on the frontend (gallery[])
 
 - admin image gallery[] on post
@@ -183,6 +185,10 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 - admin image gallery[] ordering (first in main image)
 
 - admin image gallery[] check single main image per post - still needed?
+
+## TODO - add frontend toast, on the right bottom side (maybe a smaller mobile version?), this for mayor and minor events, the toasts can stack up (max 5 as a setting) and remove itself (after some seconds as a settings) from the stack by sliding offscreen (remove for real of the stage) - the toast have a status (warning, error, info) colorring, create a common component for it, maybe use the Card component with colorrig for the outside?
+
+- have a toast variant who does not close/remove itself? this for errors, can stack up for like 10 toasts - is this needed?
 
 ## TODO - add tags as a Polymorphic model - needs one level (has already multiselect 1 level) (implement manualy by looking at category)
 

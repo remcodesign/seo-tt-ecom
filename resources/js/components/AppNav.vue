@@ -33,11 +33,6 @@ const handleMobileNavClick = (navigate: () => void): void => {
     closeMobileMenu();
 };
 
-const handleLogout = async (): Promise<void> => {
-    await auth.logout();
-    closeMobileMenu();
-};
-
 onMounted(async () => {
     await auth.initializeAuth();
 });
@@ -70,15 +65,10 @@ onMounted(async () => {
                 </template>
             </li>
         </ul>
-
-        <Transition name="fade">
-            <LoginModal :show="showLoginModal" @close="showLoginModal = false" @login-success="handleLoginSuccess" />
-        </Transition>
     </nav>
 
     <!-- Mobile hamburger button and transition from closed to open -->
-    <button
-        class="lg:hidden relative z-50 flex size-10 items-center justify-center 
+    <button class="lg:hidden relative z-50 flex size-10 items-center justify-center 
         rounded-md border border-[#8a7f4f40] dark:border-[#3E3E3A]  transition-all duration-300 
         cursor-pointer hover:shadow-lg hover:shadow-[#f53003]/20 dark:hover:shadow-[#FF4433]/30"
         :class="{ 'border-[#f53003] text-[#f53003] dark:border-[#FF4433] dark:text-[#FF4433]': showMobileMenu }"
@@ -112,11 +102,11 @@ onMounted(async () => {
                     <li v-for="link in links" :key="`mobile-${link.route}`">
                         <router-link :to="{ name: link.route }" custom>
                             <template #default="{ navigate, isActive }">
-                               <Button variant="nav" size="md" :active="isActive"
+                                <Button variant="nav" size="md" :active="isActive"
                                     class="w-full rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors"
                                     @click="handleMobileNavClick(navigate)">
                                     {{ link.label }}
-                                </button>
+                                </Button>
                             </template>
                         </router-link>
                     </li>
@@ -126,33 +116,7 @@ onMounted(async () => {
             <!-- Mobile account section -->
             <div class="border-t border-[#e6e6e2] px-4 py-4 dark:border-[#3E3E3A]">
                 <template v-if="auth.isAuthenticated.value">
-                    <div class="mb-3 border-b border-[#e6e6e2] pb-3 dark:border-[#3E3E3A]">
-                        <p class="text-sm font-semibold text-[#111113] dark:text-[#EDEDEC]">{{ auth.user.value?.name }}
-                        </p>
-                        <p class="mt-0.5 text-xs text-[#6C6C66] dark:text-[#A1A19A]">Role: {{
-                            auth.user.value?.role_label }}</p>
-                    </div>
-
-                    <ul class="mb-3 space-y-1">
-                        <li>
-                            <router-link to="/blog/posts"
-                                class="block rounded-lg px-4 py-2 text-sm text-[#111113] transition-colors hover:bg-[#f53003] hover:text-white dark:text-[#EDEDEC] dark:hover:bg-[#FF4433]"
-                                @click="closeMobileMenu">
-                                Dashboard (posts)
-                            </router-link>
-                        </li>
-                        <li>
-                            <router-link to="/blog/comments"
-                                class="block rounded-lg px-4 py-2 text-sm text-[#111113] transition-colors hover:bg-[#f53003] hover:text-white dark:text-[#EDEDEC] dark:hover:bg-[#FF4433]"
-                                @click="closeMobileMenu">
-                                Dashboard (comments)
-                            </router-link>
-                        </li>
-                    </ul>
-
-                    <Button variant="text" size="sm" class="w-full text-left" @click="handleLogout">
-                        Logout
-                    </Button>
+                    <AccountMenu mobile @navigate="closeMobileMenu" />
                 </template>
 
                 <template v-else>
@@ -162,11 +126,11 @@ onMounted(async () => {
                     </Button>
                 </template>
             </div>
-            
+
         </div>
     </Transition>
 
-    <LoginModal :show="showLoginModal" @close="showLoginModal = false" @login-success="handleLoginSuccess"  />
+    <LoginModal :show="showLoginModal" @close="showLoginModal = false" @login-success="handleLoginSuccess" />
 </template>
 
 <style scoped>
