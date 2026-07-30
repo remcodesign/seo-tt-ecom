@@ -176,7 +176,9 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 >HERE
 
-- create frontend test for the header nav menu : admin menu, login/logout (move this to a general test file, so we can reuse the login part in other test), items visible (?login) - test in both desktop and mobile mode
+- refactor frontend test - extract : login/logout (move this to a general test file, so we can reuse the login part in other test)
+
+- create frontend test for the header nav menu : admin menu, login/logout (reuse login function) - use a separate test for only the login?, items visible (?login) - test in both desktop and mobile mode
 
 ## TODO - POLY model :: image seeding and presenting on the frontend (gallery[])
 
