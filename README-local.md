@@ -126,10 +126,28 @@ ddev composer install
 ddev artisan key:generate
 ```
 
-### 6. Install frontend dependencies
+### 6.1 Install frontend dependencies
+
+- when not working - delete `(folder) node_modules + (file) package-lock.json`, then follow again:
 
 ```bash
 npm install
+..
+npm run build
+npm run dev
+```
+
+### 6.2 Let playwright work
+
+> LOCAL install playwright packages, all from local (!) not from DDEV
+
+- when not working - delete `(folder) node_modules + (file) package-lock.json`, then follow again:
+
+```bash
+npm install
+npm install playwright@latest && npx playwright install
+..
+npm run test:browser 
 ```
 
 ### 7. Build frontend assets
@@ -230,6 +248,12 @@ ddev composer coverage
 
 ```bash
 ddev artisan typescript:transform
+```
+
+### update composer packages
+
+```bash
+composer require laravel/pint --dev
 ```
 
 ---

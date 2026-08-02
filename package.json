@@ -6,11 +6,8 @@
         "build": "vite build",
         "build_d": "ddev composer typescript && npm run lint && vite build",
         "dev": "vite",
-
         "lint": "eslint \"resources/js/**/*.{js,ts,vue}\" --fix",
         "typecheck": "npx vue-tsc --noEmit --project tsconfig.json",
-
-        "playwright:install": "exec npm install playwright && exec npx playwright install",
         "test:browser": "ddev composer typescript && npm run lint && vite build && vendor/bin/pest --compact tests/Browser"
     },
     "dependencies": {
@@ -28,8 +25,12 @@
         "concurrently": "^9.0.1",
         "eslint": "^10.6.0",
         "eslint-plugin-vue": "^10.9.2",
+        "fontaine": "^0.8.0",
         "laravel-vite-plugin": "^3.1",
-        "playwright": "^1.61.1",
+        "playwright": "^1.62.1",
+        "prettier": "^3.9.6",
+        "prettier-plugin-blade": "^3.2.2",
+        "prettier-plugin-tailwindcss": "^0.8.1",
         "tailwindcss": "^4.0.0",
         "typescript": "^5.9.3",
         "vite": "^8.0.0",
