@@ -4,7 +4,7 @@
             <p class="text-sm font-semibold tracking-[0.24em] text-slate-500 uppercase">Filter and Search</p>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-3 sm:items-end">
+        <div class="grid gap-4 sm:grid-cols-2 sm:items-end">
             <div>
                 <label for="search" class="block text-sm font-medium text-slate-700">Search</label>
                 <input

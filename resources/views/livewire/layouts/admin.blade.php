@@ -11,6 +11,8 @@
 
     @vite(['resources/css/livewire.css', 'resources/js/livewire.js'])
     @livewireStyles
+
+    @stack('soft-scoped-styles')
 </head>
 
 <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">

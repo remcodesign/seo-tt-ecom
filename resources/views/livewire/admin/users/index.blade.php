@@ -25,7 +25,11 @@
     @livewire(FilterSearch::class, ['roleLabels' => $this->roleLabels])
 
     {{-- lister --}}
-    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div class="index_table_main rounded-3xl border border-slate-200 bg-white shadow-sm">
+        @if ($users->hasPages())
+            <div class="mt-0 p-6">{{ $users->links() }}</div>
+        @endif
+
         <table class="min-w-full divide-y divide-slate-200">
             <thead class="bg-slate-50">
                 <tr>
@@ -65,9 +69,20 @@
                             @endif
                         </button>
                     </th>
+
                     <th class="px-6 py-4 text-left text-xs font-semibold tracking-[0.24em] text-slate-500 uppercase">
-                        Role
+                        <button
+                            type="button"
+                            wire:click="sortBy('updated_at')"
+                            class="inline-flex cursor-pointer items-center gap-2 text-slate-500 transition hover:text-slate-900"
+                        >
+                            Updated At
+                            @if ($orderBy === 'updated_at')
+                                <span aria-hidden="true">{{ $orderDirection === 'asc' ? '▲' : '▼' }}</span>
+                            @endif
+                        </button>
                     </th>
+
                     <th class="px-6 py-4 text-right text-xs font-semibold tracking-[0.24em] text-slate-500 uppercase">
                         Actions
                     </th>
@@ -78,11 +93,22 @@
                 @forelse ($users as $user)
                     <tr wire:key="user-{{ $user->id }}">
                         <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">{{ $user->id }}</td>
-                        <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-900">{{ $user->name }}</td>
-                        <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">{{ $user->email }}</td>
-                        <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
-                            {{ ucfirst($user->role_label->value) }}
+                        <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-900">
+                            <div class="mb-3">
+                                <a
+                                    class="font-semibold text-slate-900 transition hover:text-slate-700"
+                                    href="{{ route('admin.users.edit', $user) }}"
+                                >{{ $user->name }}</a>
+                            </div>
+
+                            <div class="mb-3 inline-block rounded-full border border-green-200 bg-green-50 px-3 py-2 text-xs text-green-800">
+                                {{ ucfirst($user->role_label->value) }}
+                            </div>
                         </td>
+                        <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">{{ $user->email }}</td>
+
+                        <td class="px-6 py-4 text-sm whitespace-nowrap text-slate-500">{{ $user->updated_at }}</td>
+
                         <td class="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                             <a
                                 href="{{ route('admin.users.edit', $user) }}"
@@ -113,3 +139,17 @@
         @endif
     </div>
 </div>
+
+@push('soft-scoped-styles')
+    <style>
+        .index_table_main {
+            overflow: auto;
+        }
+
+        @media (min-width: 1024px) {
+            .index_table_main {
+                overflow: hidden;
+            }
+        }
+    </style>
+@endpush

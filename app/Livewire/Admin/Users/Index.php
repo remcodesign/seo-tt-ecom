@@ -47,7 +47,7 @@ class Index extends Component
 
     public function sortBy(string $column): void
     {
-        $allowed = ['id', 'name', 'email'];
+        $allowed = ['id', 'name', 'email', 'created_at', 'updated_at'];
 
         if (! in_array($column, $allowed, true)) {
             return;
