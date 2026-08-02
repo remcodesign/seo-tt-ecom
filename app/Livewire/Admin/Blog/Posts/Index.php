@@ -84,7 +84,7 @@ class Index extends Component
             ->with('categories')
             ->withCount('comments')
             ->orderBy($this->orderBy, $this->orderDirection === 'asc' ? 'asc' : 'desc')
-            ->paginate(8);
+            ->paginate(5);
 
         return view('livewire.admin.blog.posts.index', [
             'posts' => $lengthAwarePaginator,
