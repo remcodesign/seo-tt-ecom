@@ -52,11 +52,9 @@ docs/private/todo/done/7-dto-plus-phpstan-level9.md
 
 ## DONE - blog post `published_on = null` should not be visible with the public index and show api calls
 
-<!-- ## TODO - postman test + sanctum > send full post/comment objects -->
-
 > vue
 >
-## TODO - start een simple vue frontend with components for common parts
+## DONE - start een simple vue frontend with components for common parts
 
 - use `laravel boost` and `context 7` to get the most modern vue3 vite within laravel
 - first only a base layout - setup to make vite / vue3 SPA (without inertia) inside the codebase `resources` - keep the styling very simple - just a bit contrast
@@ -182,10 +180,6 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 - make `role_label` fillable again to make the system more simple
   - in `app/Models/User.php`
 
-- add images via native laravel `First-Party Image Processing`
-  - in `app/Livewire/Admin/Blog/Posts/Form.php`
-  - <https://laravel-news.com/laravel-13-20-0?utm_source=newsletter&utm_medium=email&utm_campaign=624&utm_content=weekly&bento_uuid=61000f95-fc3e-493e-a055-e04be3ca9074>
-
 - (future) create category 'poly-model' service to handle this logic, and move this logic to that service)
   - in `app/Services/Blog/PostService.php` :: resolveCategoryIds
   - add caching for the "Uncategorized" category to avoid repeated DB queries in a single request
@@ -194,15 +188,24 @@ docs/private/todo/done/10-category-polymorphic-plan.md
   - in `app/Services/Blog/CommentService.php`
   - '.. remove `$user` parameter once we have a DTO validation rule that ensures the user is authorized to update the comment.'
     - `update` > 'convert to `$data = $updateCommentData->toArray();`
-    - '.. and directly pass to `$comment->update($data)` once we have a DTO validation rule that ensures at least one field is present for update.'
+    - '.. (still needed / possible?) and directly pass to `$comment->update($data)` once we have a DTO validation rule that ensures at least one field is present for update.'
+
+>THEN
 
 - refactor frontend test - extract : login/logout (move this to a general test file, so we can reuse the login part in other test)
 
 - create frontend test for the header nav menu : admin menu, login/logout (reuse login function) - use a separate test for only the login?, items visible (?login) - test in both desktop and mobile mode
 
+- postman test + sanctum > send full post/comment objects
+  - can we create a `postman download object` to fast init postman project
+
 ## TODO - POLY model :: image seeding and presenting on the frontend (gallery[])
 
 - admin image gallery[] on post
+  - 'Laravel 13.20 introduces an Illuminate\Image'
+  - add images via native laravel `First-Party Image Processing`
+    - in `app/Livewire/Admin/Blog/Posts/Form.php`
+    - <https://laravel-news.com/laravel-13-20-0>
 
 - admin image gallery[] ordering (first in main image)
 
@@ -226,8 +229,6 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 ## TODO - make category multi level - also select 1 or many categories over the levels - currently already multiselect
 
->THEN
-
 ## TODO - render post categories on Vue 3 SPA frontend
 
 ## TODO - use flux for the frontend components?
@@ -249,7 +250,3 @@ docs/private/todo/value-object.md
 ## TODO - domain invariants - exception handling
 
 docs/private/todo/domain-invariant.md
-
-> blade?
->
-## TODO - simple blog - blade home / post-index / post-show + comments(read) + seeds + web.php routes
