@@ -39,10 +39,10 @@ describe('Livewire admin blog posts', function (): void {
                 ->assertSuccessful()
                 ->assertSee('All blog posts')
                 ->assertSee(Post::first()->title)
-                ->assertSee(Post::skip(7)->first()->title)
-                ->assertDontSee(Post::skip(8)->first()->title)
+                ->assertSee(Post::skip(4)->first()->title)
+                ->assertDontSee(Post::skip(5)->first()->title)
                 ->call('gotoPage', 2)
-                ->assertSee(Post::skip(8)->first()->title);
+                ->assertSee(Post::skip(5)->first()->title);
         });
 
         it('has edit button for each post', function (): void {

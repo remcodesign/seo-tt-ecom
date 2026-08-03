@@ -18,7 +18,7 @@ use Spatie\LaravelData\PaginatedDataCollection;
 
 class PostController extends Controller
 {
-    use HasOptionalIncludes; // (future) currently not used, but kept for phpstan dead code detection
+    use HasOptionalIncludes;
     use HasOrderBy;
     use HasPerPage;
 

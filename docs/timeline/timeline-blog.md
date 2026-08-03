@@ -176,6 +176,26 @@ docs/private/todo/done/10-category-polymorphic-plan.md
 
 >HERE
 
+- is this still needed `use HasOptionalIncludes;`
+  - in `app/Http/Controllers/Api/Blog/PostController.php`
+
+- make `role_label` fillable again to make the system more simple
+  - in `app/Models/User.php`
+
+- add images via native laravel `First-Party Image Processing`
+  - in `app/Livewire/Admin/Blog/Posts/Form.php`
+  - <https://laravel-news.com/laravel-13-20-0?utm_source=newsletter&utm_medium=email&utm_campaign=624&utm_content=weekly&bento_uuid=61000f95-fc3e-493e-a055-e04be3ca9074>
+
+- (future) create category 'poly-model' service to handle this logic, and move this logic to that service)
+  - in `app/Services/Blog/PostService.php` :: resolveCategoryIds
+  - add caching for the "Uncategorized" category to avoid repeated DB queries in a single request
+
+- remove $user from `create` and `update` methods
+  - in `app/Services/Blog/CommentService.php`
+  - '.. remove `$user` parameter once we have a DTO validation rule that ensures the user is authorized to update the comment.'
+    - `update` > 'convert to `$data = $updateCommentData->toArray();`
+    - '.. and directly pass to `$comment->update($data)` once we have a DTO validation rule that ensures at least one field is present for update.'
+
 - refactor frontend test - extract : login/logout (move this to a general test file, so we can reuse the login part in other test)
 
 - create frontend test for the header nav menu : admin menu, login/logout (reuse login function) - use a separate test for only the login?, items visible (?login) - test in both desktop and mobile mode
