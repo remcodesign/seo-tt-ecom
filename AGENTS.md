@@ -23,6 +23,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - phpunit/phpunit (PHPUNIT) - v12
 - rector/rector (RECTOR) - v2
 - eslint (ESLINT) - v10
+- prettier (PRETTIER) - v3
 - tailwindcss (TAILWINDCSS) - v4
 - vue (VUE) - v3
 

@@ -256,6 +256,17 @@ ddev artisan typescript:transform
 composer require laravel/pint --dev
 ```
 
+### update
+
+```bash
+php artisan boost:update
+```
+
+```bash
+composer require laravel/boost --dev
+php artisan boost:install
+```
+
 ---
 
 ## Troubleshooting
