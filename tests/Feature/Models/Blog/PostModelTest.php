@@ -8,6 +8,9 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\HasMedia;
 
 uses(RefreshDatabase::class);
 
@@ -35,6 +38,18 @@ describe('Post', function (): void {
 
             expect($post->published_on)->toBeNull();
             expect($post->fresh()->published_on)->toBeNull();
+        });
+
+        it('supports attaching media', function (): void {
+            Storage::fake('public');
+            $post = Post::factory()->create();
+
+            $post->addMedia(UploadedFile::fake()->image('cover.jpg'))
+                ->toMediaCollection();
+
+            expect($post)->toBeInstanceOf(HasMedia::class);
+            expect($post->getMedia())->toHaveCount(1);
+            expect($post->getFirstMedia()->file_name)->toBe('cover.jpg');
         });
     });
 

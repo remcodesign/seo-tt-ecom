@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 /**
  * @property int $id
@@ -35,12 +37,14 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable(['user_id', 'title', 'body', 'slug', 'published_on'])]
 #[Table(name: 'blog_posts')]
-class Post extends BlogRootModel
+class Post extends BlogRootModel implements HasMedia
 {
     /**
      * @use HasFactory<PostFactory>
      */
     use HasFactory;
+
+    use InteractsWithMedia;
 
     /**
      * Get the model's attribute type casts.
