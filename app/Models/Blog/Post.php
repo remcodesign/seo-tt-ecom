@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -31,6 +32,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property Carbon|null $updated_at
  * @property-read User $user
  * @property-read Collection<int, Comment> $comments
+ * @property-read PostWorkflow|null $workflow
  *
  * @method static Builder<static> withoutContentFields()
  * @method static Builder<static> published()
@@ -74,6 +76,14 @@ class Post extends BlogRootModel implements HasMedia
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * @return HasOne<PostWorkflow, $this>
+     */
+    public function workflow(): HasOne
+    {
+        return $this->hasOne(PostWorkflow::class);
     }
 
     /**

@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Enums\PostWorkflowStatus;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
+use App\Models\Blog\PostWorkflow;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
@@ -50,6 +52,23 @@ describe('Post', function (): void {
             expect($post)->toBeInstanceOf(HasMedia::class);
             expect($post->getMedia())->toHaveCount(1);
             expect($post->getFirstMedia()->file_name)->toBe('cover.jpg');
+        });
+
+        it('has a workflow with a cast status and captured timestamp', function (): void {
+            $post = Post::factory()->create();
+            $workflow = PostWorkflow::create([
+                'post_id' => $post->id,
+                'file_hash' => sha1('seed-image'),
+                'status' => PostWorkflowStatus::completed,
+                'captured_at' => '2026-01-01 12:00:00',
+                'embedding' => json_encode([0.0, 0.0]),
+            ]);
+
+            expect($post->workflow)->toBeInstanceOf(PostWorkflow::class);
+            expect($workflow->post)->toBeInstanceOf(Post::class);
+            expect($workflow->status)->toBe(PostWorkflowStatus::completed);
+            expect($workflow->captured_at)->toBeInstanceOf(CarbonImmutable::class);
+            expect($workflow->embedding)->toBe('[0,0]');
         });
     });
 

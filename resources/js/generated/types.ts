@@ -89,6 +89,13 @@ export type PostForCommentDataResponse = {
     created_at: string | null;
     updated_at: string | null;
 };
+export type PostWorkflowStatus =
+    | "discovered"
+    | "proxy_created"
+    | "uploaded"
+    | "described"
+    | "embedded"
+    | "completed";
 export type RegisterData = {
     name: string;
     email: string;

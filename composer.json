@@ -83,8 +83,8 @@
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
         "db_refresh": [
-            "@php artisan migrate:refresh",
-            "@php artisan db:seed"
+            "@php artisan migrate:refresh --force",
+            "@php artisan db:seed --force"
         ],
         "pint": "vendor/bin/pint",
         "pint_w_blade": "vendor/bin/pint --blade",

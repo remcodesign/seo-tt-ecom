@@ -6,8 +6,10 @@ namespace Database\Seeders;
 
 use App\Data\Blog\Requests\StoreCommentData;
 use App\Data\Blog\Requests\StorePostData;
+use App\Enums\PostWorkflowStatus;
 use App\Enums\RoleLabel;
 use App\Models\Blog\Post;
+use App\Models\Blog\PostWorkflow;
 use App\Models\Category;
 use App\Models\User;
 use App\Services\Blog\CommentService;
@@ -15,7 +17,9 @@ use App\Services\Blog\PostService;
 use Faker\Generator as Faker;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 final class BlogSeeder extends Seeder
 {
@@ -63,6 +67,26 @@ final class BlogSeeder extends Seeder
 
         $commentCounts = [1, 2, 3, 4, 1, 3, 2];
 
+        $attachSeedImage = static function (Post $post, int $index): void {
+            $filename = 'Screenshot 2026-03-15 at 20.28.04.png';
+            $image = UploadedFile::fake()->image($filename, 200 + $index, 300 + $index);
+            $fileHash = sha1_file($image->getRealPath());
+            $capturedAt = Carbon::createFromFormat(
+                'Y-m-d H.i.s',
+                str_replace(' at ', ' ', Str::after(pathinfo($filename, PATHINFO_FILENAME), 'Screenshot ')),
+            );
+
+            $post->addMedia($image)->toMediaCollection('blog-images');
+
+            PostWorkflow::create([
+                'post_id' => $post->id,
+                'file_hash' => $fileHash,
+                'status' => PostWorkflowStatus::completed,
+                'captured_at' => $capturedAt,
+                'embedding' => json_encode([0.0, 0.0]),
+            ]);
+        };
+
         // Fetch the "Uncategorized" category (seeded by CategorySeeder) and add more categories
         $categoriesList = [];
         // 'uncategorized' should be guaranteed to exist via the CategorySeeder,
@@ -73,7 +97,7 @@ final class BlogSeeder extends Seeder
         $categoriesList[] = Category::factory()->create(['name' => 'Frontend Development', 'slug' => 'frontend-development']);
 
         // Create published posts with comments
-        $publishedPosts = collect($publishedTitles)->map(function (string $title, int $index) use ($writers, $postService, $generator, $makeBody, $categoriesList): Post {
+        $publishedPosts = collect($publishedTitles)->map(function (string $title, int $index) use ($writers, $postService, $generator, $makeBody, $categoriesList, $attachSeedImage): Post {
             /** @var User $writer */
             $writer = $writers->get($index % $writers->count());
 
@@ -96,7 +120,7 @@ final class BlogSeeder extends Seeder
             /** @var array<int> $categoryIds */
             $categoryIds = collect($categories)->pluck('id')->all();
 
-            return $postService->create(
+            $post = $postService->create(
                 new StorePostData(
                     user_id: $writer->id,
                     title: $title,
@@ -105,6 +129,10 @@ final class BlogSeeder extends Seeder
                     published_on: Carbon::now()->subDays(7 * ($index + 1))->toImmutable(),
                 ),
             );
+
+            $attachSeedImage($post, $index);
+
+            return $post;
         });
 
         // Create comments for each published post
@@ -141,6 +169,8 @@ final class BlogSeeder extends Seeder
                 body: $makeBody($generator),
             ),
         );
+
+        $attachSeedImage($draftPost, count($publishedTitles));
 
         /** @var User $draftCommenter */
         $draftCommenter = $commenters->first();

@@ -29,4 +29,9 @@ return new class extends Migration
             $blueprint->nullableTimestamps();
         });
     }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('media');
+    }
 };
