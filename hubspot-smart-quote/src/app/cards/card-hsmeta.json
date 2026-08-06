@@ -1,0 +1,13 @@
+{
+  "uid": "hubspot_smart_quote_card",
+  "type": "card",
+  "config": {
+    "name": "Smart Quote",
+    "description": "Check customer value and prepare a concise quote pitch.",
+    "location": "crm.record.sidebar",
+    "entrypoint": "/app/cards/smart-quote-card.tsx",
+    "objectTypes": [
+      "deals"
+    ]
+  }
+}

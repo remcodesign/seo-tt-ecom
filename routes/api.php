@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\Auth\RegisterUserController;
 use App\Http\Controllers\Api\Auth\RevokeTokenController;
 use App\Http\Controllers\Api\Blog\CommentController;
 use App\Http\Controllers\Api\Blog\PostController;
+use App\Http\Controllers\Api\HubSpot\CustomerCheckController;
+use App\Http\Controllers\Api\HubSpot\QuotePitchController;
 use App\Http\Controllers\Api\Poly\CategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +26,13 @@ Route::prefix('blog')->group(function (): void {
 Route::prefix('poly')->group(function (): void {
     Route::apiResource('categories', CategoryController::class)->only(['index']);
 });
+
+Route::prefix('hubspot')
+    ->middleware('hubspot.signature')
+    ->group(function (): void {
+        Route::post('/customer-check', CustomerCheckController::class);
+        Route::post('/quote-pitch', QuotePitchController::class);
+    });
 
 Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', CurrentUserController::class);

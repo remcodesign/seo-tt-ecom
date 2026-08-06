@@ -8,6 +8,7 @@ use App\Enums\RoleLabel;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
+use App\Services\HubSpot\OpenRouterService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
@@ -28,6 +29,8 @@ class Dashboard extends Component
 
     public function render(): View
     {
+        $openRouterService = app(OpenRouterService::class);
+
         $postCategoryCount = DB::table('categorizables')
             ->where('categorizable_type', Post::class)
             ->distinct('category_id')
@@ -40,6 +43,7 @@ class Dashboard extends Component
             'postCount' => Post::count(),
 
             'commentCount' => Comment::count(),
+            'openRouterConfigured' => $openRouterService->isConfigured(),
         ]);
     }
 }

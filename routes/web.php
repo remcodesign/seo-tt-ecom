@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\LogoutController;
 use App\Livewire\Admin\Blog\Posts\Form as LivewirePostForm;
 use App\Livewire\Admin\Blog\Posts\Index as LivewirePostsIndex;
 use App\Livewire\Admin\Dashboard as LivewireDashboard;
+use App\Livewire\Admin\HubSpot\Console as LivewireHubSpotConsole;
+use App\Livewire\Admin\HubSpot\Logs as LivewireHubSpotLogs;
 use App\Livewire\Admin\Login as LivewireLogin;
 use App\Livewire\Admin\Users\Form as LivewireUserForm;
 use App\Livewire\Admin\Users\Index as LivewireUsersIndex;
@@ -26,6 +28,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
     Route::middleware('auth')->group(function (): void {
         Route::post('/logout', LogoutController::class)
             ->name('logout');
+
+        Route::prefix('hubspot')->name('hubspot.')->group(function (): void {
+            Route::livewire('/', LivewireHubSpotConsole::class)->name('console');
+            Route::livewire('/logs', LivewireHubSpotLogs::class)->name('logs');
+        });
 
         // general
         Route::prefix('users')->group(function (): void {

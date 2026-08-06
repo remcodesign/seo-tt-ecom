@@ -73,6 +73,22 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'hubspot' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/hubspot.log'),
+            'level' => env('HUBSPOT_LOG_LEVEL', 'debug'),
+            'days' => env('HUBSPOT_LOG_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'ai' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/ai.log'),
+            'level' => env('AI_LOG_LEVEL', 'debug'),
+            'days' => env('AI_LOG_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

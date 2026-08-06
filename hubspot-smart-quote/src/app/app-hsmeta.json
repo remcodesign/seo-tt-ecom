@@ -1,0 +1,32 @@
+{
+  "uid": "hubspot_smart_quote_app",
+  "type": "app",
+  "config": {
+    "description": "Deterministic customer value checks and quote pitch preparation for Deal records.",
+    "name": "Smart Quote",
+    "distribution": "private",
+    "auth": {
+      "type": "static",
+      "requiredScopes": [
+        "crm.objects.deals.read",
+        "crm.objects.contacts.read"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": [
+        "https://seo-tt-ecom-production-0oxgks.laravel.cloud/api/hubspot/customer-check",
+        "https://seo-tt-ecom-production-0oxgks.laravel.cloud/api/hubspot/quote-pitch"
+      ],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "support@example.com",
+      "documentationUrl": "https://example.com/docs",
+      "supportUrl": "https://example.com/support",
+      "supportPhone": "+18005555555"
+    }
+  }
+}

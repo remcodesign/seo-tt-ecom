@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Ai\Agents\HubSpot\QuotePitchAgent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -10,6 +11,9 @@ pest()->extend(TestCase::class)
     ->in('Feature');
 
 pest()->beforeEach(function (): void {
+    // Prevent stray prompts from being sent to OpenRouter during tests
+    QuotePitchAgent::fake()->preventStrayPrompts();
+
     $hotFile = public_path('hot');
 
     if (file_exists($hotFile)) {
