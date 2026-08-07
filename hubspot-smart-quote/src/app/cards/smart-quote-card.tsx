@@ -6,21 +6,25 @@ import {
     Text,
     hubspot,
 } from '@hubspot/ui-extensions';
+
 import { useAssociations, useCrmProperties } from '@hubspot/ui-extensions/crm';
 import { useState } from 'react';
 
-import { LARAVEL_API_BASE_URL } from './api-config.js';
-import type { DealProperties } from './crm-types.js';
+import { LARAVEL_API_BASE_URL } from './config/api-config.js';
+import type { DealProperties } from './types/crm.js';
 import {
     createHubSpotQuoteApi,
-    type QuoteApi,
-    type HubSpotFetchOptions,
-} from './quote-client.js';
-import type { CustomerCheckResult, QuotePitchResult } from './quote-types.js';
+} from './clients/quote-api.js';
+import type { HubSpotFetchOptions } from './types/hubspot-fetch.js';
+import type {
+    CustomerCheckResult,
+    QuoteApi,
+    QuotePitchResult,
+} from './types/quote.js';
 import {
     getDealAmount,
     getFirstContactEmail,
-} from './quote-logic.js';
+} from './domain/quote-logic.js';
 
 interface CardActions {
     addAlert: (options: { message: string; type?: string }) => void;
@@ -42,8 +46,8 @@ export function SmartQuoteCard({ actions }: { actions: CardActions }) {
         properties: ['email'],
         pageLength: 1,
     });
-    const [customerResult, setCustomerResult] =
-        useState<CustomerCheckResult | null>(null);
+
+    const [customerResult, setCustomerResult] = useState<CustomerCheckResult | null>(null);
     const [pitchResult, setPitchResult] = useState<QuotePitchResult | null>(null);
     const [customerError, setCustomerError] = useState<string | null>(null);
     const [pitchError, setPitchError] = useState<string | null>(null);

@@ -18,3 +18,8 @@ export interface QuotePitchResult {
     provider: string;
     generated: boolean;
 }
+
+export interface QuoteApi {
+    checkCustomer: (email: string) => Promise<CustomerCheckResult>;
+    generatePitch: (input: QuotePitchInput) => Promise<QuotePitchResult>;
+}

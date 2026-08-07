@@ -71,6 +71,30 @@ IMPORTANT: IF THE 'HubSpotDev' MCP SERVER IS INSTALLED USE THE TOOLS BEFORE TRYI
 - If npm reports `Missing script: "validate"` or ESLint reports that a declared package cannot be found, first check `pwd` and `npm prefix`; the command was likely run from the repository root or dependencies were installed in the wrong directory.
 - If `npm install` fails with a network error (`ENETUNREACH`, `ETIMEDOUT`, `EAI_AGAIN`, registry DNS errors, or a proxy error), treat it as an npm registry/network problem. Verify npm's registry and proxy configuration with `npm config get registry` and `npm config get proxy`, then rerun `npm install` from `src/app/cards`. Do not move dependencies to the Laravel root to work around it.
 
+### Code organization and maintainability
+
+- Keep normal implementation files focused. A card component should coordinate UI state and user actions; it should not also own CRM type definitions, HTTP transport contracts, response validation, fixtures, or domain rules.
+- Put shared TypeScript contracts in a nearby `types/` directory. Group them by responsibility, such as `types/quote.ts`, `types/crm.ts`, and `types/hubspot-fetch.ts`. Import type-only contracts from their owning module rather than re-exporting them from implementation files.
+- Put runtime validation and response parsers in a nearby `validation/` directory. TypeScript annotations and casts do not validate JSON at runtime; validate external responses before passing them to card or domain code.
+- Use these folders as responsibility hints when the project grows:
+  - `types/` for shared compile-time contracts and DTO-like shapes.
+  - `validation/` for runtime guards, parsers, and external response validation.
+  - `clients/` for HubSpot or Laravel HTTP clients and other external API adapters.
+  - `domain/` for deterministic business rules and transformations independent of React and HTTP.
+  - `config/` for URLs, timeouts, feature configuration, and other non-secret settings.
+  - `mappers/` for converting HubSpot CRM shapes into application-owned types.
+  - `hooks/` for reusable React state or data-fetching hooks.
+  - `components/` for reusable presentational UI components.
+  - `cards/` for thin HubSpot entrypoints that compose hooks, clients, domain logic, and components.
+  - `fixtures/` for deterministic test data and test-only factories; never import these into production code.
+  - `errors/` for typed errors when the UI needs to distinguish failure categories.
+  - `constants/` for genuinely shared fixed values that do not belong to configuration or domain logic.
+  - `tests/` only when the project convention centralizes tests; otherwise keep focused tests beside the module they cover.
+- Do not create every folder in advance. Create one when it represents an existing responsibility, has multiple consumers, or needs independent tests. Avoid generic `utils/` and catch-all `services/` folders unless their ownership is genuinely clear.
+- Keep transport adapters focused on request construction, `hubspot.fetch`, status handling, and delegation to validation. Keep deterministic quote rules in domain or logic modules and keep presentation in the card component.
+- Prefer small functions and focused modules over large files, but do not create folders, classes, or abstractions for a single local value without a reuse or ownership reason. Extract a contract when it is shared, a validator when data crosses a trust boundary, and a service when behavior has an independent responsibility.
+- When moving a type or validator, update all consumers and add or preserve focused tests for both valid and malformed external data. Do not change the public card workflow as part of an organization-only refactor.
+
 ## npm packages
 
 ### `@hubspot/ui-extensions`

@@ -1,4 +1,4 @@
-import type { ContactAssociation, DealProperties } from './crm-types.js';
+import type { ContactAssociation, DealProperties } from '../types/crm.js';
 
 export function getFirstContactEmail(input: unknown): string | null {
     if (Array.isArray(input)) {

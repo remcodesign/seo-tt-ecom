@@ -25,5 +25,4 @@ describe('quote logic', () => {
         expect(getDealAmount({ amount: '12000' })).toBe(12000);
         expect(getDealAmount({ amount: 'not-a-number' })).toBeNull();
     });
-
 });
