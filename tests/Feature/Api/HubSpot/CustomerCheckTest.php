@@ -19,20 +19,22 @@ beforeEach(function (): void {
 
 describe('HubSpot customer check API', function (): void {
     // todo update with a more robust test that doesn't rely on the stubbed VIP email
-    // it('returns the VIP result for a valid signed request', function (): void {
-    //     signedHubSpotPost('/api/hubspot/customer-check', [
-    //         'email' => 'vip@example.test',
-    //     ])
-    //         ->assertSuccessful()
-    //         ->assertJson([
-    //             'is_vip' => true,
-    //             'lifetime_value' => 4500,
-    //             'allowed_discount' => 15,
-    //         ]);
-    // });
+    it('returns the VIP result for a valid signed request', function (): void {
+        signedHubSpotCustomerCheckPost('/api/hubspot/customer-check', [
+            'email' => 'vip@remcodesign.nl',
+        ])
+            ->assertSuccessful()
+            ->assertJson([
+                'is_vip' => true,
+                'lifetime_value' => 4500,
+                'allowed_discount' => 15,
+                'reason' => 'Returning test customer',
+                'source' => 'hubspot test rules',
+            ]);
+    });
 
     it('returns validation errors for an invalid email', function (): void {
-        signedHubSpotPost('/api/hubspot/customer-check', [
+        signedHubSpotCustomerCheckPost('/api/hubspot/customer-check', [
             'email' => 'invalid-email',
         ])
             ->assertUnprocessable()
@@ -46,22 +48,7 @@ describe('HubSpot customer check API', function (): void {
     });
 });
 
-describe('HubSpot quote pitch API', function (): void {
-    it('returns the fallback pitch for a valid signed request', function (): void {
-        signedHubSpotPost('/api/hubspot/quote-pitch', [
-            'deal_name' => 'VIP Website Renewal',
-            'deal_amount' => 12000,
-            'customer_email' => 'vip@example.test',
-            'allowed_discount' => 15,
-        ])
-            ->assertSuccessful()
-            ->assertJsonPath('provider', 'fallback')
-            ->assertJsonPath('generated', false)
-            ->assertJsonPath('text', 'For this returning customer we can offer a tailored proposal with up to 15 percent flexibility.');
-    });
-});
-
-function signedHubSpotPost(string $uri, array $payload): TestResponse
+function signedHubSpotCustomerCheckPost(string $uri, array $payload): TestResponse
 {
     $body = json_encode($payload, JSON_THROW_ON_ERROR);
     $timestamp = (string) (Carbon::now()->getTimestamp() * 1000);

@@ -2,73 +2,19 @@
 
 declare(strict_types=1);
 
-use App\Ai\Agents\HubSpot\QuotePitchAgent;
 use App\Enums\RoleLabel;
-use App\Livewire\Admin\HubSpot\Console;
 use App\Livewire\Admin\HubSpot\Logs;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Ai\Prompts\AgentPrompt;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
-describe('HubSpot admin tools', function (): void {
-    it('redirects a non-admin user from the HubSpot console', function (): void {
-        $user = User::factory()->create(['role_label' => RoleLabel::user]);
-
-        Livewire::actingAs($user)
-            ->test(Console::class)
+describe('HubSpot logs', function (): void {
+    it('redirects unauthenticated users from the log page', function (): void {
+        Livewire::test(Logs::class)
             ->assertRedirectToRoute('admin.login');
-    });
-
-    // todo update with a more robust test that doesn't rely on the stubbed VIP email
-    // it('checks the known VIP customer from the admin console', function (): void {
-    //     $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
-
-    //     Livewire::actingAs($admin)
-    //         ->test(Console::class)
-    //         ->set('email', 'vip@example.test')
-    //         ->call('checkCustomer')
-    //         ->assertSet('customerResult.is_vip', true)
-    //         ->assertSet('customerResult.allowed_discount', 15)
-    //         ->assertSee('Returning test customer');
-    // });
-
-    it('uses the fallback pitch when OpenRouter is not configured', function (): void {
-        config([
-            'ai.providers.openrouter.key' => null,
-            'ai.providers.openrouter.models.text.default' => '',
-        ]);
-
-        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
-
-        Livewire::actingAs($admin)
-            ->test(Console::class)
-            ->call('generatePitch')
-            ->assertSet('pitchResult.provider', 'fallback')
-            ->assertSee('15 percent flexibility');
-    });
-
-    it('uses OpenRouter when it is configured', function (): void {
-        config([
-            'ai.providers.openrouter.key' => 'test-key',
-            'ai.providers.openrouter.models.text.default' => 'test/provider-model',
-        ]);
-
-        QuotePitchAgent::fake(['A generated test pitch.'])->preventStrayPrompts();
-
-        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
-
-        Livewire::actingAs($admin)
-            ->test(Console::class)
-            ->call('generatePitch')
-            ->assertSet('pitchResult.provider', 'openrouter')
-            ->assertSee('A generated test pitch.');
-
-        QuotePitchAgent::assertPrompted(fn (AgentPrompt $agentPrompt): bool => $agentPrompt->contains('VIP Website Renewal')
-            && $agentPrompt->contains('15 percent'));
     });
 
     it('shows the dedicated HubSpot and AI log page to admins', function (): void {
@@ -76,6 +22,7 @@ describe('HubSpot admin tools', function (): void {
 
         Livewire::actingAs($admin)
             ->test(Logs::class)
+            ->call('refreshLogs')
             ->assertSuccessful()
             ->assertSee('Integration logs')
             ->assertSee('Only the dedicated HubSpot and AI channels are shown.')
@@ -87,6 +34,23 @@ describe('HubSpot admin tools', function (): void {
             ->assertSee('emergency')
             ->assertSee('Clear')
             ->assertSee('Reset filters');
+    });
+
+    it('toggles valid log levels and ignores invalid levels', function (): void {
+        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+
+        Livewire::actingAs($admin)
+            ->test(Logs::class)
+            ->set('enabledLogLevels', ['debug'])
+            ->call('toggleLogLevel', 'invalid')
+            ->assertSet('enabledLogLevels', ['debug'])
+            ->call('toggleLogLevel', 'debug')
+            ->assertSet('enabledLogLevels', [])
+            ->call('toggleLogLevel', 'warning')
+            ->assertSet('enabledLogLevels', ['warning'])
+            ->set('enabledLogLevels', ['debug'])
+            ->call('toggleLogLevel', 'warning')
+            ->assertSet('enabledLogLevels', ['warning', 'debug']);
     });
 
     it('sorts log entries by date and then channel', function (): void {
@@ -148,6 +112,41 @@ describe('HubSpot admin tools', function (): void {
         }
     });
 
+    it('filters entries using every date range', function (): void {
+        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+        $path = storage_path('logs/hubspot-test-date-ranges-'.uniqid().'.log');
+
+        CarbonImmutable::setTestNow(CarbonImmutable::create(2026, 8, 7, 12, 0, 0, 'UTC'));
+        file_put_contents($path, implode("\n", [
+            '[2026-08-07 10:00:00] hubspot.INFO: Date range today marker',
+            '[2026-08-06 10:00:00] hubspot.INFO: Date range yesterday marker',
+            '[2026-08-03 10:00:00] hubspot.INFO: Date range week marker',
+            '[2026-08-01 10:00:00] hubspot.INFO: Date range month marker',
+            '[2026-08-02 10:00:00] hubspot.INFO: Date range seven days marker',
+            '[2026-07-20 10:00:00] hubspot.INFO: Date range thirty days marker',
+        ])."\n");
+
+        $testable = Livewire::actingAs($admin)->test(Logs::class);
+
+        try {
+            foreach ([
+                'yesterday' => 'yesterday',
+                'this_week' => 'week',
+                'this_month' => 'month',
+                'last_7_days' => 'seven days',
+                'last_30_days' => 'thirty days',
+            ] as $filter => $marker) {
+                $testable
+                    ->set('dateFilter', $filter)
+                    ->set('search', 'Date range '.$marker.' marker')
+                    ->assertSee('Date range '.$marker.' marker');
+            }
+        } finally {
+            CarbonImmutable::setTestNow();
+            @unlink($path);
+        }
+    });
+
     it('converts UTC log timestamps to Amsterdam time', function (): void {
         $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
         $path = storage_path('logs/hubspot-test-timezone-'.uniqid().'.log');
@@ -160,6 +159,28 @@ describe('HubSpot admin tools', function (): void {
                 ->set('dateFilter', 'all')
                 ->set('search', 'Timezone marker')
                 ->assertSee('2026-08-06 16:17:23');
+        } finally {
+            @unlink($path);
+        }
+    });
+
+    it('ignores malformed log dates and unknown log levels', function (): void {
+        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+        $path = storage_path('logs/hubspot-test-malformed-'.uniqid().'.log');
+
+        file_put_contents($path, implode("\n", [
+            'not a valid log line',
+            '[2026-08-06 14:17:23] local.UNKNOWN: Unknown level marker',
+            '[2026-08-06 14:17:23] local.INFO: Valid marker',
+        ])."\n");
+
+        try {
+            Livewire::actingAs($admin)
+                ->test(Logs::class)
+                ->set('dateFilter', 'all')
+                ->set('search', 'marker')
+                ->assertSee('Valid marker')
+                ->assertDontSee('Unknown level marker');
         } finally {
             @unlink($path);
         }

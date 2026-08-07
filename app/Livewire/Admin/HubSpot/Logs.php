@@ -50,18 +50,24 @@ class Logs extends Component
 
     public function toggleLogLevel(string $level): void
     {
-        if (! in_array($level, self::LOG_LEVELS, true)) {
+        if (! collect(self::LOG_LEVELS)->containsStrict($level)) {
             return;
         }
 
-        if (in_array($level, $this->enabledLogLevels, true)) {
-            $this->enabledLogLevels = array_values(array_diff($this->enabledLogLevels, [$level]));
+        if (collect($this->enabledLogLevels)->containsStrict($level)) {
+            $this->enabledLogLevels = collect($this->enabledLogLevels)
+                ->reject(fn (string $enabledLevel): bool => $enabledLevel === $level)
+                ->values()
+                ->all();
 
             return;
         }
 
         $this->enabledLogLevels[] = $level;
-        $this->enabledLogLevels = array_values(array_intersect(self::LOG_LEVELS, $this->enabledLogLevels));
+        $this->enabledLogLevels = collect(self::LOG_LEVELS)
+            ->intersect($this->enabledLogLevels)
+            ->values()
+            ->all();
     }
 
     public function clearLogLevels(): void

@@ -13,7 +13,7 @@ final class CustomerCheckService
      */
     public function check(string $email): array
     {
-        // VERY TODO - This is a stub implementation for testing purposes. In a real implementation, you would query HubSpot or your database to determine if the customer is VIP and retrieve their lifetime value and allowed discount.
+        // TODO - This is a stub implementation for testing purposes. In a real implementation, you would query HubSpot or your database to determine if the customer is VIP and retrieve their lifetime value and allowed discount.
         $isVip = mb_strtolower(trim($email)) === 'vip@remcodesign.nl';
 
         $result = [

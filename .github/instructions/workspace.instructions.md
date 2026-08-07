@@ -126,7 +126,7 @@ readonly class PostController
 ### Service Layer
 - Encapsulate business logic, queries, and side effects.
 - Reuse model scopes for shared query logic (e.g., `withPostAndUserName()`).
-- Prefer Laravel collection helpers over raw PHP `array_*` functions when transforming DTO arrays or building payloads in services.
+- Prefer `collect()` and Laravel collection helpers over native PHP array transformation functions such as `array_map`, `array_filter`, `array_diff`, `array_intersect`, and `array_values` when transforming data or building payloads. Use native array functions only when there is no clear collection equivalent or when a PHP-specific operation is materially clearer.
 - Default to readonly properties and constructor injection. Use `readonly class` (PHP 8.4+).
 
 ### Content-Field Scope (`withoutContentFields`)

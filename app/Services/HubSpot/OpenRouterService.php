@@ -7,6 +7,7 @@ namespace App\Services\HubSpot;
 use App\Ai\Agents\HubSpot\QuotePitchAgent;
 use Illuminate\Support\Facades\Log;
 use Laravel\Ai\Enums\Lab;
+use Laravel\Ai\Exceptions\FailoverableException;
 use Throwable;
 
 final class OpenRouterService
@@ -16,23 +17,60 @@ final class OpenRouterService
      */
     public function generate(string $userPrompt): ?array
     {
-        if (! $this->isConfigured()) {
+        if ($this->configuredApiKey() === null) {
             return null;
         }
 
-        $model = config('ai.providers.openrouter.models.text.default');
+        $models = $this->configuredModels();
 
-        if (! is_string($model) || $model === '') {
+        if ($models === []) {
             return null;
         }
 
-        try {
-            $timeout = config('hubspot.ai.timeout', 15);
+        $timeout = config('hubspot.ai.timeout', 15);
 
-            if (! is_int($timeout)) {
-                return null;
+        if (! is_int($timeout)) {
+            return null;
+        }
+
+        foreach ($models as $model) {
+            try {
+                $result = $this->generateForModel($userPrompt, $model, $timeout);
+            } catch (FailoverableException $exception) {
+                Log::channel('ai')->warning('Laravel AI agent request failed; trying next model.', [
+                    'exception' => $exception::class,
+                    'model' => $model,
+                ]);
+
+                continue;
             }
 
+            return $result;
+        }
+
+        return null;
+    }
+
+    public function isConfigured(): bool
+    {
+        $models = $this->configuredModels();
+
+        return $this->configuredApiKey() !== null && $models !== [];
+    }
+
+    private function configuredApiKey(): ?string
+    {
+        $apiKey = config('ai.providers.openrouter.key');
+
+        return is_string($apiKey) && $apiKey !== '' ? $apiKey : null;
+    }
+
+    /**
+     * @return array{text: string, model: string, usage: array<string, mixed>}|null
+     */
+    private function generateForModel(string $userPrompt, string $model, int $timeout): ?array
+    {
+        try {
             $response = QuotePitchAgent::make()->prompt(
                 $userPrompt,
                 provider: Lab::OpenRouter,
@@ -40,6 +78,10 @@ final class OpenRouterService
                 timeout: $timeout,
             );
         } catch (Throwable $throwable) {
+            if ($throwable instanceof FailoverableException) {
+                throw $throwable;
+            }
+
             Log::channel('ai')->warning('Laravel AI agent request failed.', [
                 'exception' => $throwable::class,
                 'model' => $model,
@@ -73,11 +115,24 @@ final class OpenRouterService
         ];
     }
 
-    public function isConfigured(): bool
+    /**
+     * @return list<string>
+     */
+    private function configuredModels(): array
     {
-        $apiKey = config('ai.providers.openrouter.key');
-        $model = config('ai.providers.openrouter.models.text.default');
+        $models = config('ai.providers.openrouter.models.text.default');
 
-        return is_string($apiKey) && $apiKey !== '' && is_string($model) && $model !== '';
+        if (! is_string($models)) {
+            return [];
+        }
+
+        /** @var list<string> $configuredModels */
+        $configuredModels = collect(explode(',', $models))
+            ->map(static fn (string $model, int $key): string => trim($model))
+            ->filter()
+            ->values()
+            ->all();
+
+        return $configuredModels;
     }
 }
