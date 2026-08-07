@@ -10,7 +10,8 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck && npm test"
+    "validate": "npm run lint && npm run typecheck && npm test",
+    "validate_hs": "npm run validate && hs project validate"
   },
   "dependencies": {
     "@hubspot/ui-extensions": "latest",

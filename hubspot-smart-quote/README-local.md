@@ -1,66 +1,96 @@
 # HubSpot Smart Quote
 
-Standalone HubSpot CLI project for a Deal record card. It is intentionally separate from the Laravel application in the repository root.
+Standalone HubSpot CLI project for a private Deal record sidebar card. The project targets HubSpot platform `2026.03` and remains separate from the Laravel application in the repository root.
 
-## Local checks
+The card reads Deal properties and the first associated Contact through the HubSpot UI Extensions SDK. A sales user explicitly starts the customer check and quote-pitch requests; the card sends those requests to the configured Laravel API through `hubspot.fetch`.
+
+## Project layout
+
+- `hubspot-smart-quote/`: HubSpot CLI project root; run `hs project` commands here.
+- `hubspot-smart-quote/src/app/`: HubSpot app metadata and source directory.
+- `hubspot-smart-quote/src/app/cards/`: React/TypeScript card package; run npm commands here.
+
+The card is registered at `crm.record.sidebar` for Deal records only (`objectTypes: ["deals"]`). The app uses private static authentication with read scopes for Deals and Contacts.
+
+## Validate the project
+
+Install dependencies and run the card checks from the directory that owns `package.json`:
 
 ```bash
 cd hubspot-smart-quote/src/app/cards
 npm install
 npm run validate
+npm run validate_hs
 ```
 
-`validate` runs ESLint, TypeScript, and Vitest. The root Laravel `package.json` is not used by this project.
+`npm run validate` runs ESLint, TypeScript, and Vitest. `npm run validate_hs` runs those checks and then `hs project validate`. The root Laravel `package.json` and build process are not used for this project.
 
-## HubSpot CLI workflow
+To validate only the HubSpot project metadata and structure:
 
-Install and authenticate the official CLI only when a HubSpot developer or test account is available:
+```bash
+cd hubspot-smart-quote
+hs project validate
+```
+
+## Local HubSpot development
+
+Install and authenticate the official HubSpot CLI with a HubSpot Developer Test Account or another isolated test account:
 
 ```bash
 npm install -g @hubspot/cli
 hs init
 hs account list
-hs project validate
-hs project dev
 ```
 
-## Dev mode via dev test user - find via number below dev-tester in the Hubspot interface
+Start local development from the HubSpot project root. Replace the example account IDs with the project and test-account IDs from your HubSpot developer account:
 
 ```bash
+cd hubspot-smart-quote
 hs project dev \
   --project-account xxx \
   --testing-account xxx \
   --debug
 ```
 
-Use `hs project upload` and `hs project deploy` only after replacing the placeholder Laravel URLs in `src/app/app-hsmeta.json` and `src/app/cards/smart-quote-card.tsx`.
+Use `hs project upload` to create an account build and `hs project deploy` only when that build is ready to be activated:
 
-The project was shaped to the current Projects CLI format. If `hs project validate` reports a generated metadata difference, accept the CLI-generated metadata shape and preserve the existing card contract: Deal object type, sidebar location, card entrypoint, and exact HTTPS `permittedUrls.fetch` entries.
+```bash
+cd hubspot-smart-quote
+hs project upload
+hs project deploy
+```
 
-## Switching to Laravel
+Keep the existing card contract when changing metadata: Deal object type, sidebar location, card entrypoint, required CRM read scopes, and exact HTTPS `permittedUrls.fetch` entries.
 
-When the backend is publicly reachable over HTTPS:
+## Laravel API configuration
 
-1. Set the same host in `src/app/cards/api-config.ts`.
-2. Replace both placeholder URLs in `src/app/app-hsmeta.json` with the exact customer-check and quote-pitch URLs.
-3. Confirm the HubSpot app client secret is configured in Laravel, never in this project.
-4. Run `npm run validate`, then `hs project validate` and `hs project dev`.
+The card currently uses the Laravel Cloud API configured in `src/app/cards/api-config.ts`:
 
-The real path uses `hubspot.fetch`, so HubSpot supplies the request signing headers. Do not replace it with browser `fetch` and do not add wildcard URLs.
+```text
+https://seo-tt-ecom-production-0oxgks.laravel.cloud/api/hubspot
+```
 
-## Test scenarios
+If the backend host or endpoint paths change:
 
-The current automated tests cover:
+1. Update `src/app/cards/api-config.ts`.
+2. Keep the exact customer-check and quote-pitch URLs in `src/app/app-hsmeta.json` synchronized with the adapter paths.
+3. Confirm the Laravel client secret is configured on the backend, never in this project.
+4. Run `npm run validate_hs` from `src/app/cards`, then use `hs project dev` from `hubspot-smart-quote`.
+
+All external requests use `hubspot.fetch`; do not replace it with browser `fetch`. Fetch permissions must remain exact HTTPS URLs and must never use wildcards, localhost, HTTP, tokens, or secrets.
+
+## Test coverage and manual checks
+
+The automated Vitest tests cover:
 
 - VIP and unknown customer mock rules
 - CRM association response shapes
 - Deals without an associated contact
 - CRM amount normalization
-- Deterministic fallback pitch generation
 - Real adapter payload construction
 - Non-success HTTP responses
 
-The manual HubSpot test matrix remains:
+Use test doubles in Vitest; do not call the real Laravel API from automated tests. For manual verification, use an isolated HubSpot Developer Test Account and check:
 
 - Deal with VIP contact
 - Deal with unknown contact
