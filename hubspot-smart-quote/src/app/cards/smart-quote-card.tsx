@@ -9,11 +9,9 @@ import {
 import { useAssociations, useCrmProperties } from '@hubspot/ui-extensions/crm';
 import { useState } from 'react';
 
-import { LARAVEL_API_BASE_URL, MOCK_MODE } from './config.js';
-import { MOCK_CONTACT, MOCK_DEAL } from './mock-data.js';
+import { LARAVEL_API_BASE_URL } from './api-config.js';
 import {
     createHubSpotQuoteApi,
-    createMockQuoteApi,
     type QuoteApi,
     type HubSpotFetchOptions,
 } from './quote-client.js';
@@ -53,20 +51,14 @@ export function SmartQuoteCard({ actions }: { actions: CardActions }) {
     const [isCheckingCustomer, setIsCheckingCustomer] = useState(false);
     const [isGeneratingPitch, setIsGeneratingPitch] = useState(false);
 
-    const deal: DealProperties = MOCK_MODE
-        ? MOCK_DEAL
-        : (dealProperties.properties as DealProperties);
-    const contactEmail = MOCK_MODE
-        ? MOCK_CONTACT.email
-        : getFirstContactEmail(associations);
-    const isLoading = !MOCK_MODE && dealProperties.isLoading;
-    const quoteApi: QuoteApi = MOCK_MODE
-        ? createMockQuoteApi()
-        : createHubSpotQuoteApi(
-              (resource: string, options: HubSpotFetchOptions) =>
-                  hubspot.fetch(resource, options),
-              LARAVEL_API_BASE_URL,
-          );
+    const deal: DealProperties = dealProperties.properties as DealProperties;
+    const contactEmail = getFirstContactEmail(associations);
+    const isLoading = dealProperties.isLoading;
+    const quoteApi: QuoteApi = createHubSpotQuoteApi(
+        (resource: string, options: HubSpotFetchOptions) =>
+            hubspot.fetch(resource, options),
+        LARAVEL_API_BASE_URL,
+    );
 
     async function handleCustomerCheck(): Promise<void> {
         if (!contactEmail) {
@@ -131,7 +123,7 @@ export function SmartQuoteCard({ actions }: { actions: CardActions }) {
         return <LoadingSpinner label="Loading Deal data" />;
     }
 
-    if (!MOCK_MODE && (dealProperties.error || !contactEmail)) {
+    if (dealProperties.error || !contactEmail) {
         return (
             <Flex direction="column" gap="medium">
                 <Heading>Smart Quote</Heading>
@@ -147,13 +139,12 @@ export function SmartQuoteCard({ actions }: { actions: CardActions }) {
     return (
         <Flex direction="column" gap="medium">
             <Flex direction="column" gap="small">
-                <Heading>Smart Quote 2</Heading>
+                <Heading>Smart Quote 4</Heading>
                 <Text>{deal.dealname ?? 'Unnamed deal'}</Text>
                 <Text>
                     Amount: {getDealAmount(deal)?.toLocaleString() ?? 'No amount'}
                 </Text>
                 <Text>Customer: {contactEmail}</Text>
-                {MOCK_MODE && <Text>Mode: local mock</Text>}
             </Flex>
 
             <Button

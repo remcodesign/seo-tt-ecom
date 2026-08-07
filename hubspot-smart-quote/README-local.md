@@ -5,7 +5,7 @@ Standalone HubSpot CLI project for a Deal record card. It is intentionally separ
 ## Local checks
 
 ```bash
-cd hubspot-smart-quote
+cd hubspot-smart-quote/src/app/cards
 npm install
 npm run validate
 ```
@@ -41,7 +41,7 @@ The project was shaped to the current Projects CLI format. If `hs project valida
 
 When the backend is publicly reachable over HTTPS:
 
-1. Set the same host in `src/app/cards/config.ts`.
+1. Set the same host in `src/app/cards/api-config.ts`.
 2. Replace both placeholder URLs in `src/app/app-hsmeta.json` with the exact customer-check and quote-pitch URLs.
 3. Confirm the HubSpot app client secret is configured in Laravel, never in this project.
 4. Run `npm run validate`, then `hs project validate` and `hs project dev`.
@@ -81,7 +81,7 @@ The manual HubSpot test matrix remains:
 This is a standalone HubSpot CLI project inside a larger Laravel repository. Start in `hubspot-smart-quote/` and read:
 
 ```txt
-hubspot-smart-quote/README.md
+hubspot-smart-quote/README-local.md
 hubspot-smart-quote/hsproject.json
 hubspot-smart-quote/src/app/app-hsmeta.json
 hubspot-smart-quote/src/app/cards/
