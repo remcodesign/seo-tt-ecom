@@ -1,9 +1,38 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-    createHubSpotQuoteApi,
-    createMockQuoteApi,
-} from './quote-client.js';
+import type { QuotePitchInput } from './quote-types.js';
+import { createHubSpotQuoteApi, type QuoteApi } from './quote-client.js';
+
+function createMockQuoteApi(): QuoteApi {
+    return {
+        async checkCustomer(email) {
+            if (email.trim().toLowerCase() === 'vip@example.test') {
+                return {
+                    is_vip: true,
+                    lifetime_value: 4500,
+                    allowed_discount: 15,
+                    reason: 'Returning test customer',
+                    source: 'mock HubSpot rules',
+                };
+            }
+
+            return {
+                is_vip: false,
+                lifetime_value: 0,
+                allowed_discount: 5,
+                reason: 'Unknown test customer',
+                source: 'mock HubSpot rules',
+            };
+        },
+        async generatePitch(input: QuotePitchInput) {
+            return {
+                text: `For ${input.deal_name}, we can prepare a tailored proposal with up to ${input.allowed_discount}% flexibility for this customer.`,
+                provider: 'fallback',
+                generated: false,
+            };
+        },
+    };
+}
 
 describe('mock quote API', () => {
     it('returns the VIP fixture without making a network request', async () => {

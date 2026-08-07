@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-    getDealAmount,
-    getFallbackPitch,
-    getFirstContactEmail,
-} from './quote-logic.js';
+import { getDealAmount, getFirstContactEmail } from './quote-logic.js';
 
 describe('quote logic', () => {
     it('resolves the first associated contact from HubSpot results', () => {
@@ -30,18 +26,4 @@ describe('quote logic', () => {
         expect(getDealAmount({ amount: 'not-a-number' })).toBeNull();
     });
 
-    it('builds a deterministic fallback pitch', () => {
-        expect(
-            getFallbackPitch({
-                deal_name: 'VIP Website Renewal',
-                deal_amount: 12000,
-                customer_email: 'vip@example.test',
-                allowed_discount: 15,
-            }),
-        ).toEqual({
-            text: 'For VIP Website Renewal, we can prepare a tailored proposal with up to 15% flexibility for this customer.',
-            provider: 'fallback',
-            generated: false,
-        });
-    });
 });

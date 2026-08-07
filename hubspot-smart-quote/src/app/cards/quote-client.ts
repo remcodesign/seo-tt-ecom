@@ -1,9 +1,8 @@
-import {
-    getFallbackPitch,
-    type CustomerCheckResult,
-    type QuotePitchInput,
-    type QuotePitchResult,
-} from './quote-logic.js';
+import type {
+    CustomerCheckResult,
+    QuotePitchInput,
+    QuotePitchResult,
+} from './quote-types.js';
 
 export interface HubSpotFetchOptions {
     method: 'POST';
@@ -28,33 +27,6 @@ export interface QuoteApi {
 }
 
 const REQUEST_TIMEOUT = 15000;
-
-export function createMockQuoteApi(): QuoteApi {
-    return {
-        async checkCustomer(email): Promise<CustomerCheckResult> {
-            if (email.trim().toLowerCase() === 'vip@example.test') {
-                return {
-                    is_vip: true,
-                    lifetime_value: 4500,
-                    allowed_discount: 15,
-                    reason: 'Returning test customer',
-                    source: 'mock HubSpot rules',
-                };
-            }
-
-            return {
-                is_vip: false,
-                lifetime_value: 0,
-                allowed_discount: 5,
-                reason: 'Unknown test customer',
-                source: 'mock HubSpot rules',
-            };
-        },
-        async generatePitch(input): Promise<QuotePitchResult> {
-            return getFallbackPitch(input);
-        },
-    };
-}
 
 export function createHubSpotQuoteApi(
     fetcher: HubSpotFetch,

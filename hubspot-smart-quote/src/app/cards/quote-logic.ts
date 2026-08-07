@@ -1,36 +1,4 @@
-export interface DealProperties {
-    dealname?: string | null;
-    amount?: string | number | null;
-    hs_object_id?: string | null;
-}
-
-export interface ContactAssociation {
-    properties?: {
-        email?: string | null;
-    };
-    email?: string | null;
-}
-
-export interface CustomerCheckResult {
-    is_vip: boolean;
-    lifetime_value: number;
-    allowed_discount: number;
-    reason: string;
-    source: string;
-}
-
-export interface QuotePitchInput {
-    deal_name: string;
-    deal_amount: number | null;
-    customer_email: string;
-    allowed_discount: number;
-}
-
-export interface QuotePitchResult {
-    text: string;
-    provider: string;
-    generated: boolean;
-}
+import type { ContactAssociation, DealProperties } from './crm-types.js';
 
 export function getFirstContactEmail(input: unknown): string | null {
     if (Array.isArray(input)) {
@@ -65,12 +33,4 @@ export function getDealAmount(deal: DealProperties): number | null {
     const amount = Number(deal.amount);
 
     return Number.isFinite(amount) ? amount : null;
-}
-
-export function getFallbackPitch(input: QuotePitchInput): QuotePitchResult {
-    return {
-        text: `For ${input.deal_name}, we can prepare a tailored proposal with up to ${input.allowed_discount}% flexibility for this customer.`,
-        provider: 'fallback',
-        generated: false,
-    };
 }

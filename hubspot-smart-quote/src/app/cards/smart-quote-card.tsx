@@ -10,17 +10,16 @@ import { useAssociations, useCrmProperties } from '@hubspot/ui-extensions/crm';
 import { useState } from 'react';
 
 import { LARAVEL_API_BASE_URL } from './api-config.js';
+import type { DealProperties } from './crm-types.js';
 import {
     createHubSpotQuoteApi,
     type QuoteApi,
     type HubSpotFetchOptions,
 } from './quote-client.js';
+import type { CustomerCheckResult, QuotePitchResult } from './quote-types.js';
 import {
     getDealAmount,
     getFirstContactEmail,
-    type CustomerCheckResult,
-    type DealProperties,
-    type QuotePitchResult,
 } from './quote-logic.js';
 
 interface CardActions {
@@ -139,7 +138,7 @@ export function SmartQuoteCard({ actions }: { actions: CardActions }) {
     return (
         <Flex direction="column" gap="medium">
             <Flex direction="column" gap="small">
-                <Heading>Smart Quote 4</Heading>
+                <Heading>Smart Quote 5</Heading>
                 <Text>{deal.dealname ?? 'Unnamed deal'}</Text>
                 <Text>
                     Amount: {getDealAmount(deal)?.toLocaleString() ?? 'No amount'}
