@@ -139,6 +139,64 @@ IMPORTANT: IF THE 'HubSpotDev' MCP SERVER IS INSTALLED USE THE TOOLS BEFORE TRYI
 ### card
 
 - `card` components must be in the `app/cards` directory
+- The `cards` directory is the shared discovery and dependency boundary for multiple cards; it is not a directory that contains one nested component directory per card.
+- Each card must have its own `*-hsmeta.json` metadata file and entrypoint source file directly inside `app/cards`. For example:
+
+  ```text
+  src/app/cards/
+  ├── package.json
+  ├── smart-quote-card.tsx
+  ├── smart-quote-card-hsmeta.json
+  ├── smart-quote-card/
+  │   ├── clients/
+  │   ├── config/
+  │   ├── domain/
+  │   ├── types/
+  │   └── validation/
+  ├── customer-health-card.tsx
+  ├── customer-health-card-hsmeta.json
+  └── customer-health-card/
+      ├── components/
+      ├── clients/
+      ├── domain/
+      └── types/
+  ```
+
+- Give every card a unique `uid`. Keep the existing `uid`, `location`, `objectTypes`, and public card contract unchanged when editing an existing card.
+- Set each card's `config.entrypoint` to the project path for its root-level entrypoint, such as `/app/cards/customer-health-card.tsx`.
+- Each card may have a matching deeper implementation folder, such as `smart-quote-card/` or `customer-health-card/`. Deeper folders are appropriate for card-specific implementation files such as `components/`, `clients/`, `config/`, `domain/`, `hooks/`, `types/`, `validation/`, and `tests/`. Do not put card `*-hsmeta.json` files or card entrypoints inside those folders.
+- Do not rename or move an existing card's metadata or entrypoint casually. A move can make the uploaded project appear to remove the remote card even when the `uid` is unchanged, triggering the warning that existing record views may be affected.
+- Before changing an existing card's path, compare the current metadata and deployed project. If the change is only organizational, preserve the root-level metadata filename and entrypoint path. If a path must change, upload with auto-deploy disabled and inspect the build before deploying.
+- To add a card, use `hs project add` from the project root and select `Card`, or add a new root-level `*-hsmeta.json` plus entrypoint while preserving the shared `package.json`. Validate from the directory that owns `package.json`:
+
+  ```shell
+  cd src/app/cards
+  npm run validate_hs
+  cd ../..
+  hs project upload --skip-auto-deploy
+  hs project deploy --build=<build-id>
+  ```
+
+- To intentionally remove a card, first confirm that it is no longer used in HubSpot record views. Remove its root-level `*-hsmeta.json` and entrypoint only when the removal is deliberate, then validate and upload with auto-deploy disabled:
+
+  ```shell
+  cd src/app/cards
+  npm run validate_hs
+  cd ../..
+  hs project upload --skip-auto-deploy
+  ```
+
+  Inspect the build's destructive-action warning. Deploy with `hs project deploy --build=<build-id> --force` only after confirming that removing the card from existing views is intended. The force flag acknowledges the removal; it does not preserve the card or migrate its views.
+
+- Do not rename an existing card's `*-hsmeta.json` file as a cosmetic change. A metadata filename change can be interpreted by HubSpot as removing the old component and adding a new one, especially when the entrypoint or `uid` also changes. Treat it as a migration:
+  1. Keep the existing `uid` and card contract when the remote card should remain the same.
+  2. Prefer leaving the existing metadata filename in place and changing only display fields when possible.
+  3. If the filename must change, upload with `--skip-auto-deploy`, inspect whether HubSpot reports a removal and addition, and do not use `--force` unless the old card is intentionally being retired.
+  4. If the goal is a genuinely new card, use a new metadata filename, a new unique `uid`, and a new entrypoint; configure and test it as a separate card.
+
+- A metadata rename is not guaranteed to be a safe filesystem rename: the `uid` is the component identity, but HubSpot's project diff can still classify an unrecognized path as a removal. Never delete the old metadata file and deploy immediately when the existing card must remain in users' views.
+
+- Do not use `hs project deploy --force` to resolve a card-removal warning unless removing that card from existing HubSpot views is intentional. `--force` bypasses the safety warning; it does not preserve component identity or convert a move into an update.
 - The global `window` object is not available in the `card` component
 - Cannot use `window.fetch`, and instead must use the `hubspot.fetch` function provided by the `@hubspot/ui-extensions` npm package.  Any urls called with the `hubspot.fetch` function must be added to the `config.permittedUrls.fetch` array in the `app` component's hsmeta.json file
 - `hubspot.fetch` requires fully qualified HTTPS URLs (e.g., `https://api.example.com/endpoint`) - relative paths like `/api/endpoint` are NOT supported
