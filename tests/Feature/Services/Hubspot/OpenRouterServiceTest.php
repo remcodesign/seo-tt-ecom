@@ -90,3 +90,51 @@ describe('OpenRouterService generation failures', function (): void {
         expect($attempts)->toBe(2);
     });
 });
+
+describe('OpenRouterService generation success', function (): void {
+    beforeEach(function (): void {
+        config([
+            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.models.text.default' => 'test/model',
+            'hubspot.ai.timeout' => 15,
+        ]);
+    });
+
+    it('returns trimmed generated text with the configured model and usage', function (): void {
+        QuotePitchAgent::fake(['  A generated pitch.  '])->preventStrayPrompts();
+
+        $result = app(OpenRouterService::class)->generate('Write a pitch.');
+
+        expect($result)
+            ->toBeArray()
+            ->toMatchArray([
+                'text' => 'A generated pitch.',
+                'model' => 'test/model',
+            ])
+            ->and($result['usage'])->toBeArray();
+    });
+
+    it('uses the next configured model after a failoverable error', function (): void {
+        config([
+            'ai.providers.openrouter.models.text.default' => 'test/primary,test/backup',
+        ]);
+
+        $attempts = 0;
+        QuotePitchAgent::fake(function () use (&$attempts): string {
+            $attempts++;
+
+            if ($attempts === 1) {
+                throw RateLimitedException::forProvider('openrouter', 429);
+            }
+
+            return 'A backup model pitch.';
+        })->preventStrayPrompts();
+
+        expect(app(OpenRouterService::class)->generate('Write a pitch.'))
+            ->toMatchArray([
+                'text' => 'A backup model pitch.',
+                'model' => 'test/backup',
+            ]);
+        expect($attempts)->toBe(2);
+    });
+});

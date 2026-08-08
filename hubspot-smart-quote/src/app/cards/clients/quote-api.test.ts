@@ -1,61 +1,63 @@
 import { describe, expect, it } from 'vitest';
 
-import type { QuoteApi, QuotePitchInput } from '../types/quote.js';
+import type { HubSpotFetch } from '../types/hubspot-fetch.js';
 import { createHubSpotQuoteApi } from './quote-api.js';
 
-function createMockQuoteApi(): QuoteApi {
-    return {
-        async checkCustomer(email) {
-            if (email.trim().toLowerCase() === 'vip@example.test') {
-                return {
+describe('HubSpot quote API', () => {
+    it('posts the customer check through the permitted fetch adapter', async () => {
+        let request: {
+            resource: string;
+            options: Parameters<HubSpotFetch>[1];
+        } | null = null;
+        const fetcher: HubSpotFetch = async (resource, options) => {
+            request = { resource, options };
+
+            return {
+                ok: true,
+                status: 200,
+                json: async () => ({
                     is_vip: true,
                     lifetime_value: 4500,
                     allowed_discount: 15,
                     reason: 'Returning test customer',
-                    source: 'mock HubSpot rules',
-                };
-            }
-
-            return {
-                is_vip: false,
-                lifetime_value: 0,
-                allowed_discount: 5,
-                reason: 'Unknown test customer',
-                source: 'mock HubSpot rules',
+                    source: 'Laravel',
+                }),
             };
-        },
-        async generatePitch(input: QuotePitchInput) {
-            return {
-                text: `For ${input.deal_name}, we can prepare a tailored proposal with up to ${input.allowed_discount}% flexibility for this customer.`,
-                provider: 'fallback',
-                generated: false,
-            };
-        },
-    };
-}
-
-describe('mock quote API', () => {
-    it('returns the VIP fixture without making a network request', async () => {
-        const api = createMockQuoteApi();
+        };
+        const api = createHubSpotQuoteApi(fetcher, 'https://api.example.test');
 
         await expect(api.checkCustomer('vip@example.test')).resolves.toMatchObject({
-            is_vip: true,
-            lifetime_value: 4500,
             allowed_discount: 15,
         });
-    });
-
-    it('returns the default rule for an unknown customer', async () => {
-        const api = createMockQuoteApi();
-
-        await expect(api.checkCustomer('unknown@example.test')).resolves.toMatchObject({
-            is_vip: false,
-            allowed_discount: 5,
+        expect(request).toEqual({
+            resource: 'https://api.example.test/customer-check',
+            options: {
+                method: 'POST',
+                timeout: 15000,
+                body: { email: 'vip@example.test' },
+            },
         });
     });
 
-    it('returns the deterministic fallback pitch', async () => {
-        const api = createMockQuoteApi();
+    it('posts the quote pitch with the complete input payload', async () => {
+        let request: {
+            resource: string;
+            options: Parameters<HubSpotFetch>[1];
+        } | null = null;
+        const fetcher: HubSpotFetch = async (resource, options) => {
+            request = { resource, options };
+
+            return {
+                ok: true,
+                status: 200,
+                json: async () => ({
+                    text: 'A tailored proposal is ready.',
+                    provider: 'fallback',
+                    generated: false,
+                }),
+            };
+        };
+        const api = createHubSpotQuoteApi(fetcher, 'https://api.example.test');
 
         await expect(
             api.generatePitch({
@@ -64,31 +66,19 @@ describe('mock quote API', () => {
                 customer_email: 'vip@example.test',
                 allowed_discount: 15,
             }),
-        ).resolves.toMatchObject({ provider: 'fallback', generated: false });
-    });
-});
-
-describe('HubSpot quote API', () => {
-    it('posts the customer check through the permitted fetch adapter', async () => {
-        const fetcher = async (
-            _resource: string,
-            options: { body: Record<string, unknown> },
-        ) => ({
-            ok: true,
-            status: 200,
-            json: async () => ({
-                is_vip: true,
-                lifetime_value: 4500,
-                allowed_discount: 15,
-                reason: 'Returning test customer',
-                source: 'Laravel',
-            }),
-            receivedBody: options.body,
-        });
-        const api = createHubSpotQuoteApi(fetcher, 'https://api.example.test');
-
-        await expect(api.checkCustomer('vip@example.test')).resolves.toMatchObject({
-            allowed_discount: 15,
+        ).resolves.toMatchObject({ generated: false });
+        expect(request).toEqual({
+            resource: 'https://api.example.test/quote-pitch',
+            options: {
+                method: 'POST',
+                timeout: 15000,
+                body: {
+                    deal_name: 'VIP Website Renewal',
+                    deal_amount: 12000,
+                    customer_email: 'vip@example.test',
+                    allowed_discount: 15,
+                },
+            },
         });
     });
 
@@ -102,6 +92,17 @@ describe('HubSpot quote API', () => {
 
         await expect(api.checkCustomer('vip@example.test')).rejects.toThrow(
             'HubSpot request failed with 403',
+        );
+    });
+
+    it('surfaces fetcher failures to the card', async () => {
+        const fetcher: HubSpotFetch = async () => {
+            throw new Error('Network unavailable');
+        };
+        const api = createHubSpotQuoteApi(fetcher, 'https://api.example.test');
+
+        await expect(api.checkCustomer('vip@example.test')).rejects.toThrow(
+            'Network unavailable',
         );
     });
 
@@ -144,5 +145,18 @@ describe('HubSpot quote API', () => {
                 allowed_discount: 15,
             }),
         ).rejects.toThrow('Invalid quote pitch response');
+    });
+
+    it('rejects an empty customer check response', async () => {
+        const fetcher: HubSpotFetch = async () => ({
+            ok: true,
+            status: 200,
+            json: async () => null,
+        });
+        const api = createHubSpotQuoteApi(fetcher, 'https://api.example.test');
+
+        await expect(api.checkCustomer('vip@example.test')).rejects.toThrow(
+            'Invalid customer check response',
+        );
     });
 });

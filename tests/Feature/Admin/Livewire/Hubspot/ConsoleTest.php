@@ -22,6 +22,19 @@ describe('HubSpot console', function (): void {
             ->assertRedirectToRoute('admin.login');
     });
 
+    it('validates all quote pitch fields before generating a pitch', function (): void {
+        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+
+        Livewire::actingAs($admin)
+            ->test(Console::class)
+            ->set('dealName', '')
+            ->set('dealAmount', '-1')
+            ->set('email', 'invalid-email')
+            ->set('allowedDiscount', '101')
+            ->call('generatePitch')
+            ->assertHasErrors(['dealName', 'dealAmount', 'email', 'allowedDiscount']);
+    });
+
     it('checks a VIP customer and clears the previous pitch result', function (): void {
         $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
 
@@ -80,19 +93,6 @@ describe('HubSpot console', function (): void {
             ->assertSet('customerResult', null)
             ->assertSet('pitchResult', null)
             ->assertSet('errorMessage', '');
-    });
-
-    // todo update with a more robust test that doesn't rely on the stubbed VIP email
-    it('checks the known VIP customer from the admin console', function (): void {
-        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
-
-        Livewire::actingAs($admin)
-            ->test(Console::class)
-            ->set('email', 'vip@remcodesign.nl')
-            ->call('checkCustomer')
-            ->assertSet('customerResult.is_vip', true)
-            ->assertSet('customerResult.allowed_discount', 15)
-            ->assertSee('Returning test customer');
     });
 
     it('uses the fallback pitch when OpenRouter is not configured', function (): void {

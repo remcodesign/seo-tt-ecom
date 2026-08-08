@@ -42,9 +42,13 @@ export function createHubSpotQuoteApi(
                 'customer-check',
                 { email },
                 isCustomerCheckResult,
-                'customer check',
+                'customer check'
             ),
         generatePitch: (input) =>
-            post('quote-pitch', { ...input }, isQuotePitchResult, 'quote pitch'),
+            post('quote-pitch',
+                { ...input },
+                isQuotePitchResult,
+                'quote pitch'
+            ),
     };
 }

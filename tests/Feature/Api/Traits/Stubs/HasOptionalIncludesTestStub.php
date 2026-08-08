@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\LaravelData\Data;
 
+// This stub class is used to test the HasOptionalIncludes trait.
 class HasOptionalIncludesTestStub
 {
     use HasOptionalIncludes;

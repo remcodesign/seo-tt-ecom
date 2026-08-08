@@ -17,6 +17,14 @@ describe('HubSpot logs', function (): void {
             ->assertRedirectToRoute('admin.login');
     });
 
+    it('redirects non-admin users from the log page', function (): void {
+        $user = User::factory()->create(['role_label' => RoleLabel::user]);
+
+        Livewire::actingAs($user)
+            ->test(Logs::class)
+            ->assertRedirectToRoute('admin.login');
+    });
+
     it('shows the dedicated HubSpot and AI log page to admins', function (): void {
         $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
 

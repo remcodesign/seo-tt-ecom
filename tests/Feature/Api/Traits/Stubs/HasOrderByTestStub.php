@@ -6,6 +6,7 @@ namespace Tests\Feature\Api\Traits\Stubs;
 
 use App\Http\Controllers\Api\Traits\HasOrderBy;
 
+// This stub class is used to test the HasOrderBy trait.
 class HasOrderByTestStub
 {
     use HasOrderBy;

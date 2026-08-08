@@ -242,6 +242,24 @@ Use the `logger` API to send custom log messages. In local development mode, log
 
 - `workflow-action` components must be in the `app/workflow-actions` directory
 
+## HubSpot Card Test Boundaries
+
+Tests must prove behavior at the responsibility boundary they name. Do not add tests that only execute a hand-written mock or fixture and then assert the same values returned by that mock. A mock is test setup; it is useful when injected into a card or adapter test, but it is not production behavior to verify. TypeScript's declared return type already checks that a local mock has the expected compile-time shape.
+
+For client and adapter modules such as `clients/quote-api.ts`, use a typed `hubspot.fetch` test double and assert:
+
+- the exact HTTPS endpoint, including its path;
+- the HTTP method, timeout, and complete request body;
+- successful response mapping for each operation;
+- non-success HTTP statuses;
+- rejected network or adapter promises;
+- empty, malformed, and wrong-type JSON responses;
+- that no real HubSpot, Laravel, AI provider, or other external request is made.
+
+For domain modules such as `domain/quote-logic.ts`, test deterministic input/output behavior independently of React, HubSpot SDK hooks, HTTP clients, and Laravel. Cover the supported CRM response shapes, missing associations, malformed or incomplete values, empty values, numeric normalization, and non-finite numbers. Keep business-rule tests focused on the rule owned by the domain module rather than duplicating transport or presentation tests.
+
+Prefer a small number of strong assertions over tests that merely check a response is truthy. When a test claims that a request is posted, inspect the captured URL and options; capturing a body without asserting it does not verify request construction. Keep live-account checks manual or in a separately controlled integration suite using an isolated HubSpot Developer Test Account. They must never run as ordinary unit tests or depend on production data.
+
 ## HubSpot CLI commands
 
 - All the commands and subcommands have a `--help` argument that provides details on the command and it's arguments

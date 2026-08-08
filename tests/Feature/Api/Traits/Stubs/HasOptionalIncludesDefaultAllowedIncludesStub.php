@@ -6,6 +6,7 @@ namespace Tests\Feature\Api\Traits\Stubs;
 
 use App\Http\Controllers\Api\Traits\HasOptionalIncludes;
 
+// This stub class is used to test the HasOptionalIncludes trait's default allowedIncludes behavior.
 class HasOptionalIncludesDefaultAllowedIncludesStub
 {
     use HasOptionalIncludes;
