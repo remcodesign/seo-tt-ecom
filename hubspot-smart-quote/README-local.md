@@ -133,6 +133,12 @@ Also use this when a change crosses the Laravel API boundary, request signing, A
 .github/skills/hubspot-laravel-integration/SKILL.md
 ```
 
+Use this when the change needs requirements clarified, behavior decomposed into testable parts, or an implementation plan and validation criteria captured as specs:
+
+```txt
+.github/skills/specs-as-code-architect/SKILL.md
+```
+
 Use the current official HubSpot developer documentation when behavior depends on a specific CLI command, UI Extensions SDK API, CRM hook, request-signature version, or metadata schema.
 
 > for more direct documentation, use the tool 'Context7'
@@ -170,7 +176,8 @@ npm run validate
 hs project validate
 ```
 
-Run focused Vitest tests first when applicable. Use `hs project dev` for local CRM iteration, and use `hs project upload` or `hs project deploy` only when the task requires an account operation and the metadata and HTTPS configuration are ready.
+- Run focused Vitest tests first when applicable. Use `hs project dev` for local CRM iteration
+- !IMPORTANT Never use `hs project upload` or `hs project deploy` on your own, that is for me to call on the CLI (and I will only do it when the task requires an account operation and the metadata and HTTPS configuration are ready.)
 
 For Laravel-side changes, run only the affected Laravel tests and the repository's documented Laravel checks in addition to the HubSpot checks. Do not run Laravel formatting or the root frontend build for a card-only change.
 
