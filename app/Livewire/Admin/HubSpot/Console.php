@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire\Admin\HubSpot;
 
+use App\Data\HubSpot\Requests\WarehouseRecommendationData;
 use App\Enums\RoleLabel;
 use App\Models\User;
 use App\Services\HubSpot\CustomerCheckService;
-use App\Services\HubSpot\OpenRouterService;
 use App\Services\HubSpot\QuotePitchService;
+use App\Services\HubSpot\WarehouseRecommendationService;
+use App\Services\OpenRouter\OpenRouterService;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -24,11 +26,22 @@ class Console extends Component
 
     public string $allowedDiscount = '15';
 
+    public string $activeTab = 'quote';
+
+    public string $sku = 'TV-55-OLED';
+
+    public string $requestedQuantity = '2';
+
+    public string $destinationPostalCode = '1012AB'; // not really used for the distance calculation, but just for testing
+
     /** @var array{is_vip: bool, lifetime_value: int, allowed_discount: int, reason: string, source: string}|null */
     public ?array $customerResult = null;
 
     /** @var array{text: string, provider: string, generated: bool, model: string|null}|null */
     public ?array $pitchResult = null;
+
+    /** @var array<string, mixed>|null */
+    public ?array $warehouseResult = null;
 
     public string $errorMessage = '';
 
@@ -71,10 +84,29 @@ class Console extends Component
         );
     }
 
+    public function recommendWarehouse(WarehouseRecommendationService $warehouseRecommendationService): void
+    {
+        $this->validate([
+            'sku' => ['required', 'string', 'max:80'],
+            'requestedQuantity' => ['required', 'integer', 'min:1', 'max:1000'],
+            'destinationPostalCode' => ['required', 'string', 'max:20'],
+        ]);
+
+        $this->errorMessage = '';
+        $this->warehouseResult = $warehouseRecommendationService->recommend(
+            new WarehouseRecommendationData(
+                sku: $this->sku,
+                requested_quantity: (int) $this->requestedQuantity,
+                destination_postal_code: $this->destinationPostalCode,
+            ),
+        )->toArray();
+    }
+
     public function clearResults(): void
     {
         $this->customerResult = null;
         $this->pitchResult = null;
+        $this->warehouseResult = null;
         $this->errorMessage = '';
     }
 
@@ -82,7 +114,7 @@ class Console extends Component
     {
         $openRouterService = app(OpenRouterService::class);
 
-        return view('livewire.admin.hub-spot.console', [
+        return view('livewire.admin.hubspot.console', [
             'aiConfigured' => $openRouterService->isConfigured(),
             'aiModel' => config('ai.providers.openrouter.models.text.default'),
         ]);

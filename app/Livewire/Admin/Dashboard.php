@@ -8,7 +8,7 @@ use App\Enums\RoleLabel;
 use App\Models\Blog\Comment;
 use App\Models\Blog\Post;
 use App\Models\User;
-use App\Services\HubSpot\OpenRouterService;
+use App\Services\OpenRouter\OpenRouterService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;

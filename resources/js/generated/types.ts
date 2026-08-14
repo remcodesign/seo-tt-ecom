@@ -1,3 +1,4 @@
+export type AiModelProfile = "default" | "smart";
 export type CategoryDataResponse = {
     id: number;
     name: string;
@@ -142,3 +143,5 @@ export type UserDataResponse = {
     name: string;
     role_label: RoleLabel;
 };
+export type WarehouseRecommendationTaskStatus =
+    "accepted" | "processing" | "succeeded" | "failed" | "expired";

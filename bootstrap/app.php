@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ResolveHubSpotTenant;
 use App\Http\Middleware\VerifyHubSpotRequestSignature;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'hubspot.signature' => VerifyHubSpotRequestSignature::class,
+            'hubspot.tenant' => ResolveHubSpotTenant::class,
         ]);
 
         // Disable redirecting unauthenticated API requests to the login page

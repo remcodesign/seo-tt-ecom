@@ -1,0 +1,99 @@
+{
+  "uid": "warehouse-recommendation-v3",
+  "type": "workflow-action",
+  "config": {
+    "actionUrl": "https://seo-tt-ecom-production-0oxgks.laravel.cloud/api/hubspot/warehouse-recommendation-v3",
+    "isPublished": false,
+    "objectTypes": [
+      "0-3"
+    ],
+    "objectRequestOptions": {
+      "properties": [
+        "hs_object_id"
+      ]
+    },
+    "labels": {
+      "en": {
+        "actionName": "Warehouse Recommendation V3 - Deal",
+        "actionDescription": "Queues warehouse recommendations for all Line Items associated with this Deal.",
+        "appDisplayName": "Warehouse Routing App",
+        "inputFieldLabels": {},
+        "inputFieldDescriptions": {},
+        "outputFieldLabels": {
+          "taskId": "Task ID",
+          "status": "Status",
+          "summary": "Summary",
+          "recommendedWarehouse": "Recommended Warehouse",
+          "availableQuantity": "Available Quantity",
+          "deliveryEstimate": "Delivery Estimate",
+          "resultJson": "Result JSON",
+          "errorCode": "Error Code"
+        }
+      }
+    },
+    "inputFields": [],
+    "outputFields": [
+      {
+        "typeDefinition": {
+          "name": "taskId",
+          "type": "string",
+          "fieldType": "text"
+        }
+      },
+      {
+        "typeDefinition": {
+          "name": "status",
+          "type": "string",
+          "fieldType": "text"
+        }
+      },
+      {
+        "typeDefinition": {
+          "name": "summary",
+          "type": "string",
+          "fieldType": "text"
+        }
+      },
+      {
+        "typeDefinition": {
+          "name": "recommendedWarehouse",
+          "type": "string",
+          "fieldType": "text"
+        }
+      },
+      {
+        "typeDefinition": {
+          "name": "availableQuantity",
+          "type": "string",
+          "fieldType": "text"
+        }
+      },
+      {
+        "typeDefinition": {
+          "name": "deliveryEstimate",
+          "type": "string",
+          "fieldType": "text"
+        }
+      },
+      {
+        "typeDefinition": {
+          "name": "resultJson",
+          "type": "string",
+          "fieldType": "textarea"
+        }
+      },
+      {
+        "typeDefinition": {
+          "name": "errorCode",
+          "type": "string",
+          "fieldType": "text"
+        }
+      }
+    ],
+    "supportedClients": [
+      {
+        "client": "WORKFLOWS"
+      }
+    ]
+  }
+}

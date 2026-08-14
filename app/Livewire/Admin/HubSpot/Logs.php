@@ -259,7 +259,7 @@ class Logs extends Component
         $groupCounts = $this->groupCounts();
         $levelCounts = $this->levelCounts();
 
-        return view('livewire.admin.hub-spot.logs', [
+        return view('livewire.admin.hubspot.logs', [
             'entries' => $this->entries(),
             'groupCounts' => $groupCounts,
             'levelCounts' => $levelCounts,

@@ -58,6 +58,40 @@ The idea document describes possible MCP and Breeze-agent extensions, but those 
 
 ## Architecture Rules
 
+### Workflow action handoff
+
+For a custom workflow action, use the reusable contract guidance in
+`hubspot-workflow-actions` and keep these phases distinct:
+
+1. HubSpot metadata declares the enrolled object, action URL, inputs, outputs,
+    and publication state.
+2. Laravel verifies the documented signature and resolves the portal tenant.
+3. Laravel validates `callbackId`, workflow context, object type, and
+    `object.objectId` before creating an idempotent task.
+4. The intake response is fast and bounded. Slow CRM, AI, inventory, note, and
+    callback work belongs to the queue worker.
+5. The worker completes the blocked action with a safe result and an explicit
+    success or failure state.
+
+Do not treat a valid `hsmeta` file, a signed route, or a `501` placeholder as an
+end-to-end implementation. Record current behavior and target behavior
+separately, and keep action versions compatible during migrations.
+
+### Tenant-scoped CRM access
+
+Use an authorized per-portal HubSpot connection for server-side CRM reads and
+writes. Prefer OAuth with encrypted token storage and refresh handling over an
+API-key shortcut. Read enrolled CRM context deterministically, request
+properties explicitly, paginate association results, and use batch reads when
+they reduce rate-limit pressure. Keep the CRM client responsible for transport
+and response normalization; keep SKU, quantity, inventory, and note
+idempotency rules in Laravel services.
+
+For current HubSpot behavior, verify the exact endpoint, scope, signature,
+callback, and object payload with Context7's official HubSpot documentation and
+an isolated Developer Test Account before implementation. Do not infer a
+`callbackUrl` or tenant from ordinary workflow input fields.
+
 ### Keep the workflows separate
 
 - A human-facing CRM action or UI extension should call a focused REST endpoint for a fast response.

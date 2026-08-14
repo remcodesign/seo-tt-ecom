@@ -17,7 +17,12 @@ final class VerifyHubSpotRequestSignature
         $timestamp = $request->header('X-HubSpot-Request-Timestamp');
         $clientSecret = config('hubspot.client_secret');
 
-        if ($signature === null || $timestamp === null || ! is_string($clientSecret) || $clientSecret === '') {
+        if ($signature === null
+            || $signature === ''
+            || $timestamp === null
+            || ! ctype_digit($timestamp)
+            || ! is_string($clientSecret)
+            || $clientSecret === '') {
             abort(403, 'Invalid HubSpot request.');
         }
 

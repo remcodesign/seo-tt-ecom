@@ -31,18 +31,66 @@ it('rejects a HubSpot request with an invalid signature', function (): void {
         ->assertJsonPath('message', 'Invalid HubSpot request.');
 });
 
-function postSignedHubSpotRequest(string $timestamp, bool $validSignature): TestResponse
-{
+it('rejects a HubSpot request with a malformed timestamp', function (): void {
+    postSignedHubSpotRequest('not-a-timestamp', validSignature: true)
+        ->assertForbidden()
+        ->assertJsonPath('message', 'Invalid HubSpot request.');
+});
+
+it('rejects a HubSpot request without a required signature header', function (): void {
+    $timestamp = (string) Carbon::now()->getTimestampMs();
+
+    postSignedHubSpotRequest($timestamp, validSignature: true, includeSignature: false)
+        ->assertForbidden()
+        ->assertJsonPath('message', 'Invalid HubSpot request.');
+});
+
+it('rejects a request when the signed body is altered', function (): void {
+    $timestamp = (string) Carbon::now()->getTimestampMs();
     $body = json_encode(['email' => 'vip@example.test'], JSON_THROW_ON_ERROR);
+    $signedBody = json_encode(['email' => 'other@example.test'], JSON_THROW_ON_ERROR);
+    $url = url('/api/hubspot/customer-check');
+    $signaturePayload = 'POST'.$url.$signedBody.$timestamp;
+    $signature = base64_encode(hash_hmac('sha256', $signaturePayload, 'test-client-secret', true));
+
+    postSignedHubSpotRequest($timestamp, validSignature: true, body: $body, signature: $signature)
+        ->assertForbidden()
+        ->assertJsonPath('message', 'Invalid HubSpot request.');
+});
+
+it('rejects a request when the signed URL does not match the request URL', function (): void {
+    $timestamp = (string) Carbon::now()->getTimestampMs();
+    $body = json_encode(['email' => 'vip@example.test'], JSON_THROW_ON_ERROR);
+    $signaturePayload = 'POST'.url('/api/hubspot/quote-pitch').$body.$timestamp;
+    $signature = base64_encode(hash_hmac('sha256', $signaturePayload, 'test-client-secret', true));
+
+    postSignedHubSpotRequest($timestamp, validSignature: true, signature: $signature)
+        ->assertForbidden()
+        ->assertJsonPath('message', 'Invalid HubSpot request.');
+});
+
+function postSignedHubSpotRequest(
+    string $timestamp,
+    bool $validSignature,
+    bool $includeSignature = true,
+    ?string $body = null,
+    ?string $signature = null,
+): TestResponse {
+    $body ??= json_encode(['email' => 'vip@example.test'], JSON_THROW_ON_ERROR);
     $url = url('/api/hubspot/customer-check');
     $signaturePayload = 'POST'.$url.$body.$timestamp;
-    $signature = $validSignature
+    $signature ??= $validSignature
         ? base64_encode(hash_hmac('sha256', $signaturePayload, 'test-client-secret', true))
         : 'invalid-signature';
 
-    return test()->call('POST', '/api/hubspot/customer-check', [], [], [], [
+    $headers = [
         'CONTENT_TYPE' => 'application/json',
-        'HTTP_X_HUBSPOT_SIGNATURE_V3' => $signature,
         'HTTP_X_HUBSPOT_REQUEST_TIMESTAMP' => $timestamp,
-    ], $body);
+    ];
+
+    if ($includeSignature) {
+        $headers['HTTP_X_HUBSPOT_SIGNATURE_V3'] = $signature;
+    }
+
+    return test()->call('POST', '/api/hubspot/customer-check', [], [], [], $headers, $body);
 }

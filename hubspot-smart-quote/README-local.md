@@ -60,6 +60,25 @@ hs project upload
 hs project deploy
 ```
 
+### Removing a HubSpot component
+
+Renaming a component metadata file and changing its `uid` makes HubSpot treat the change as a removal of the old component and an addition of a new component. For example, changing `warehouse-recommendation-v1` to `warehouse-recommendation-v2` can produce a destructive-action warning for the deployed `v1` component.
+
+Before removing the old component, confirm that no active workflows still use it. Upload the project without automatically deploying the build so the removal can be reviewed:
+
+```bash
+cd hubspot-smart-quote
+hs project upload --skip-auto-deploy
+```
+
+Review the build warning and note the build ID. Deploy the build with `--force` only after confirming that removing the old component is intentional:
+
+```bash
+hs project deploy --build=<build-id> --force
+```
+
+The `--force` flag acknowledges the removal warning. It does not migrate existing workflows or preserve references to the removed component. If the existing component must remain in use, keep its metadata filename and `uid`, and update it in place instead of renaming it.
+
 Keep the existing card contract when changing metadata: Deal object type, sidebar location, card entrypoint, required CRM read scopes, and exact HTTPS `permittedUrls.fetch` entries.
 
 ## Laravel API configuration
@@ -187,6 +206,8 @@ For Laravel-side changes, run only the affected Laravel tests and the repository
 - Cover both success and failure paths, including missing contact associations and non-success HTTP responses.
 - Keep tests deterministic and never make real provider or HubSpot API calls.
 - Confirm `npm run validate` and, when relevant, `hs project validate` pass before finishing.
+
+### 7. Need more info? use `context 7`
 
 ---
 
