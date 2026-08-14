@@ -9,7 +9,7 @@ use App\Enums\RoleLabel;
 use App\Models\User;
 use App\Services\HubSpot\CustomerCheckService;
 use App\Services\HubSpot\QuotePitchService;
-use App\Services\HubSpot\WarehouseRecommendationService;
+use App\Services\HubSpot\Warehouse\WarehouseRecommendationService;
 use App\Services\OpenRouter\OpenRouterService;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;

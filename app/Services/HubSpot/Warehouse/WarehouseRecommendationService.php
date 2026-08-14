@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\HubSpot;
+namespace App\Services\HubSpot\Warehouse;
 
 use App\Ai\Agents\HubSpot\WarehouseRecommendationAgent;
 use App\Data\HubSpot\Data\WarehouseCandidateData;

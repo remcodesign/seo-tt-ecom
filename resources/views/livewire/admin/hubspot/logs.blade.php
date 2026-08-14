@@ -180,12 +180,12 @@
                                     class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide uppercase {{
                                         match ($entry['level']) {
                                             'emergency', 'alert', 'critical' => 'bg-red-100 text-red-800',
-                                            'error' => 'bg-rose-100 text-rose-800',
-                                            'warning' => 'bg-amber-100 text-amber-800',
-                                            'notice' => 'bg-sky-100 text-sky-800',
-                                            'info' => 'bg-emerald-100 text-emerald-800',
-                                            'debug' => 'bg-slate-100 text-slate-700',
-                                            default => 'bg-slate-100 text-slate-700',
+                                            'error'                          => 'bg-rose-100 text-rose-800',
+                                            'warning'                        => 'bg-amber-100 text-amber-800',
+                                            'notice'                         => 'bg-sky-100 text-sky-800',
+                                            'info'                           => 'bg-emerald-100 text-emerald-800',
+                                            'debug'                          => 'bg-slate-100 text-slate-700',
+                                            default                          => 'bg-slate-100 text-slate-700',
                                         }
                                     }}"
                                 >

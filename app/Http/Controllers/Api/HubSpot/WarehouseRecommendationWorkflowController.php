@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Api\HubSpot;
 
 use App\Data\HubSpot\Requests\WarehouseRecommendationIntakeData;
 use App\Data\HubSpot\Requests\WarehouseRecommendationWorkflowRequestData;
-use App\Services\HubSpot\WarehouseRecommendationIntakeService;
+use App\Services\HubSpot\Warehouse\WarehouseRecommendationIntakeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

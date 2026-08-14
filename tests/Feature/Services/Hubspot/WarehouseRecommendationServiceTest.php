@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Ai\Agents\HubSpot\WarehouseRecommendationAgent;
 use App\Data\HubSpot\Requests\WarehouseRecommendationData;
-use App\Services\HubSpot\WarehouseRecommendationService;
+use App\Services\HubSpot\Warehouse\WarehouseRecommendationService;
 use Laravel\Ai\Prompts\AgentPrompt;
 
 describe('WarehouseRecommendationService', function (): void {
