@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Jobs\Hubspot;
+namespace App\Jobs\HubSpot;
 
 use App\Enums\WarehouseRecommendationTaskStatus;
 use App\Models\HubSpot\WarehouseRecommendationTask;

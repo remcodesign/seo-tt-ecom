@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\WarehouseRecommendationTaskStatus;
-use App\Jobs\Hubspot\ProcessWarehouseRecommendation;
+use App\Jobs\HubSpot\ProcessWarehouseRecommendation;
 use App\Models\HubSpot\WarehouseRecommendationTask;
 
 it('claims an accepted task as processing and records the start time', function (): void {

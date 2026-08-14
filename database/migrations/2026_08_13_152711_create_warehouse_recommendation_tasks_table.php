@@ -23,7 +23,7 @@ return new class extends Migration
             $blueprint->enum(
                 'status',
                 collect(WarehouseRecommendationTaskStatus::cases())
-                    ->map(static fn (WarehouseRecommendationTaskStatus $status): string => $status->value)->all()
+                    ->map(static fn (WarehouseRecommendationTaskStatus $warehouseRecommendationTaskStatus): string => $warehouseRecommendationTaskStatus->value)->all()
             )->default(WarehouseRecommendationTaskStatus::accepted);
             $blueprint->json('result')->nullable();
             $blueprint->string('failure_code')->nullable();
