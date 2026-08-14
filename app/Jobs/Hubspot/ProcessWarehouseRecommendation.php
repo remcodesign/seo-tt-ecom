@@ -78,13 +78,13 @@ class ProcessWarehouseRecommendation implements ShouldQueue
                 $warehouseInventoryService,
                 $warehouseRecommendationService,
             );
-            $result = new WarehouseRecommendationResultData(
+            $warehouseRecommendationResultData = new WarehouseRecommendationResultData(
                 items: $recommendations,
                 summary: sprintf('Warehouse recommendations were produced for %d line items.', count($recommendations)),
             );
-            $noteId = $this->storeResultAndNote($task, $hubSpotCrmClient, $result);
+            $noteId = $this->storeResultAndNote($task, $hubSpotCrmClient, $warehouseRecommendationResultData);
 
-            $this->completeSuccessfully($task, $result, $noteId);
+            $this->completeSuccessfully($task, $warehouseRecommendationResultData, $noteId);
         } catch (Throwable $throwable) {
             $this->fail($task, $throwable);
         }
