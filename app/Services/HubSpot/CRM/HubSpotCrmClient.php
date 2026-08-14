@@ -10,6 +10,7 @@ use App\Exceptions\HubSpot\HubSpotCrmNotConfiguredException;
 use App\Exceptions\HubSpot\HubSpotCrmReadException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Throwable;
@@ -153,9 +154,10 @@ final readonly class HubSpotCrmClient
             ->asJson()
             ->timeout(is_int($timeout) ? $timeout : 15)
             ->retry(
-                is_int($retryTimes) ? $retryTimes : 3,
+                is_int($retryTimes) ? max(1, $retryTimes + 1) : 4,
                 is_int($retrySleepMs) ? $retrySleepMs : 100,
                 fn (Throwable $throwable): bool => $this->shouldRetry($throwable),
+                false,
             );
     }
 
@@ -173,10 +175,19 @@ final readonly class HubSpotCrmClient
         return $token;
     }
 
-    private function shouldRetry(Throwable $throwable): bool
+    private function shouldRetry(Throwable|Response $throwable): bool
     {
         if ($throwable instanceof ConnectionException) {
             return true;
+        }
+
+        if ($throwable instanceof RequestException) {
+            $response = $throwable->response;
+            if ($response->status() >= 500) {
+                return true;
+            }
+
+            return $response->status() === 429;
         }
 
         if (! $throwable instanceof Response) {
