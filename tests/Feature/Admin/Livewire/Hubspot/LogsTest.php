@@ -138,10 +138,10 @@ describe('HubSpot logs', function (): void {
 
         try {
             foreach ([
-                'yesterday' => 'yesterday',
-                'this_week' => 'week',
-                'this_month' => 'month',
-                'last_7_days' => 'seven days',
+                'yesterday'    => 'yesterday',
+                'this_week'    => 'week',
+                'this_month'   => 'month',
+                'last_7_days'  => 'seven days',
                 'last_30_days' => 'thirty days',
             ] as $filter => $marker) {
                 $testable

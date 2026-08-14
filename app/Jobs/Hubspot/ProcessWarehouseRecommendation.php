@@ -34,7 +34,7 @@ class ProcessWarehouseRecommendation implements ShouldQueue
         }
 
         $task->update([
-            'status' => WarehouseRecommendationTaskStatus::processing,
+            'status'     => WarehouseRecommendationTaskStatus::processing,
             'started_at' => now(),
         ]);
 

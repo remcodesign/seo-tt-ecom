@@ -23,8 +23,8 @@ readonly class UserService
     public function createWith(RegisterData $registerData, RoleLabel $roleLabel): User
     {
         $user = User::create([
-            'name' => $registerData->name,
-            'email' => $registerData->email,
+            'name'     => $registerData->name,
+            'email'    => $registerData->email,
             'password' => Hash::make($registerData->password),
         ]);
 
@@ -48,7 +48,7 @@ readonly class UserService
         }
 
         $data = [
-            'name' => $updateUserData->name,
+            'name'  => $updateUserData->name,
             'email' => $updateUserData->email,
         ];
 

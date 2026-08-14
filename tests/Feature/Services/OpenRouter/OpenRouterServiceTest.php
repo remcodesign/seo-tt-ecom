@@ -14,7 +14,7 @@ use Laravel\Ai\Exceptions\RateLimitedException;
 describe('OpenRouterService configuration', function (): void {
     it('returns null when OpenRouter is not configured', function (): void {
         config([
-            'ai.providers.openrouter.key' => null,
+            'ai.providers.openrouter.key'                 => null,
             'ai.providers.openrouter.models.text.default' => 'test/model',
         ]);
 
@@ -23,7 +23,7 @@ describe('OpenRouterService configuration', function (): void {
 
     it('returns null when no models are configured', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'                 => 'test-key',
             'ai.providers.openrouter.models.text.default' => '',
         ]);
 
@@ -32,7 +32,7 @@ describe('OpenRouterService configuration', function (): void {
 
     it('returns null when the model configuration is not a string', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'                 => 'test-key',
             'ai.providers.openrouter.models.text.default' => ['test/model'],
         ]);
 
@@ -41,9 +41,9 @@ describe('OpenRouterService configuration', function (): void {
 
     it('returns null when the timeout is not an integer', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'                 => 'test-key',
             'ai.providers.openrouter.models.text.default' => 'test/model',
-            'hubspot.ai.timeout' => '15',
+            'hubspot.ai.timeout'                          => '15',
         ]);
 
         expect(app(OpenRouterService::class)->generate('Write a pitch.', QuotePitchAgent::make()))->toBeNull();
@@ -51,9 +51,9 @@ describe('OpenRouterService configuration', function (): void {
 
     it('allows the caller to override the default timeout', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'                 => 'test-key',
             'ai.providers.openrouter.models.text.default' => 'test/model',
-            'hubspot.ai.timeout' => 'invalid',
+            'hubspot.ai.timeout'                          => 'invalid',
         ]);
 
         QuotePitchAgent::fake(['A generated pitch.'])->preventStrayPrompts();
@@ -69,9 +69,9 @@ describe('OpenRouterService configuration', function (): void {
 describe('OpenRouterService generation failures', function (): void {
     beforeEach(function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'                 => 'test-key',
             'ai.providers.openrouter.models.text.default' => 'test/model',
-            'hubspot.ai.timeout' => 15,
+            'hubspot.ai.timeout'                          => 15,
         ]);
     });
 
@@ -118,9 +118,9 @@ describe('OpenRouterService generation failures', function (): void {
 describe('OpenRouterService generation success', function (): void {
     beforeEach(function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'                 => 'test-key',
             'ai.providers.openrouter.models.text.default' => 'test/model',
-            'hubspot.ai.timeout' => 15,
+            'hubspot.ai.timeout'                          => 15,
         ]);
     });
 
@@ -172,12 +172,12 @@ describe('OpenRouterService generation success', function (): void {
     it('uses the smart model list for warehouse recommendations', function (): void {
         config([
             'ai.providers.openrouter.models.text.default' => 'test/simple-model',
-            'ai.providers.openrouter.models.text.smart' => 'test/smart-primary,test/smart-backup',
+            'ai.providers.openrouter.models.text.smart'   => 'test/smart-primary,test/smart-backup',
         ]);
 
         WarehouseRecommendationAgent::fake([[
             'selected_warehouse' => ['id' => 'warehouse-local', 'name' => 'Local City Warehouse'],
-            'reason' => 'The local warehouse can fulfil the request.',
+            'reason'             => 'The local warehouse can fulfil the request.',
         ]])->preventStrayPrompts();
 
         $result = app(OpenRouterService::class)->generate(
@@ -192,7 +192,7 @@ describe('OpenRouterService generation success', function (): void {
     it('fails over to the next smart model after a rate limit', function (): void {
         config([
             'ai.providers.openrouter.models.text.default' => 'test/simple-model',
-            'ai.providers.openrouter.models.text.smart' => 'test/smart-primary,test/smart-backup',
+            'ai.providers.openrouter.models.text.smart'   => 'test/smart-primary,test/smart-backup',
         ]);
 
         $attempts = 0;
@@ -205,7 +205,7 @@ describe('OpenRouterService generation success', function (): void {
 
             return [
                 'selected_warehouse' => ['id' => 'warehouse-local', 'name' => 'Local City Warehouse'],
-                'reason' => 'The local warehouse can fulfil the request.',
+                'reason'             => 'The local warehouse can fulfil the request.',
             ];
         })->preventStrayPrompts();
 

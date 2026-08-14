@@ -30,11 +30,11 @@ class Form extends Component
         // Update of an existing user
         if ($this->form->user?->exists) {
             $updateData = UpdateUserData::validateAndCreate([
-                'id' => $this->form->user->id,
-                'name' => $this->form->name,
-                'email' => $this->form->email,
-                'role_label' => RoleLabel::from($this->form->role_label),
-                'password' => $this->form->password ?: null,
+                'id'                    => $this->form->user->id,
+                'name'                  => $this->form->name,
+                'email'                 => $this->form->email,
+                'role_label'            => RoleLabel::from($this->form->role_label),
+                'password'              => $this->form->password ?: null,
                 'password_confirmation' => $this->form->password_confirmation ?: null,
             ]);
 
@@ -48,11 +48,11 @@ class Form extends Component
 
         // Create a new user
         $registerData = RegisterData::validateAndCreate([
-            'name' => $this->form->name,
-            'email' => $this->form->email,
-            'password' => $this->form->password,
+            'name'                  => $this->form->name,
+            'email'                 => $this->form->email,
+            'password'              => $this->form->password,
             'password_confirmation' => $this->form->password_confirmation,
-            'role_label' => $this->form->role_label !== '' && $this->form->role_label !== '0'
+            'role_label'            => $this->form->role_label !== '' && $this->form->role_label !== '0'
                 ? RoleLabel::from($this->form->role_label)
                 : RoleLabel::user,
         ]);

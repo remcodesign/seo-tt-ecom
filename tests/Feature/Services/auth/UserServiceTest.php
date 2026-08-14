@@ -82,7 +82,7 @@ describe('UserService', function (): void {
         it('updates user name and email', function (): void {
             $userService = app(UserService::class);
             $user = User::factory()->create([
-                'name' => 'Original Name',
+                'name'  => 'Original Name',
                 'email' => 'original@example.com',
             ]);
 

@@ -69,9 +69,9 @@ class Console extends Component
     public function generatePitch(QuotePitchService $quotePitchService): void
     {
         $this->validate([
-            'dealName' => ['required', 'string', 'max:160'],
-            'dealAmount' => ['nullable', 'numeric', 'min:0'],
-            'email' => ['required', 'email', 'max:255'],
+            'dealName'        => ['required', 'string', 'max:160'],
+            'dealAmount'      => ['nullable', 'numeric', 'min:0'],
+            'email'           => ['required', 'email', 'max:255'],
             'allowedDiscount' => ['required', 'integer', 'min:0', 'max:100'],
         ]);
 
@@ -87,8 +87,8 @@ class Console extends Component
     public function recommendWarehouse(WarehouseRecommendationService $warehouseRecommendationService): void
     {
         $this->validate([
-            'sku' => ['required', 'string', 'max:80'],
-            'requestedQuantity' => ['required', 'integer', 'min:1', 'max:1000'],
+            'sku'                   => ['required', 'string', 'max:80'],
+            'requestedQuantity'     => ['required', 'integer', 'min:1', 'max:1000'],
             'destinationPostalCode' => ['required', 'string', 'max:20'],
         ]);
 
@@ -116,7 +116,7 @@ class Console extends Component
 
         return view('livewire.admin.hubspot.console', [
             'aiConfigured' => $openRouterService->isConfigured(),
-            'aiModel' => config('ai.providers.openrouter.models.text.default'),
+            'aiModel'      => config('ai.providers.openrouter.models.text.default'),
         ]);
     }
 }

@@ -11,13 +11,13 @@ describe('Auth (API)', function (): void {
     describe('Sanctum Token Creation', function (): void {
         it('issues a token for valid credentials', function (): void {
             $user = User::factory()->create([
-                'email' => 'token@example.com',
+                'email'    => 'token@example.com',
                 'password' => bcrypt('secret'),
             ]);
 
             $response = $this->postJson('/api/sanctum/token', [
-                'email' => 'token@example.com',
-                'password' => 'secret',
+                'email'       => 'token@example.com',
+                'password'    => 'secret',
                 'device_name' => 'test-device',
             ]);
 
@@ -30,13 +30,13 @@ describe('Auth (API)', function (): void {
 
         it('rejects invalid credentials', function (): void {
             User::factory()->create([
-                'email' => 'valid@example.com',
+                'email'    => 'valid@example.com',
                 'password' => bcrypt('correct'),
             ]);
 
             $this->postJson('/api/sanctum/token', [
-                'email' => 'valid@example.com',
-                'password' => 'wrong-password',
+                'email'       => 'valid@example.com',
+                'password'    => 'wrong-password',
                 'device_name' => 'test-device',
             ])->assertUnprocessable()
                 ->assertJsonValidationErrors(['email']);
@@ -51,13 +51,13 @@ describe('Auth (API)', function (): void {
 
         it('issued token can authenticate subsequent requests', function (): void {
             $user = User::factory()->create([
-                'email' => 'full-cycle@example.com',
+                'email'    => 'full-cycle@example.com',
                 'password' => bcrypt('secret'),
             ]);
 
             $response = $this->postJson('/api/sanctum/token', [
-                'email' => 'full-cycle@example.com',
-                'password' => 'secret',
+                'email'       => 'full-cycle@example.com',
+                'password'    => 'secret',
                 'device_name' => 'full-test',
             ]);
 
@@ -72,8 +72,8 @@ describe('Auth (API)', function (): void {
                 'Authorization' => 'Bearer '.$token,
             ])->assertSuccessful()
                 ->assertJson([
-                    'id' => $user->id,
-                    'name' => $user->name,
+                    'id'         => $user->id,
+                    'name'       => $user->name,
                     'role_label' => $user->role_label->value,
                 ]);
         });
@@ -82,7 +82,7 @@ describe('Auth (API)', function (): void {
     describe('Sanctum Token Revocation', function (): void {
         it('revokes the current token', function (): void {
             $user = User::factory()->create([
-                'email' => 'revoke@example.com',
+                'email'    => 'revoke@example.com',
                 'password' => bcrypt('secret'),
             ]);
 

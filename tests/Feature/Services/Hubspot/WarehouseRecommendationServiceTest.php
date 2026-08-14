@@ -10,15 +10,15 @@ use Laravel\Ai\Prompts\AgentPrompt;
 describe('WarehouseRecommendationService', function (): void {
     it('lets the AI choose one eligible warehouse for the full quantity', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'               => 'test-key',
             'ai.providers.openrouter.models.text.smart' => 'test/smart-model',
         ]);
 
         WarehouseRecommendationAgent::fake([
             [
                 'selected_warehouse' => [
-                    'id' => 'warehouse-premium',
-                    'name' => 'Premium Fulfillment Warehouse',
+                    'id'     => 'warehouse-premium',
+                    'name'   => 'Premium Fulfillment Warehouse',
                     'reason' => 'The premium warehouse has the strongest reviews while fulfilling all requested units.',
                 ],
             ],
@@ -33,8 +33,8 @@ describe('WarehouseRecommendationService', function (): void {
             ->and($warehouseRecommendationDataResponse->ai_generated)->toBeTrue()
             ->and($warehouseRecommendationDataResponse->raw_ai_output)->toBe(json_encode([
                 'selected_warehouse' => [
-                    'id' => 'warehouse-premium',
-                    'name' => 'Premium Fulfillment Warehouse',
+                    'id'     => 'warehouse-premium',
+                    'name'   => 'Premium Fulfillment Warehouse',
                     'reason' => 'The premium warehouse has the strongest reviews while fulfilling all requested units.',
                 ],
             ]));
@@ -46,14 +46,14 @@ describe('WarehouseRecommendationService', function (): void {
 
     it('allows the AI to choose the partial warehouse when one item is requested', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'               => 'test-key',
             'ai.providers.openrouter.models.text.smart' => 'test/smart-model',
         ]);
 
         WarehouseRecommendationAgent::fake([[
             'selected_warehouse' => [
-                'id' => 'warehouse-partial',
-                'name' => 'Partial Stock Warehouse',
+                'id'     => 'warehouse-partial',
+                'name'   => 'Partial Stock Warehouse',
                 'reason' => 'One unit is available at the closest warehouse.',
             ],
         ]])->preventStrayPrompts();
@@ -69,14 +69,14 @@ describe('WarehouseRecommendationService', function (): void {
 
     it('rejects an AI-selected warehouse that cannot fulfil the requested quantity', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'               => 'test-key',
             'ai.providers.openrouter.models.text.smart' => 'test/smart-model',
         ]);
 
         WarehouseRecommendationAgent::fake([[
             'selected_warehouse' => [
-                'id' => 'warehouse-partial',
-                'name' => 'Partial Stock Warehouse',
+                'id'     => 'warehouse-partial',
+                'name'   => 'Partial Stock Warehouse',
                 'reason' => 'It is the closest warehouse.',
             ],
         ]])->preventStrayPrompts();
@@ -93,7 +93,7 @@ describe('WarehouseRecommendationService', function (): void {
 
     it('exposes the captured AI error when warehouse recommendation is unavailable', function (): void {
         config([
-            'ai.providers.openrouter.key' => null,
+            'ai.providers.openrouter.key'               => null,
             'ai.providers.openrouter.models.text.smart' => '',
         ]);
 

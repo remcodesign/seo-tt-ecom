@@ -13,7 +13,7 @@ describe('Livewire admin users', function (): void {
     beforeEach(function (): void {
         $this->admin = User::factory()->create([
             'role_label' => RoleLabel::admin,
-            'password' => bcrypt('secret'),
+            'password'   => bcrypt('secret'),
         ]);
 
         $this->actingAs($this->admin);
@@ -23,12 +23,12 @@ describe('Livewire admin users', function (): void {
         it('filters users by role', function (): void {
             $writer = User::factory()->create([
                 'role_label' => RoleLabel::writer,
-                'email' => 'writer@example.com',
+                'email'      => 'writer@example.com',
             ]);
 
             $admin = User::factory()->create([
                 'role_label' => RoleLabel::admin,
-                'email' => 'admin@example.com',
+                'email'      => 'admin@example.com',
             ]);
 
             Livewire::test(Index::class)
@@ -47,14 +47,14 @@ describe('Livewire admin users', function (): void {
         it('filters users by search using setSearch', function (): void {
             User::factory()->create([
                 'role_label' => RoleLabel::writer,
-                'email' => 'writer@example.com',
-                'name' => 'Writer Example',
+                'email'      => 'writer@example.com',
+                'name'       => 'Writer Example',
             ]);
 
             User::factory()->create([
                 'role_label' => RoleLabel::admin,
-                'email' => 'admin@example.com',
-                'name' => 'Admin Example',
+                'email'      => 'admin@example.com',
+                'name'       => 'Admin Example',
             ]);
 
             Livewire::test(Index::class)
@@ -67,12 +67,12 @@ describe('Livewire admin users', function (): void {
         it('filters users by role label using setRoleLabelFilter', function (): void {
             User::factory()->create([
                 'role_label' => RoleLabel::writer,
-                'email' => 'writer@example.com',
+                'email'      => 'writer@example.com',
             ]);
 
             User::factory()->create([
                 'role_label' => RoleLabel::admin,
-                'email' => 'admin@example.com',
+                'email'      => 'admin@example.com',
             ]);
 
             Livewire::test(Index::class)
@@ -178,7 +178,7 @@ describe('Livewire admin users', function (): void {
 
         it('updates a user and redirects back to the list', function (): void {
             $user = User::factory()->create([
-                'name' => 'Original Name',
+                'name'  => 'Original Name',
                 'email' => 'original@example.com',
             ]);
 
@@ -196,7 +196,7 @@ describe('Livewire admin users', function (): void {
 
         it('updates a user with the same email', function (): void {
             $user = User::factory()->create([
-                'name' => 'Same Email User',
+                'name'  => 'Same Email User',
                 'email' => 'same@example.com',
             ]);
 

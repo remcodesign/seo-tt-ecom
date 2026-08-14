@@ -31,17 +31,17 @@ final readonly class WarehouseRecommendationIntakeService
         }
 
         $task = WarehouseRecommendationTask::query()->create([
-            'portal_id' => $warehouseRecommendationIntakeData->portal_id,
-            'tenant_id' => $warehouseRecommendationIntakeData->tenant_id,
-            'deal_id' => $warehouseRecommendationIntakeData->deal_id,
-            'callback_id' => $warehouseRecommendationIntakeData->callback_id,
-            'workflow_id' => $warehouseRecommendationIntakeData->workflow_id,
-            'action_definition_id' => $warehouseRecommendationIntakeData->action_definition_id,
+            'portal_id'                 => $warehouseRecommendationIntakeData->portal_id,
+            'tenant_id'                 => $warehouseRecommendationIntakeData->tenant_id,
+            'deal_id'                   => $warehouseRecommendationIntakeData->deal_id,
+            'callback_id'               => $warehouseRecommendationIntakeData->callback_id,
+            'workflow_id'               => $warehouseRecommendationIntakeData->workflow_id,
+            'action_definition_id'      => $warehouseRecommendationIntakeData->action_definition_id,
             'action_definition_version' => $warehouseRecommendationIntakeData->action_definition_version,
-            'source' => $warehouseRecommendationIntakeData->source,
-            'input_hash' => $inputHash,
-            'status' => WarehouseRecommendationTaskStatus::accepted,
-            'expires_at' => now()->addMinutes(15),
+            'source'                    => $warehouseRecommendationIntakeData->source,
+            'input_hash'                => $inputHash,
+            'status'                    => WarehouseRecommendationTaskStatus::accepted,
+            'expires_at'                => now()->addMinutes(15),
         ]);
 
         ProcessWarehouseRecommendation::dispatch($task->id)->afterCommit();

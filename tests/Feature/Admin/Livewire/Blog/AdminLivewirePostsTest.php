@@ -266,8 +266,8 @@ describe('Livewire admin blog posts', function (): void {
             ]);
 
             $post = Post::factory()->for($writer)->create([
-                'title' => 'Original Title',
-                'body' => 'Original Body',
+                'title'        => 'Original Title',
+                'body'         => 'Original Body',
                 'published_on' => now()->subDay()->toDateString(),
             ]);
 
@@ -284,8 +284,8 @@ describe('Livewire admin blog posts', function (): void {
             ]);
 
             $post = Post::factory()->for($writer)->create([
-                'title' => 'Original Title',
-                'body' => 'Original Body',
+                'title'        => 'Original Title',
+                'body'         => 'Original Body',
                 'published_on' => now()->subDay()->toDateString(),
             ]);
 
@@ -300,8 +300,8 @@ describe('Livewire admin blog posts', function (): void {
             ]);
 
             $post = Post::factory()->for($writer)->create([
-                'title' => 'Original Title',
-                'body' => 'Original Body',
+                'title'        => 'Original Title',
+                'body'         => 'Original Body',
                 'published_on' => now()->subDay()->toDateString(),
             ]);
 
@@ -330,8 +330,8 @@ describe('Livewire admin blog posts', function (): void {
             ]);
 
             $post = Post::factory()->for($writer)->create([
-                'title' => 'Original Title',
-                'body' => 'Original Body',
+                'title'        => 'Original Title',
+                'body'         => 'Original Body',
                 'published_on' => now()->subDay()->toDateString(),
             ]);
 

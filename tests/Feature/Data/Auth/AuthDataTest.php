@@ -18,18 +18,18 @@ it('hydrates RegisterData and converts it to an array', function (): void {
         ->and($registerData->email)->toBe('jane@example.com')
         ->and($registerData->password)->toBe('password')
         ->and($registerData->toArray())->toBe([
-            'name' => 'Jane Doe',
-            'email' => 'jane@example.com',
-            'password' => 'password',
+            'name'       => 'Jane Doe',
+            'email'      => 'jane@example.com',
+            'password'   => 'password',
             'role_label' => null, // but will be set to RoleLabel::user in the UserService when creating a user
         ]);
 });
 
 it('converts a User model into UserData', function (): void {
     $user = User::factory()->make([
-        'id' => 42,
-        'name' => 'Jane Doe',
-        'email' => 'jane@example.com',
+        'id'         => 42,
+        'name'       => 'Jane Doe',
+        'email'      => 'jane@example.com',
         'role_label' => RoleLabel::admin,
     ]);
 

@@ -10,9 +10,9 @@ uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     config([
-        'app.url' => 'http://localhost',
-        'hubspot.client_secret' => 'test-client-secret',
-        'ai.providers.openrouter.key' => null,
+        'app.url'                                     => 'http://localhost',
+        'hubspot.client_secret'                       => 'test-client-secret',
+        'ai.providers.openrouter.key'                 => null,
         'ai.providers.openrouter.models.text.default' => '',
     ]);
 });
@@ -25,11 +25,11 @@ describe('HubSpot customer check API', function (): void {
         ])
             ->assertSuccessful()
             ->assertJson([
-                'is_vip' => true,
-                'lifetime_value' => 4500,
+                'is_vip'           => true,
+                'lifetime_value'   => 4500,
                 'allowed_discount' => 15,
-                'reason' => 'Returning test customer',
-                'source' => 'hubspot test rules',
+                'reason'           => 'Returning test customer',
+                'source'           => 'hubspot test rules',
             ]);
     });
 
@@ -57,8 +57,8 @@ function signedHubSpotCustomerCheckPost(string $uri, array $payload): TestRespon
     $signature = base64_encode(hash_hmac('sha256', $signaturePayload, 'test-client-secret', true));
 
     return test()->call('POST', $uri, [], [], [], [
-        'CONTENT_TYPE' => 'application/json',
-        'HTTP_X_HUBSPOT_SIGNATURE_V3' => $signature,
+        'CONTENT_TYPE'                     => 'application/json',
+        'HTTP_X_HUBSPOT_SIGNATURE_V3'      => $signature,
         'HTTP_X_HUBSPOT_REQUEST_TIMESTAMP' => $timestamp,
     ], $body);
 }

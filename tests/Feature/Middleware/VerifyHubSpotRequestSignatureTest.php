@@ -10,7 +10,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     config([
-        'app.url' => 'http://localhost',
+        'app.url'               => 'http://localhost',
         'hubspot.client_secret' => 'test-client-secret',
     ]);
 });
@@ -84,7 +84,7 @@ function postSignedHubSpotRequest(
         : 'invalid-signature';
 
     $headers = [
-        'CONTENT_TYPE' => 'application/json',
+        'CONTENT_TYPE'                     => 'application/json',
         'HTTP_X_HUBSPOT_REQUEST_TIMESTAMP' => $timestamp,
     ];
 

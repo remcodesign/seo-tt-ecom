@@ -69,12 +69,12 @@ class WarehouseRecommendationTask extends Model
     protected function casts(): array
     {
         return [
-            'status' => WarehouseRecommendationTaskStatus::class,
-            'result' => 'array',
-            'attempts' => 'integer',
-            'started_at' => 'immutable_datetime',
-            'completed_at' => 'immutable_datetime',
-            'expires_at' => 'immutable_datetime',
+            'status'           => WarehouseRecommendationTaskStatus::class,
+            'result'           => 'array',
+            'attempts'         => 'integer',
+            'started_at'       => 'immutable_datetime',
+            'completed_at'     => 'immutable_datetime',
+            'expires_at'       => 'immutable_datetime',
             'callback_sent_at' => 'immutable_datetime',
         ];
     }

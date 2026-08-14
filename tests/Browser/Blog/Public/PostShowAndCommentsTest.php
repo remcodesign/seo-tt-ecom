@@ -23,7 +23,7 @@ function createPostUser(): array
     $post = Post::factory()->for($user)->create(
         [
             'title' => 'Test Post',
-            'slug' => 'test-post',
+            'slug'  => 'test-post',
         ]
     );
 

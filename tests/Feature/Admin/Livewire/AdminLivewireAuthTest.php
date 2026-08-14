@@ -18,7 +18,7 @@ describe('Livewire admin auth', function (): void {
     it('redirects an authenticated admin away from the login page', function (): void {
         $admin = User::factory()->create([
             'role_label' => RoleLabel::admin,
-            'password' => bcrypt('secret'),
+            'password'   => bcrypt('secret'),
         ]);
 
         Livewire::actingAs($admin)
@@ -29,7 +29,7 @@ describe('Livewire admin auth', function (): void {
     it('allows an admin user to sign in and access the dashboard', function (): void {
         $admin = User::factory()->create([
             'role_label' => RoleLabel::admin,
-            'password' => bcrypt('secret'),
+            'password'   => bcrypt('secret'),
         ]);
 
         Livewire::test(Login::class)
@@ -53,7 +53,7 @@ describe('Livewire admin auth', function (): void {
     it('prevents non-admin users from accessing the dashboard', function (): void {
         $user = User::factory()->create([
             'role_label' => RoleLabel::user,
-            'password' => bcrypt('secret'),
+            'password'   => bcrypt('secret'),
         ]);
 
         $this->actingAs($user);
@@ -65,7 +65,7 @@ describe('Livewire admin auth', function (): void {
     it('logs out the admin user', function (): void {
         $admin = User::factory()->create([
             'role_label' => RoleLabel::admin,
-            'password' => bcrypt('secret'),
+            'password'   => bcrypt('secret'),
         ]);
 
         $this->actingAs($admin)
@@ -76,7 +76,7 @@ describe('Livewire admin auth', function (): void {
     it('shows the dashboard with stats', function (): void {
         $admin = User::factory()->create([
             'role_label' => RoleLabel::admin,
-            'password' => bcrypt('secret'),
+            'password'   => bcrypt('secret'),
         ]);
 
         Livewire::actingAs($admin)

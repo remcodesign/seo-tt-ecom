@@ -133,7 +133,7 @@ describe('PostController (API)', function (): void {
                     'body',
                     'slug',
                     'user_id',
-                    'user' => ['id', 'name'],
+                    'user'     => ['id', 'name'],
                     'comments' => [
                         '*' => [
                             'id',
@@ -161,10 +161,10 @@ describe('PostController (API)', function (): void {
             $category = Category::factory()->create();
 
             $response = $this->postJson('/api/blog/posts', [
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 'category_ids' => [$category->id],
-                'title' => 'My New Post',
-                'body' => 'This is the body content.',
+                'title'        => 'My New Post',
+                'body'         => 'This is the body content.',
                 'published_on' => now()->toDateTimeString(),
             ]);
 
@@ -177,8 +177,8 @@ describe('PostController (API)', function (): void {
                     'user_id',
                 ])
                 ->assertJson([
-                    'title' => 'My New Post',
-                    'body' => 'This is the body content.',
+                    'title'   => 'My New Post',
+                    'body'    => 'This is the body content.',
                     'user_id' => $user->id,
                 ]);
         });
@@ -203,10 +203,10 @@ describe('PostController (API)', function (): void {
             $uncategorized = Category::factory()->create(['slug' => 'uncategorized']);
 
             $response = $this->postJson('/api/blog/posts', [
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 'category_ids' => [],
-                'title' => 'Uncategorized Post',
-                'body' => 'Body',
+                'title'        => 'Uncategorized Post',
+                'body'         => 'Body',
             ]);
 
             $response->assertCreated();
@@ -219,10 +219,10 @@ describe('PostController (API)', function (): void {
             Sanctum::actingAs($user = User::factory()->create(['role_label' => RoleLabel::writer]));
             // no creation of the "Uncategorized" category, the system should create it automatically
             $response = $this->postJson('/api/blog/posts', [
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 'category_ids' => [],
-                'title' => 'Uncategorized Post',
-                'body' => 'Body',
+                'title'        => 'Uncategorized Post',
+                'body'         => 'Body',
             ]);
 
             $response->assertCreated();
@@ -239,9 +239,9 @@ describe('PostController (API)', function (): void {
             $category = Category::factory()->create();
 
             $response = $this->putJson('/api/blog/posts/'.$post->id, [
-                'user_id' => $user->id,
+                'user_id'      => $user->id,
                 'category_ids' => [$category->id],
-                'title' => 'Updated Title',
+                'title'        => 'Updated Title',
             ]);
 
             $response->assertSuccessful()

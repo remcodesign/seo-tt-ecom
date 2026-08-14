@@ -11,8 +11,8 @@ use Illuminate\Testing\TestResponse;
 
 beforeEach(function (): void {
     config([
-        'app.url' => 'http://localhost',
-        'hubspot.client_secret' => 'test-client-secret',
+        'app.url'                => 'http://localhost',
+        'hubspot.client_secret'  => 'test-client-secret',
         'hubspot.portal_tenants' => [
             '12345' => ['tenant_id' => 'tenant-test', 'enabled' => true],
             '67890' => ['tenant_id' => 'tenant-disabled', 'enabled' => false],
@@ -108,14 +108,14 @@ it('rejects a signed request with a malformed callback id', function (): void {
 
 it('rejects an invalid signature before reaching workflow intake', function (): void {
     $payload = [
-        'origin' => ['portalId' => '12345'],
+        'origin'  => ['portalId' => '12345'],
         'context' => [
             'workflowId' => 'workflow-001',
-            'source' => 'WORKFLOWS',
+            'source'     => 'WORKFLOWS',
         ],
         'callbackId' => 'callback-001',
-        'object' => [
-            'objectId' => '500005',
+        'object'     => [
+            'objectId'   => '500005',
             'objectType' => 'DEAL',
         ],
     ];
@@ -123,8 +123,8 @@ it('rejects an invalid signature before reaching workflow intake', function (): 
     $timestamp = (string) Carbon::now()->getTimestampMs();
 
     test()->call('POST', '/api/hubspot/warehouse-recommendation-v3', [], [], [], [
-        'CONTENT_TYPE' => 'application/json',
-        'HTTP_X_HUBSPOT_SIGNATURE_V3' => 'invalid-signature',
+        'CONTENT_TYPE'                     => 'application/json',
+        'HTTP_X_HUBSPOT_SIGNATURE_V3'      => 'invalid-signature',
         'HTTP_X_HUBSPOT_REQUEST_TIMESTAMP' => $timestamp,
     ], $body)
         ->assertForbidden()
@@ -141,17 +141,17 @@ function signedWarehouseWorkflowRequest(
 ): TestResponse {
     $payload = [
         'origin' => array_filter([
-            'portalId' => $portalId,
-            'actionDefinitionId' => '400004',
+            'portalId'                => $portalId,
+            'actionDefinitionId'      => '400004',
             'actionDefinitionVersion' => '3',
         ]),
         'context' => array_filter([
             'workflowId' => 'workflow-001',
-            'source' => $source,
+            'source'     => $source,
         ]),
         'callbackId' => $callbackId,
-        'object' => array_filter([
-            'objectId' => $objectId,
+        'object'     => array_filter([
+            'objectId'   => $objectId,
             'objectType' => 'DEAL',
         ]),
     ];
@@ -163,8 +163,8 @@ function signedWarehouseWorkflowRequest(
     $signature = base64_encode(hash_hmac('sha256', $signaturePayload, 'test-client-secret', true));
 
     return test()->call('POST', $uri, [], [], [], [
-        'CONTENT_TYPE' => 'application/json',
-        'HTTP_X_HUBSPOT_SIGNATURE_V3' => $signature,
+        'CONTENT_TYPE'                     => 'application/json',
+        'HTTP_X_HUBSPOT_SIGNATURE_V3'      => $signature,
         'HTTP_X_HUBSPOT_REQUEST_TIMESTAMP' => $timestamp,
     ], $body);
 }

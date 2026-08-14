@@ -57,11 +57,11 @@ describe('Post', function (): void {
         it('has a workflow with a cast status and captured timestamp', function (): void {
             $post = Post::factory()->create();
             $workflow = PostWorkflow::create([
-                'post_id' => $post->id,
-                'file_hash' => sha1('seed-image'),
-                'status' => PostWorkflowStatus::completed,
+                'post_id'     => $post->id,
+                'file_hash'   => sha1('seed-image'),
+                'status'      => PostWorkflowStatus::completed,
                 'captured_at' => '2026-01-01 12:00:00',
-                'embedding' => json_encode([0.0, 0.0]),
+                'embedding'   => json_encode([0.0, 0.0]),
             ]);
 
             expect($post->workflow)->toBeInstanceOf(PostWorkflow::class);

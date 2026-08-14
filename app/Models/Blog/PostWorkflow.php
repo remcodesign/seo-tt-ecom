@@ -40,7 +40,7 @@ class PostWorkflow extends BlogRootModel
     protected function casts(): array
     {
         return [
-            'status' => PostWorkflowStatus::class,
+            'status'      => PostWorkflowStatus::class,
             'captured_at' => 'immutable_datetime',
         ];
     }

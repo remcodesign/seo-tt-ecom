@@ -87,7 +87,7 @@ class Index extends Component
             ->paginate(5);
 
         return view('livewire.admin.blog.posts.index', [
-            'posts' => $lengthAwarePaginator,
+            'posts'      => $lengthAwarePaginator,
             'categories' => Category::query()->orderBy('name')->pluck('name', 'id')->toArray(),
         ]);
     }

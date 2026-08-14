@@ -46,7 +46,7 @@ final class UpdatePostData extends Data
     public static function rules($context = null): array
     {
         return [
-            'category_ids' => ['present', 'array'],
+            'category_ids'   => ['present', 'array'],
             'category_ids.*' => ['integer', 'distinct', 'exists:categories,id'],
         ];
     }

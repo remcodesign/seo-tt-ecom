@@ -55,7 +55,7 @@ final class OpenRouterService
 
                 Log::channel('ai')->warning('Laravel AI agent request failed; trying next model.', [
                     'exception' => $exception::class,
-                    'model' => $model,
+                    'model'     => $model,
                 ]);
 
                 continue;
@@ -108,8 +108,8 @@ final class OpenRouterService
             $this->lastError = $this->errorMessage($throwable);
 
             Log::channel('ai')->warning('Laravel AI agent request failed.', [
-                'exception' => $throwable::class,
-                'model' => $model,
+                'exception'   => $throwable::class,
+                'model'       => $model,
                 'duration_ms' => $this->durationMilliseconds($startedAt),
             ]);
 
@@ -122,7 +122,7 @@ final class OpenRouterService
             $this->lastError = 'OpenRouter returned an empty or oversized response.';
 
             Log::channel('ai')->warning('OpenRouter returned unusable text.', [
-                'model' => $model,
+                'model'       => $model,
                 'text_length' => mb_strlen($text),
                 'duration_ms' => $this->durationMilliseconds($startedAt),
             ]);
@@ -131,9 +131,9 @@ final class OpenRouterService
         }
 
         Log::channel('ai')->info('OpenRouter request completed.', [
-            'sdk' => 'laravel/ai',
-            'model' => $model,
-            'usage' => $response->usage->toArray(),
+            'sdk'         => 'laravel/ai',
+            'model'       => $model,
+            'usage'       => $response->usage->toArray(),
             'text_length' => mb_strlen($text),
             'duration_ms' => $this->durationMilliseconds($startedAt),
         ]);

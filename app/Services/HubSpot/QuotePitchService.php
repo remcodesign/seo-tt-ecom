@@ -54,10 +54,10 @@ final readonly class QuotePitchService
         }
 
         return [
-            'text' => $result->text,
-            'provider' => 'openrouter',
+            'text'      => $result->text,
+            'provider'  => 'openrouter',
             'generated' => true,
-            'model' => $result->model,
+            'model'     => $result->model,
         ];
     }
 
@@ -72,9 +72,9 @@ final readonly class QuotePitchService
                 'For this returning customer we can offer a tailored proposal with up to %d percent flexibility.',
                 $allowedDiscount,
             ),
-            'provider' => 'fallback',
+            'provider'  => 'fallback',
             'generated' => false,
-            'model' => null,
+            'model'     => null,
         ];
     }
 }

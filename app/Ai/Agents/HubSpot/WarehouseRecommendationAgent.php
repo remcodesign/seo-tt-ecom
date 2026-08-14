@@ -22,7 +22,7 @@ final class WarehouseRecommendationAgent implements Agent, HasStructuredOutput
     {
         return [
             'selected_warehouse' => $schema->object(fn (JsonSchema $jsonSchema): array => [
-                'id' => $jsonSchema->string()->required(),
+                'id'   => $jsonSchema->string()->required(),
                 'name' => $jsonSchema->string()->required(),
             ])->required(),
             'reason' => $schema->string()->required(),

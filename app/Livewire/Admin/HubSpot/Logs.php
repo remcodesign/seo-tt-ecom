@@ -88,12 +88,12 @@ class Logs extends Component
     public function dateFilters(): array
     {
         return [
-            'all' => 'All dates',
-            'today' => 'Today',
-            'yesterday' => 'Yesterday',
-            'this_week' => 'This week',
-            'this_month' => 'This month',
-            'last_7_days' => 'Last 7 days',
+            'all'          => 'All dates',
+            'today'        => 'Today',
+            'yesterday'    => 'Yesterday',
+            'this_week'    => 'This week',
+            'this_month'   => 'This month',
+            'last_7_days'  => 'Last 7 days',
             'last_30_days' => 'Last 30 days',
         ];
     }
@@ -171,10 +171,10 @@ class Logs extends Component
 
                     $entries[] = [
                         'source' => $source,
-                        'file' => basename($path),
-                        'line' => trim($line),
-                        'date' => $date,
-                        'level' => $level,
+                        'file'   => basename($path),
+                        'line'   => trim($line),
+                        'date'   => $date,
+                        'level'  => $level,
                     ];
                 }
             }
@@ -244,13 +244,13 @@ class Logs extends Component
         $now = CarbonImmutable::now(self::LOG_TIMEZONE);
 
         return match ($this->dateFilter) {
-            'today' => $date->isSameDay($now),
-            'yesterday' => $date->isSameDay($now->subDay()),
-            'this_week' => $date->betweenIncluded($now->startOfWeek(), $now),
-            'this_month' => $date->betweenIncluded($now->startOfMonth(), $now),
-            'last_7_days' => $date->greaterThanOrEqualTo($now->subDays(7)),
+            'today'        => $date->isSameDay($now),
+            'yesterday'    => $date->isSameDay($now->subDay()),
+            'this_week'    => $date->betweenIncluded($now->startOfWeek(), $now),
+            'this_month'   => $date->betweenIncluded($now->startOfMonth(), $now),
+            'last_7_days'  => $date->greaterThanOrEqualTo($now->subDays(7)),
             'last_30_days' => $date->greaterThanOrEqualTo($now->subDays(30)),
-            default => true,
+            default        => true,
         };
     }
 
@@ -260,10 +260,10 @@ class Logs extends Component
         $levelCounts = $this->levelCounts();
 
         return view('livewire.admin.hubspot.logs', [
-            'entries' => $this->entries(),
+            'entries'     => $this->entries(),
             'groupCounts' => $groupCounts,
             'levelCounts' => $levelCounts,
-            'chartData' => $this->chartData(),
+            'chartData'   => $this->chartData(),
         ]);
     }
 }

@@ -22,10 +22,10 @@ class PostFactory extends Factory
         $title = fake()->sentence(3);
 
         return [
-            'user_id' => User::factory(),
-            'title' => $title,
-            'body' => fake()->paragraphs(3, true),
-            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(1000, 9999),
+            'user_id'      => User::factory(),
+            'title'        => $title,
+            'body'         => fake()->paragraphs(3, true),
+            'slug'         => Str::slug($title).'-'.fake()->unique()->numberBetween(1000, 9999),
             'published_on' => fake()->dateTimeBetween('-1 years', 'now'),
         ];
     }

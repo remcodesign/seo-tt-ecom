@@ -49,17 +49,17 @@ it('creates pagination meta data and converts it to an array', function (): void
         ->and($meta->to)->toBe(15)
         ->and($meta->total)->toBe(150)
         ->and($meta->toArray())->toBe([
-            'current_page' => 1,
+            'current_page'   => 1,
             'first_page_url' => 'https://example.com?page=1',
-            'from' => 1,
-            'last_page' => 10,
-            'last_page_url' => 'https://example.com?page=10',
-            'next_page_url' => 'https://example.com?page=2',
-            'path' => 'https://example.com',
-            'per_page' => 15,
-            'prev_page_url' => null,
-            'to' => 15,
-            'total' => 150,
+            'from'           => 1,
+            'last_page'      => 10,
+            'last_page_url'  => 'https://example.com?page=10',
+            'next_page_url'  => 'https://example.com?page=2',
+            'path'           => 'https://example.com',
+            'per_page'       => 15,
+            'prev_page_url'  => null,
+            'to'             => 15,
+            'total'          => 150,
         ]);
 });
 
@@ -106,20 +106,20 @@ it('serializes an empty paginated response with no items or links', function ():
     expect($paginatedResponse->data)->toBe([])
         ->and($paginatedResponse->links)->toBe([])
         ->and($paginatedResponse->toArray())->toBe([
-            'data' => [],
+            'data'  => [],
             'links' => [],
-            'meta' => [
-                'current_page' => 1,
+            'meta'  => [
+                'current_page'   => 1,
                 'first_page_url' => 'https://example.com?page=1',
-                'from' => null,
-                'last_page' => 1,
-                'last_page_url' => 'https://example.com?page=1',
-                'next_page_url' => null,
-                'path' => 'https://example.com',
-                'per_page' => 10,
-                'prev_page_url' => null,
-                'to' => null,
-                'total' => 0,
+                'from'           => null,
+                'last_page'      => 1,
+                'last_page_url'  => 'https://example.com?page=1',
+                'next_page_url'  => null,
+                'path'           => 'https://example.com',
+                'per_page'       => 10,
+                'prev_page_url'  => null,
+                'to'             => null,
+                'total'          => 0,
             ],
         ]);
 });
@@ -160,33 +160,33 @@ it('creates a paginated response with data, links, and metadata', function (): v
         ->and($paginatedResponse->links)->toBe($links)
         ->and($paginatedResponse->meta)->toBe($meta)
         ->and($paginatedResponse->toArray())->toBe([
-            'data' => $data,
+            'data'  => $data,
             'links' => [
                 [
-                    'url' => 'https://example.com?page=1',
-                    'label' => '1',
-                    'page' => 1,
+                    'url'    => 'https://example.com?page=1',
+                    'label'  => '1',
+                    'page'   => 1,
                     'active' => true,
                 ],
                 [
-                    'url' => 'https://example.com?page=2',
-                    'label' => '2',
-                    'page' => 2,
+                    'url'    => 'https://example.com?page=2',
+                    'label'  => '2',
+                    'page'   => 2,
                     'active' => false,
                 ],
             ],
             'meta' => [
-                'current_page' => 1,
+                'current_page'   => 1,
                 'first_page_url' => 'https://example.com?page=1',
-                'from' => 1,
-                'last_page' => 3,
-                'last_page_url' => 'https://example.com?page=3',
-                'next_page_url' => 'https://example.com?page=2',
-                'path' => 'https://example.com',
-                'per_page' => 2,
-                'prev_page_url' => null,
-                'to' => 2,
-                'total' => 6,
+                'from'           => 1,
+                'last_page'      => 3,
+                'last_page_url'  => 'https://example.com?page=3',
+                'next_page_url'  => 'https://example.com?page=2',
+                'path'           => 'https://example.com',
+                'per_page'       => 2,
+                'prev_page_url'  => null,
+                'to'             => 2,
+                'total'          => 6,
             ],
         ]);
 });

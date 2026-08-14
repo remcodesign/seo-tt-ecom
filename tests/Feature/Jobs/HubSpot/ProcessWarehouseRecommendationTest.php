@@ -8,7 +8,7 @@ use App\Models\HubSpot\WarehouseRecommendationTask;
 
 it('claims an accepted task as processing and records the start time', function (): void {
     $task = WarehouseRecommendationTask::factory()->create([
-        'status' => WarehouseRecommendationTaskStatus::accepted,
+        'status'     => WarehouseRecommendationTaskStatus::accepted,
         'started_at' => null,
     ]);
 
@@ -28,7 +28,7 @@ it('does nothing when the task does not exist', function (): void {
 
 it('does not claim a task that is not accepted', function (): void {
     $task = WarehouseRecommendationTask::factory()->create([
-        'status' => WarehouseRecommendationTaskStatus::processing,
+        'status'     => WarehouseRecommendationTaskStatus::processing,
         'started_at' => null,
     ]);
 

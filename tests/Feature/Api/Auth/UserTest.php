@@ -12,9 +12,9 @@ describe('User (API)', function (): void {
     describe('User Registration', function (): void {
         it('registers a new user via POST /api/users', function (): void {
             $response = $this->postJson('/api/users', [
-                'name' => 'Jane Doe',
-                'email' => 'jane@example.com',
-                'password' => 'password',
+                'name'                  => 'Jane Doe',
+                'email'                 => 'jane@example.com',
+                'password'              => 'password',
                 'password_confirmation' => 'password', // via validation rule `Confirmed`
 
             ]);
@@ -27,15 +27,15 @@ describe('User (API)', function (): void {
                     'role_label',
                 ])
                 ->assertJson([
-                    'id' => 1,
-                    'name' => 'Jane Doe',
+                    'id'         => 1,
+                    'name'       => 'Jane Doe',
                     'role_label' => 'user',
                 ]);
 
             // Verify that the user is actually in the database
             $this->assertDatabaseHas('users', [
-                'name' => 'Jane Doe',
-                'email' => 'jane@example.com',
+                'name'       => 'Jane Doe',
+                'email'      => 'jane@example.com',
                 'role_label' => RoleLabel::user,
             ]);
         });
@@ -51,9 +51,9 @@ describe('User (API)', function (): void {
 
         it('rejects registration with mismatched passwords', function (): void {
             $response = $this->postJson('/api/users', [
-                'name' => 'Bad Password',
-                'email' => 'bad@example.com',
-                'password' => 'password',
+                'name'                  => 'Bad Password',
+                'email'                 => 'bad@example.com',
+                'password'              => 'password',
                 'password_confirmation' => 'different',
             ]);
 
@@ -63,9 +63,9 @@ describe('User (API)', function (): void {
 
         it('rejects too-short password', function (): void {
             $response = $this->postJson('/api/users', [
-                'name' => 'Short Pwd',
-                'email' => 'short@example.com',
-                'password' => 'short',
+                'name'                  => 'Short Pwd',
+                'email'                 => 'short@example.com',
+                'password'              => 'short',
                 'password_confirmation' => 'short',
             ]);
 
@@ -77,9 +77,9 @@ describe('User (API)', function (): void {
             User::factory()->create(['email' => 'dup@example.com']);
 
             $response = $this->postJson('/api/users', [
-                'name' => 'Duplicate',
-                'email' => 'dup@example.com',
-                'password' => 'password',
+                'name'                  => 'Duplicate',
+                'email'                 => 'dup@example.com',
+                'password'              => 'password',
                 'password_confirmation' => 'password',
             ]);
 

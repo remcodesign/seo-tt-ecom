@@ -260,7 +260,7 @@ it('9. correct URL query parameters when filtering by category', function (): vo
     $cat = Category::factory()->create(['name' => 'Tech']);
     $post = Post::factory()->for($user)->create([
         'title' => 'How to Seed Test Content the Right Way',
-        'slug' => 'how-to-seed-test-content-the-right-way',
+        'slug'  => 'how-to-seed-test-content-the-right-way',
     ]);
     $post->categories()->attach($cat);
 

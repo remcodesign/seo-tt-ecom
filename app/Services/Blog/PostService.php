@@ -22,10 +22,10 @@ readonly class PostService
         $categoryIds = $this->resolveCategoryIds($storePostData->category_ids);
 
         $data = [
-            'title' => $storePostData->title,
-            'body' => $storePostData->body,
+            'title'        => $storePostData->title,
+            'body'         => $storePostData->body,
             'published_on' => $storePostData->published_on,
-            'slug' => $this->generateUniqueSlug($storePostData->title),
+            'slug'         => $this->generateUniqueSlug($storePostData->title),
         ];
 
         $post = $user->posts()->create($data);
@@ -41,9 +41,9 @@ readonly class PostService
         $categoryIds = $this->resolveCategoryIds($updatePostData->category_ids);
 
         $data = [
-            'user_id' => $updatePostData->user_id,
-            'title' => $updatePostData->title,
-            'body' => $updatePostData->body,
+            'user_id'      => $updatePostData->user_id,
+            'title'        => $updatePostData->title,
+            'body'         => $updatePostData->body,
             'published_on' => $updatePostData->published_on,
         ];
 

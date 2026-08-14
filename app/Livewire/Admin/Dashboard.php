@@ -40,9 +40,9 @@ class Dashboard extends Component
             'userCount' => User::count(),
 
             'postCategoryCount' => $postCategoryCount,
-            'postCount' => Post::count(),
+            'postCount'         => Post::count(),
 
-            'commentCount' => Comment::count(),
+            'commentCount'         => Comment::count(),
             'openRouterConfigured' => $openRouterService->isConfigured(),
         ]);
     }

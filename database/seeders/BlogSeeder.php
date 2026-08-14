@@ -79,11 +79,11 @@ final class BlogSeeder extends Seeder
             $post->addMedia($image)->toMediaCollection('blog-images');
 
             PostWorkflow::create([
-                'post_id' => $post->id,
-                'file_hash' => $fileHash,
-                'status' => PostWorkflowStatus::completed,
+                'post_id'     => $post->id,
+                'file_hash'   => $fileHash,
+                'status'      => PostWorkflowStatus::completed,
                 'captured_at' => $capturedAt,
-                'embedding' => json_encode([0.0, 0.0]),
+                'embedding'   => json_encode([0.0, 0.0]),
             ]);
         };
 

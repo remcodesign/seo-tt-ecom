@@ -36,7 +36,7 @@ describe('HubSpot VIP check and quote pitch tools', function (): void {
 
     it('stores a generated pitch and clears a previous error', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'                 => 'test-key',
             'ai.providers.openrouter.models.text.default' => 'test/provider-model',
         ]);
 
@@ -53,10 +53,10 @@ describe('HubSpot VIP check and quote pitch tools', function (): void {
             ->set('errorMessage', 'Previous error')
             ->call('generatePitch')
             ->assertSet('pitchResult', [
-                'text' => 'A generated test pitch.',
-                'provider' => 'openrouter',
+                'text'      => 'A generated test pitch.',
+                'provider'  => 'openrouter',
                 'generated' => true,
-                'model' => 'test/provider-model',
+                'model'     => 'test/provider-model',
             ])
             ->assertSet('errorMessage', '');
 
@@ -73,19 +73,19 @@ describe('HubSpot VIP check and quote pitch tools', function (): void {
             ->test(Console::class)
             ->set('email', 'vip@remcodesign.nl')
             ->set('pitchResult', [
-                'text' => 'Old pitch',
-                'provider' => 'fallback',
+                'text'      => 'Old pitch',
+                'provider'  => 'fallback',
                 'generated' => false,
-                'model' => null,
+                'model'     => null,
             ])
             ->set('errorMessage', 'Old error')
             ->call('checkCustomer')
             ->assertSet('customerResult', [
-                'is_vip' => true,
-                'lifetime_value' => 4500,
+                'is_vip'           => true,
+                'lifetime_value'   => 4500,
                 'allowed_discount' => 15,
-                'reason' => 'Returning test customer',
-                'source' => 'hubspot test rules',
+                'reason'           => 'Returning test customer',
+                'source'           => 'hubspot test rules',
             ])
             ->assertSet('pitchResult', null)
             ->assertSet('errorMessage', '');
@@ -107,17 +107,17 @@ describe('HubSpot VIP check and quote pitch tools', function (): void {
         Livewire::actingAs($admin)
             ->test(Console::class)
             ->set('customerResult', [
-                'is_vip' => true,
-                'lifetime_value' => 4500,
+                'is_vip'           => true,
+                'lifetime_value'   => 4500,
                 'allowed_discount' => 15,
-                'reason' => 'Returning test customer',
-                'source' => 'hubspot test rules',
+                'reason'           => 'Returning test customer',
+                'source'           => 'hubspot test rules',
             ])
             ->set('pitchResult', [
-                'text' => 'Generated pitch',
-                'provider' => 'openrouter',
+                'text'      => 'Generated pitch',
+                'provider'  => 'openrouter',
                 'generated' => true,
-                'model' => 'test/model',
+                'model'     => 'test/model',
             ])
             ->set('errorMessage', 'Something went wrong')
             ->call('clearResults')

@@ -18,16 +18,16 @@ final class CustomerCheckService
         $isVip = mb_strtolower(trim($email)) === 'vip@remcodesign.nl';
 
         $result = [
-            'is_vip' => $isVip,
-            'lifetime_value' => $isVip ? 4500 : 0,
+            'is_vip'           => $isVip,
+            'lifetime_value'   => $isVip ? 4500 : 0,
             'allowed_discount' => $isVip ? 15 : 5,
-            'reason' => $isVip ? 'Returning test customer' : 'Unknown test customer',
-            'source' => 'hubspot test rules',
+            'reason'           => $isVip ? 'Returning test customer' : 'Unknown test customer',
+            'source'           => 'hubspot test rules',
         ];
 
         Log::channel('hubspot')->info('Customer check completed.', [
-            'email' => $email,
-            'is_vip' => $result['is_vip'],
+            'email'            => $email,
+            'is_vip'           => $result['is_vip'],
             'allowed_discount' => $result['allowed_discount'],
         ]);
 

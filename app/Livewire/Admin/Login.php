@@ -29,7 +29,7 @@ class Login extends Component
     public function authenticate(): void
     {
         $this->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 

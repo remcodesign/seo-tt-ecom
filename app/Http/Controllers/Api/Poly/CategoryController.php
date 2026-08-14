@@ -36,7 +36,7 @@ class CategoryController extends Controller
     {
         $categorizableType = match (request()->query('type')) {
             'blog_post' => Post::class,
-            default => abort(422, 'The type parameter is required and must be a valid categorizable type.'),
+            default     => abort(422, 'The type parameter is required and must be a valid categorizable type.'),
         };
 
         [$orderByColumn, $orderByDirection] = $this->getOrderBy('name', 'asc');

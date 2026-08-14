@@ -26,14 +26,14 @@ describe('HubSpot warehouse recommendation tool', function (): void {
 
     it('stores the warehouse recommendation and clears a previous error', function (): void {
         config([
-            'ai.providers.openrouter.key' => 'test-key',
+            'ai.providers.openrouter.key'               => 'test-key',
             'ai.providers.openrouter.models.text.smart' => 'test/smart-model',
         ]);
 
         WarehouseRecommendationAgent::fake([[
             'selected_warehouse' => [
-                'id' => 'warehouse-premium',
-                'name' => 'Premium Fulfillment Warehouse',
+                'id'     => 'warehouse-premium',
+                'name'   => 'Premium Fulfillment Warehouse',
                 'reason' => 'The premium warehouse fulfils the requested quantity.',
             ],
         ]])->preventStrayPrompts();
@@ -48,7 +48,7 @@ describe('HubSpot warehouse recommendation tool', function (): void {
             ->set('errorMessage', 'Previous error')
             ->call('recommendWarehouse')
             ->assertSet('warehouseResult.selected_warehouse', [
-                'id' => 'warehouse-premium',
+                'id'   => 'warehouse-premium',
                 'name' => 'Premium Fulfillment Warehouse',
             ])
             ->assertSet('warehouseResult.ai_generated', true)

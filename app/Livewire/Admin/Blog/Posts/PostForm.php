@@ -49,10 +49,10 @@ class PostForm extends LivewireForm
     public function toDtoPayload(): array
     {
         return [
-            'user_id' => $this->user_id,
+            'user_id'      => $this->user_id,
             'category_ids' => $this->category_ids,
-            'title' => $this->title,
-            'body' => $this->body,
+            'title'        => $this->title,
+            'body'         => $this->body,
             'published_on' => filled($this->published_on) ? $this->published_on : null,
         ];
     }
