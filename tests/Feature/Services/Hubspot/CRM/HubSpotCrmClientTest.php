@@ -98,6 +98,23 @@ it('uses an empty property map when a batch result has non-array properties', fu
         ->and($lineItems[0]->properties)->toBe([]);
 });
 
+it('throws when note creation returns no note id', function (): void {
+    Http::fake([
+        'api.hubapi.com/crm/v3/objects/notes' => Http::response([], 201),
+    ]);
+
+    $client = new HubSpotCrmClient('tenant-test');
+
+    expect(fn (): string => $client->createDealNote('500005', [
+        'hs_note_body' => 'Warehouse recommendation result.',
+    ]))->toThrow(
+        HubSpotCrmReadException::class,
+        'HubSpot note create returned no note id.',
+    );
+
+    Http::assertSentCount(1);
+});
+
 it('retries a server error (5xx) and then throws a stable failure', function (): void {
     config(['hubspot.crm.retry.times' => 3]);
 

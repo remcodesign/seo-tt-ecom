@@ -10,23 +10,26 @@ use App\Data\HubSpot\Requests\WarehouseRecommendationData;
 use App\Data\HubSpot\Responses\WarehouseRecommendationDataResponse;
 use App\Data\HubSpot\Responses\WarehouseSelectionData;
 use App\Data\OpenRouter\Responses\OpenRouterDataResponse;
-use App\Enums\AiModelProfile;
+use App\Enums\OpenRouter\AiModelProfile;
 use App\Services\OpenRouter\OpenRouterService;
 
-final readonly class WarehouseRecommendationService
+readonly class WarehouseRecommendationService
 {
     public function __construct(private OpenRouterService $openRouterService) {}
 
-    public function recommend(WarehouseRecommendationData $warehouseRecommendationData): WarehouseRecommendationDataResponse
+    /**
+     * @param  list<WarehouseCandidateData>|null  $candidates
+     */
+    public function recommend(WarehouseRecommendationData $warehouseRecommendationData, ?array $candidates = null): WarehouseRecommendationDataResponse
     {
-        $candidates = $this->candidates();
+        $candidates ??= $this->candidates();
         $prompt = $this->prompt($warehouseRecommendationData, $candidates);
         $configuredTimeout = config('hubspot.ai.smart_timeout', 60);
         $smartTimeout = is_int($configuredTimeout) ? $configuredTimeout : 60;
         $generated = $this->openRouterService->generate(
             $prompt,
             WarehouseRecommendationAgent::make(),
-            // AiModelProfile::Smart,
+            // AiModelProfile::Smart, // you can switch
             AiModelProfile::Default,
             timeout: $smartTimeout,
         );

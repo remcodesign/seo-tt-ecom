@@ -24,4 +24,12 @@ return [
         // Tokens must be tenant-scoped and encrypted in production.
         'tenants' => json_decode((string) env('HUBSPOT_CRM_TENANT_TOKENS', '{}'), true) ?: [],
     ],
+    'callback' => [
+        'base_url' => env('HUBSPOT_CALLBACK_BASE_URL', 'https://api.hubapi.com'),
+        'timeout'  => (int) env('HUBSPOT_CALLBACK_TIMEOUT', 10),
+        'tokens'   => json_decode((string) env('HUBSPOT_CALLBACK_TENANT_TOKENS', '{}'), true) ?: [],
+    ],
+    'notes' => [
+        'association_type_id' => (int) env('HUBSPOT_NOTE_DEAL_ASSOCIATION_TYPE_ID', 214),
+    ],
 ];

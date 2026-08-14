@@ -6,7 +6,7 @@ namespace App\Services\HubSpot;
 
 use App\Ai\Agents\HubSpot\QuotePitchAgent;
 use App\Data\OpenRouter\Responses\OpenRouterDataResponse;
-use App\Enums\AiModelProfile;
+use App\Enums\OpenRouter\AiModelProfile;
 use App\Services\OpenRouter\OpenRouterService;
 use Illuminate\Support\Facades\Log;
 

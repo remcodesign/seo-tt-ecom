@@ -102,6 +102,54 @@ final readonly class HubSpotCrmClient
         return $lineItems;
     }
 
+    public function findNoteByMarker(string $marker): ?string
+    {
+        $response = $this->request()->post('/crm/v3/objects/notes/search', [
+            'filterGroups' => [[
+                'filters' => [[
+                    'propertyName' => 'hs_note_body',
+                    'operator'     => 'CONTAINS_TOKEN',
+                    'value'        => $marker,
+                ]],
+            ]],
+            'limit'      => 1,
+            'properties' => ['hs_note_body'],
+        ]);
+
+        $this->throwOnFailure($response, 'note search');
+
+        $id = $response->json('results.0.id');
+
+        return is_string($id) ? $id : null;
+    }
+
+    /** @param  array<string, mixed>  $properties */
+    public function createDealNote(string $dealId, array $properties): string
+    {
+        $associationTypeId = config('hubspot.notes.association_type_id', 214);
+
+        $response = $this->request()->post('/crm/v3/objects/notes', [
+            'properties'   => $properties,
+            'associations' => [[
+                'to'    => ['id' => $dealId],
+                'types' => [[
+                    'associationCategory' => 'HUBSPOT_DEFINED',
+                    'associationTypeId'   => is_int($associationTypeId) ? $associationTypeId : 214,
+                ]],
+            ]],
+        ]);
+
+        $this->throwOnFailure($response, 'note create');
+
+        $id = $response->json('id');
+
+        if (! is_string($id) || $id === '') {
+            throw new HubSpotCrmReadException('HubSpot note create returned no note id.');
+        }
+
+        return $id;
+    }
+
     /**
      * @return list<string>
      */

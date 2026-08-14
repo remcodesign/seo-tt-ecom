@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories\HubSpot;
 
-use App\Enums\WarehouseRecommendationTaskStatus;
+use App\Enums\HubSpot\WarehouseRecommendationTaskStatus;
 use App\Models\HubSpot\WarehouseRecommendationTask;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;

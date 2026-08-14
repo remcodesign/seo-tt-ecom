@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 use App\Ai\Agents\HubSpot\WarehouseRecommendationAgent;
 use App\Enums\RoleLabel;
+use App\Jobs\HubSpot\ProcessWarehouseRecommendation;
 use App\Livewire\Admin\HubSpot\Console;
+use App\Models\HubSpot\WarehouseRecommendationTask;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
@@ -53,6 +56,20 @@ describe('HubSpot warehouse recommendation tool', function (): void {
             ])
             ->assertSet('warehouseResult.ai_generated', true)
             ->assertSet('errorMessage', '');
+    });
+
+    it('queues an accepted workflow task from the admin console', function (): void {
+        Queue::fake();
+        $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+        $task = WarehouseRecommendationTask::factory()->create();
+
+        Livewire::actingAs($admin)
+            ->test(Console::class)
+            ->set('workflowTaskId', $task->id)
+            ->call('queueWarehouseTask')
+            ->assertSet('workflowTaskResult', ['status' => 'queued', 'task_id' => $task->id]);
+
+        Queue::assertPushed(ProcessWarehouseRecommendation::class, fn (ProcessWarehouseRecommendation $processWarehouseRecommendation): bool => $processWarehouseRecommendation->taskId === $task->id);
     });
 
 });

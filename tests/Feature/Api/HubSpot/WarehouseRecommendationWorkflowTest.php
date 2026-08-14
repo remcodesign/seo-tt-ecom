@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\WarehouseRecommendationTaskStatus;
+use App\Enums\HubSpot\WarehouseRecommendationTaskStatus;
 use App\Jobs\HubSpot\ProcessWarehouseRecommendation;
 use App\Models\HubSpot\WarehouseRecommendationTask;
 use Carbon\Carbon;

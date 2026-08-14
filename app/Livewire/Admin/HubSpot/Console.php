@@ -6,12 +6,14 @@ namespace App\Livewire\Admin\HubSpot;
 
 use App\Data\HubSpot\Requests\WarehouseRecommendationData;
 use App\Enums\RoleLabel;
+use App\Jobs\HubSpot\ProcessWarehouseRecommendation;
 use App\Models\User;
 use App\Services\HubSpot\CustomerCheckService;
 use App\Services\HubSpot\QuotePitchService;
 use App\Services\HubSpot\Warehouse\WarehouseRecommendationService;
 use App\Services\OpenRouter\OpenRouterService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Queue;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -44,6 +46,11 @@ class Console extends Component
     public ?array $warehouseResult = null;
 
     public string $errorMessage = '';
+
+    public string $workflowTaskId = '';
+
+    /** @var array{status: string, task_id: string}|null */
+    public ?array $workflowTaskResult = null;
 
     public function mount(): void
     {
@@ -108,6 +115,21 @@ class Console extends Component
         $this->pitchResult = null;
         $this->warehouseResult = null;
         $this->errorMessage = '';
+        $this->workflowTaskResult = null;
+    }
+
+    public function queueWarehouseTask(): void
+    {
+        $this->validate([
+            'workflowTaskId' => ['required', 'string', 'exists:warehouse_recommendation_tasks,id'],
+        ]);
+
+        $this->errorMessage = '';
+        Queue::push(new ProcessWarehouseRecommendation($this->workflowTaskId));
+        $this->workflowTaskResult = [
+            'status'  => 'queued',
+            'task_id' => $this->workflowTaskId,
+        ];
     }
 
     public function render(): View

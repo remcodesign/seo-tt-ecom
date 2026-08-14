@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\HubSpot;
 
-use App\Enums\WarehouseRecommendationTaskStatus;
+use App\Enums\HubSpot\WarehouseRecommendationTaskStatus;
 use Carbon\CarbonImmutable;
 use Database\Factories\HubSpot\WarehouseRecommendationTaskFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property CarbonImmutable|null $completed_at
  * @property CarbonImmutable|null $expires_at
  * @property CarbonImmutable|null $callback_sent_at
+ * @property string|null $note_id
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  */
@@ -53,6 +54,7 @@ use Illuminate\Database\Eloquent\Model;
     'completed_at',
     'expires_at',
     'callback_sent_at',
+    'note_id',
 ])]
 #[Table(name: 'warehouse_recommendation_tasks')]
 class WarehouseRecommendationTask extends Model

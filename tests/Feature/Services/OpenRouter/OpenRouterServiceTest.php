@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Ai\Agents\HubSpot\QuotePitchAgent;
 use App\Ai\Agents\HubSpot\WarehouseRecommendationAgent;
 use App\Data\OpenRouter\Responses\OpenRouterDataResponse;
-use App\Enums\AiModelProfile;
+use App\Enums\OpenRouter\AiModelProfile;
 use App\Services\OpenRouter\OpenRouterService;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Facades\Event;

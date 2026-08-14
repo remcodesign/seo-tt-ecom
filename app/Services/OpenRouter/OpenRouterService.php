@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\OpenRouter;
 
 use App\Data\OpenRouter\Responses\OpenRouterDataResponse;
-use App\Enums\AiModelProfile;
+use App\Enums\OpenRouter\AiModelProfile;
 use Illuminate\Support\Facades\Log;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Enums\Lab;

@@ -6,7 +6,7 @@ namespace App\Services\HubSpot\Warehouse;
 
 use App\Data\HubSpot\Requests\WarehouseRecommendationIntakeData;
 use App\Data\HubSpot\Responses\WarehouseRecommendationIntakeResponse;
-use App\Enums\WarehouseRecommendationTaskStatus;
+use App\Enums\HubSpot\WarehouseRecommendationTaskStatus;
 use App\Jobs\HubSpot\ProcessWarehouseRecommendation;
 use App\Models\HubSpot\WarehouseRecommendationTask;
 

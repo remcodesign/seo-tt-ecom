@@ -143,6 +143,40 @@
                 </div>
             </section>
 
+            <section class="rounded-3xl border border-sky-200 bg-sky-50 p-6 sm:p-8">
+                <h2 class="text-xl font-semibold text-sky-950">Async workflow task</h2>
+                <p class="mt-2 text-sm leading-6 text-sky-900">
+                    Queue an accepted task to exercise CRM reads, warehouse AI, note creation, and callback completion.
+                </p>
+                <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end">
+                    <div class="min-w-0 flex-1">
+                        <label for="hubspot-workflow-task-id" class="text-sm font-semibold text-sky-950">Task ID</label>
+                        <input
+                            id="hubspot-workflow-task-id"
+                            type="text"
+                            wire:model.live="workflowTaskId"
+                            class="mt-2 block w-full rounded-2xl border-sky-300 bg-white px-4 py-3 font-mono text-xs shadow-sm focus:border-sky-500 focus:ring-sky-500"
+                        />
+                        @error('workflowTaskId')
+                            <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <button
+                        type="button"
+                        wire:click="queueWarehouseTask"
+                        wire:loading.attr="disabled"
+                        class="cursor-pointer rounded-2xl bg-sky-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        Queue task
+                    </button>
+                </div>
+                @if ($workflowTaskResult)
+                    <p class="mt-4 text-sm font-semibold text-sky-900">
+                        Task {{ $workflowTaskResult['task_id'] }} is {{ $workflowTaskResult['status'] }}.
+                    </p>
+                @endif
+            </section>
+
             <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
                 <div class="flex items-start justify-between gap-4">
                     <div>

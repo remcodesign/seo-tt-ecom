@@ -32,6 +32,7 @@ export type CreateTokenData = {
     password: string;
     device_name: string;
 };
+export type HubSpotWorkflowExecutionState = "SUCCESS" | "FAIL_CONTINUE";
 export type PaginatedResponseData<T> = {
     data: T[];
     links: PaginationLinkData[];
@@ -143,5 +144,11 @@ export type UserDataResponse = {
     name: string;
     role_label: RoleLabel;
 };
+export type WarehouseRecommendationFailureCode =
+    | "TASK_EXPIRED"
+    | "LINE_ITEM_DATA_INVALID"
+    | "CRM_READ_FAILED"
+    | "AI_RESULT_INVALID"
+    | "WORKFLOW_FAILED";
 export type WarehouseRecommendationTaskStatus =
     "accepted" | "processing" | "succeeded" | "failed" | "expired";
