@@ -35,12 +35,28 @@ function hubspotCallbackPattern(string $callbackId = '*'): string
     return 'api.hubapi.com'.hubspotCallbackPath($callbackId);
 }
 
+function warehouseOAuthTokenPattern(): string
+{
+    return 'api.hubapi.com/oauth/v3/token';
+}
+
+beforeEach(function (): void {
+    config([
+        'hubspot.client_id'          => 'client-id',
+        'hubspot.client_secret'      => 'client-secret',
+        'hubspot.oauth.redirect_uri' => 'https://example.com/oauth/callback',
+    ]);
+});
+
 it('processes all line items, writes one note, and completes the callback', function (): void {
     config([
         'ai.providers.openrouter.key'                 => 'test-key',
         'ai.providers.openrouter.models.text.default' => 'test/model',
         'hubspot.crm.service_keys'                    => ['tenant-test' => 'service-key'],
-        'hubspot.callback.access_tokens'              => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.callback.refresh_tokens'             => ['tenant-test' => 'oauth-refresh-token'],
+        'hubspot.client_id'                           => 'client-id',
+        'hubspot.client_secret'                       => 'client-secret',
+        'hubspot.oauth.redirect_uri'                  => 'https://example.com/oauth/callback',
         'hubspot.crm.retry.times'                     => 0,
         'hubspot.crm.retry.sleep_ms'                  => 0,
     ]);
@@ -51,6 +67,7 @@ it('processes all line items, writes one note, and completes the callback', func
     ])->preventStrayPrompts();
 
     Http::fake([
+        warehouseOAuthTokenPattern()                                          => Http::response(['access_token' => 'oauth-access-token']),
         'api.hubapi.com/crm/v3/objects/deals/500005?properties=*'             => Http::response(['id' => '500005', 'properties' => ['dealname' => 'Northwind renewal']]),
         'api.hubapi.com/crm/v3/objects/deals/500005/associations/line_items*' => Http::response([
             'results' => [['id' => 'li-1001'], ['id' => 'li-1002']],
@@ -158,9 +175,9 @@ it('expires an accepted task without performing workflow work', function (): voi
 
 it('fails the task when the AI response has no valid selection', function (): void {
     config([
-        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
-        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
-        'hubspot.crm.retry.times'        => 0,
+        'hubspot.crm.service_keys'        => ['tenant-test' => 'service-key'],
+        'hubspot.callback.refresh_tokens' => ['tenant-test' => 'oauth-refresh-token'],
+        'hubspot.crm.retry.times'         => 0,
     ]);
 
     WarehouseRecommendationAgent::fake([
@@ -188,9 +205,9 @@ it('fails the task when the AI response has no valid selection', function (): vo
 
 it('fails the task when the AI selects an unknown candidate', function (): void {
     config([
-        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
-        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
-        'hubspot.crm.retry.times'        => 0,
+        'hubspot.crm.service_keys'        => ['tenant-test' => 'service-key'],
+        'hubspot.callback.refresh_tokens' => ['tenant-test' => 'oauth-refresh-token'],
+        'hubspot.crm.retry.times'         => 0,
     ]);
 
     fakeRecommendationContext();
@@ -215,12 +232,13 @@ it('fails the task when the AI selects an unknown candidate', function (): void 
 
 it('maps CRM failures to a stable code and continues when failure callback delivery fails', function (): void {
     config([
-        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
-        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
-        'hubspot.crm.retry.times'        => 0,
+        'hubspot.crm.service_keys'        => ['tenant-test' => 'service-key'],
+        'hubspot.callback.refresh_tokens' => ['tenant-test' => 'oauth-refresh-token'],
+        'hubspot.crm.retry.times'         => 0,
     ]);
 
     Http::fake([
+        warehouseOAuthTokenPattern()                              => Http::response(['access_token' => 'oauth-access-token']),
         'api.hubapi.com/crm/v3/objects/deals/500005?properties=*' => Http::response([], 500),
         hubspotCallbackPattern('callback-crm-failure')            => Http::response([], 500),
     ]);
@@ -242,9 +260,9 @@ it('maps CRM failures to a stable code and continues when failure callback deliv
 
 it('does not send a failure callback for an admin console task', function (): void {
     config([
-        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
-        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
-        'hubspot.crm.retry.times'        => 0,
+        'hubspot.crm.service_keys'        => ['tenant-test' => 'service-key'],
+        'hubspot.callback.refresh_tokens' => ['tenant-test' => 'oauth-refresh-token'],
+        'hubspot.crm.retry.times'         => 0,
     ]);
 
     Http::fake([
@@ -271,12 +289,13 @@ it('does not send a failure callback for an admin console task', function (): vo
 
 it('maps invalid normalized line item data to a stable code', function (): void {
     config([
-        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
-        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
-        'hubspot.crm.retry.times'        => 0,
+        'hubspot.crm.service_keys'        => ['tenant-test' => 'service-key'],
+        'hubspot.callback.refresh_tokens' => ['tenant-test' => 'oauth-refresh-token'],
+        'hubspot.crm.retry.times'         => 0,
     ]);
 
     Http::fake([
+        warehouseOAuthTokenPattern()                                          => Http::response(['access_token' => 'oauth-access-token']),
         'api.hubapi.com/crm/v3/objects/deals/500005?properties=*'             => Http::response(['id' => '500005']),
         'api.hubapi.com/crm/v3/objects/deals/500005/associations/line_items*' => Http::response([
             'results' => [['id' => 'li-1001'], ['id' => 'li-1002']],
@@ -309,9 +328,9 @@ it('maps invalid normalized line item data to a stable code', function (): void 
 
 it('records a safe placeholder when a failure has no exception message', function (): void {
     config([
-        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
-        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
-        'hubspot.crm.retry.times'        => 0,
+        'hubspot.crm.service_keys'        => ['tenant-test' => 'service-key'],
+        'hubspot.callback.refresh_tokens' => ['tenant-test' => 'oauth-refresh-token'],
+        'hubspot.crm.retry.times'         => 0,
     ]);
 
     fakeRecommendationContext();
@@ -333,6 +352,7 @@ it('records a safe placeholder when a failure has no exception message', functio
 function fakeRecommendationContext(): void
 {
     Http::fake([
+        warehouseOAuthTokenPattern()                                          => Http::response(['access_token' => 'oauth-access-token']),
         'api.hubapi.com/crm/v3/objects/deals/500005?properties=*'             => Http::response(['id' => '500005']),
         'api.hubapi.com/crm/v3/objects/deals/500005/associations/line_items*' => Http::response([
             'results' => [['id' => 'li-1001']],

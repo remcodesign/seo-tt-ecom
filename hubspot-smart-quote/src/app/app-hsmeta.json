@@ -6,7 +6,10 @@
     "name": "Smart Quote",
     "distribution": "private",
     "auth": {
-      "type": "static",
+      "type": "oauth",
+      "redirectUrls": [
+        "https://seo-tt-ecom-production-0oxgks.laravel.cloud/api/hubspot/oauth/callback"
+      ],
       "requiredScopes": [
         "crm.objects.deals.read",
         "crm.objects.contacts.read",
