@@ -47,8 +47,7 @@ describe('HasOptionalIncludes', function (): void {
         expect($includes)->toBe([]);
     });
 
-    // default allowed includes implementation is to return an empty array, so this test ensures that behavior is preserved
-    it('uses the default allowed includes implementation when none are overridden', function (): void {
+    it('rejects all requested includes when the default allowlist is empty', function (): void {
         $request = Request::create('/?include=user,post', 'GET');
         app()['request'] = $request;
 

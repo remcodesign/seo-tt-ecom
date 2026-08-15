@@ -15,16 +15,13 @@ beforeEach(function (): void {
 });
 
 describe('HasOrderBy', function (): void {
-    it('returns empty allowed order-by fields by default', function (): void {
+    it('falls back when no order-by columns are allowed', function (): void {
+        app()['request'] = Request::create('/?orderby=updated_at', 'GET');
+
         $stub = new HasOrderByDefaultAllowedFieldsStub;
 
-        expect($stub->allowedOrderByFieldsPublic())->toBe([]);
-    });
-
-    it('uses custom allowed fields from the consuming class', function (): void {
-        $stub = new HasOrderByTestStub(['published_on', 'updated_at']);
-
-        expect($stub->allowedOrderByFieldsPublic())->toBe(['published_on', 'updated_at']);
+        expect($stub->getOrderByPublic('created_at', 'desc'))
+            ->toBe(['created_at', 'desc']);
     });
 
     it('returns the default column and asc direction when no orderby is given', function (): void {
