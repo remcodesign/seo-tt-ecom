@@ -34,6 +34,7 @@ final readonly class WarehouseRecommendationIntakeService
             'portal_id'                 => $warehouseRecommendationIntakeData->portal_id,
             'tenant_id'                 => $warehouseRecommendationIntakeData->tenant_id,
             'deal_id'                   => $warehouseRecommendationIntakeData->deal_id,
+            'note_deal_id'              => $warehouseRecommendationIntakeData->deal_id,
             'callback_id'               => $warehouseRecommendationIntakeData->callback_id,
             'workflow_id'               => $warehouseRecommendationIntakeData->workflow_id,
             'action_definition_id'      => $warehouseRecommendationIntakeData->action_definition_id,

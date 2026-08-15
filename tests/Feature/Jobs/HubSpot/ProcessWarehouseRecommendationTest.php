@@ -15,11 +15,18 @@ use App\Services\HubSpot\Warehouse\WarehouseRecommendationService;
 use App\Services\OpenRouter\OpenRouterService;
 use Illuminate\Support\Facades\Http;
 
+function traceData(WarehouseRecommendationTask $warehouseRecommendationTask, string $step, string $path): mixed
+{
+    $trace = collect($warehouseRecommendationTask->debug_trace)->firstWhere('step', $step);
+
+    return data_get($trace, 'data.'.$path);
+}
+
 it('processes all line items, writes one note, and completes the callback', function (): void {
     config([
         'ai.providers.openrouter.key'                 => 'test-key',
         'ai.providers.openrouter.models.text.default' => 'test/model',
-        'hubspot.crm.tenants'                         => ['tenant-test' => 'crm-token'],
+        'hubspot.crm.service_keys'                    => ['tenant-test' => 'service-key'],
         'hubspot.callback.tokens'                     => ['tenant-test' => 'callback-token'],
         'hubspot.crm.retry.times'                     => 0,
         'hubspot.crm.retry.sleep_ms'                  => 0,
@@ -31,7 +38,7 @@ it('processes all line items, writes one note, and completes the callback', func
     ])->preventStrayPrompts();
 
     Http::fake([
-        'api.hubapi.com/crm/v3/objects/deals/500005?properties=*'             => Http::response(['id' => '500005']),
+        'api.hubapi.com/crm/v3/objects/deals/500005?properties=*'             => Http::response(['id' => '500005', 'properties' => ['dealname' => 'Northwind renewal']]),
         'api.hubapi.com/crm/v3/objects/deals/500005/associations/line_items*' => Http::response([
             'results' => [['id' => 'li-1001'], ['id' => 'li-1002']],
         ]),
@@ -61,7 +68,27 @@ it('processes all line items, writes one note, and completes the callback', func
         ->and($task->status)->toBe(WarehouseRecommendationTaskStatus::succeeded)
         ->and($task->started_at)->not->toBeNull()
         ->and($task->note_id)->toBe('note-001')
-        ->and($task->result['items'])->toHaveCount(2);
+        ->and($task->result['items'])->toHaveCount(2)
+        ->and(traceData($task, 'deal_read', 'deal_name'))->toBe('Northwind renewal')
+        ->and(traceData($task, 'deal_read', 'line_item_ids'))->toBe(['li-1001', 'li-1002'])
+        ->and(traceData($task, 'line_items_normalized', 'items.0.sku'))->toBe('TV-001')
+        ->and(traceData($task, 'ai_recommendation', 'warehouse_id'))->toBe('warehouse-local')
+        ->and(traceData($task, 'ai_recommendation', 'reason'))->toBe('Fast delivery.')
+        ->and(traceData($task, 'ai_recommendation', 'warehouses'))->toHaveCount(3)
+        ->and(traceData($task, 'ai_recommendation', 'warehouses.0.fulfils_quantity'))->toBeTrue()
+        ->and(traceData($task, 'ai_recommendation', 'warehouses.2.fulfils_quantity'))->toBeFalse()
+        ->and(traceData($task, 'note_created', 'note_id'))->toBe('note-001')
+        ->and(collect($task->debug_trace)->pluck('step')->all())->toContain(
+            'worker_started',
+            'deal_read',
+            'line_items_read',
+            'line_items_normalized',
+            'inventory_loaded',
+            'ai_started',
+            'ai_recommendation',
+            'note_created',
+            'callback_completed',
+        );
 
     Http::assertSent(fn ($request): bool => str_contains((string) $request->url(), '/callbacks/callback-001/complete')
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::Success->value
@@ -110,9 +137,9 @@ it('expires an accepted task without performing workflow work', function (): voi
 
 it('fails the task when the AI response has no valid selection', function (): void {
     config([
-        'hubspot.crm.tenants'     => ['tenant-test' => 'crm-token'],
-        'hubspot.callback.tokens' => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times' => 0,
+        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
+        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
+        'hubspot.crm.retry.times'  => 0,
     ]);
 
     WarehouseRecommendationAgent::fake([
@@ -140,9 +167,9 @@ it('fails the task when the AI response has no valid selection', function (): vo
 
 it('fails the task when the AI selects an unknown candidate', function (): void {
     config([
-        'hubspot.crm.tenants'     => ['tenant-test' => 'crm-token'],
-        'hubspot.callback.tokens' => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times' => 0,
+        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
+        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
+        'hubspot.crm.retry.times'  => 0,
     ]);
 
     fakeRecommendationContext();
@@ -167,9 +194,9 @@ it('fails the task when the AI selects an unknown candidate', function (): void 
 
 it('maps CRM failures to a stable code and continues when failure callback delivery fails', function (): void {
     config([
-        'hubspot.crm.tenants'     => ['tenant-test' => 'crm-token'],
-        'hubspot.callback.tokens' => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times' => 0,
+        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
+        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
+        'hubspot.crm.retry.times'  => 0,
     ]);
 
     Http::fake([
@@ -192,11 +219,40 @@ it('maps CRM failures to a stable code and continues when failure callback deliv
         ->and($task->completed_at)->not->toBeNull();
 });
 
+it('does not send a failure callback for an admin console task', function (): void {
+    config([
+        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
+        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
+        'hubspot.crm.retry.times'  => 0,
+    ]);
+
+    Http::fake([
+        'api.hubapi.com/crm/v3/objects/deals/500005?properties=*' => Http::response([], 500),
+        'api.hubapi.com/callbacks/*/complete'                     => Http::response([]),
+    ]);
+
+    $task = WarehouseRecommendationTask::factory()->create([
+        'status'      => WarehouseRecommendationTaskStatus::accepted,
+        'source'      => 'ADMIN_CONSOLE_TEST',
+        'deal_id'     => '500005',
+        'callback_id' => 'synthetic-admin-callback',
+    ]);
+
+    (new ProcessWarehouseRecommendation($task->id))->handle();
+
+    $task->refresh();
+
+    expect($task->status)->toBe(WarehouseRecommendationTaskStatus::failed)
+        ->and($task->failure_code)->toBe(WarehouseRecommendationFailureCode::CrmReadFailed->value);
+
+    Http::assertNotSent(fn ($request): bool => str_contains((string) $request->url(), '/callbacks/'));
+});
+
 it('maps invalid normalized line item data to a stable code', function (): void {
     config([
-        'hubspot.crm.tenants'     => ['tenant-test' => 'crm-token'],
-        'hubspot.callback.tokens' => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times' => 0,
+        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
+        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
+        'hubspot.crm.retry.times'  => 0,
     ]);
 
     Http::fake([
@@ -228,6 +284,29 @@ it('maps invalid normalized line item data to a stable code', function (): void 
         ->and($task->completed_at)->not->toBeNull();
 
     assertFailureCallback('callback-invalid-line-item', WarehouseRecommendationFailureCode::LineItemDataInvalid->value);
+});
+
+it('records a safe placeholder when a failure has no exception message', function (): void {
+    config([
+        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
+        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
+        'hubspot.crm.retry.times'  => 0,
+    ]);
+
+    fakeRecommendationContext();
+
+    $task = WarehouseRecommendationTask::factory()->create([
+        'status'      => WarehouseRecommendationTaskStatus::accepted,
+        'deal_id'     => '500005',
+        'callback_id' => 'callback-empty-message',
+    ]);
+
+    (new ProcessWarehouseRecommendation($task->id))->handle(null, new EmptyMessageRecommendationService(app(OpenRouterService::class)));
+
+    $task->refresh();
+
+    expect($task->status)->toBe(WarehouseRecommendationTaskStatus::failed)
+        ->and(traceData($task, 'failed', 'message'))->toBe('[not provided]');
 });
 
 function fakeRecommendationContext(): void
@@ -269,5 +348,14 @@ readonly class UnknownCandidateRecommendationService extends WarehouseRecommenda
             raw_ai_output: null,
             candidates: $candidates ?? [],
         );
+    }
+}
+
+readonly class EmptyMessageRecommendationService extends WarehouseRecommendationService
+{
+    #[Override]
+    public function recommend(WarehouseRecommendationData $warehouseRecommendationData, ?array $candidates = null): WarehouseRecommendationDataResponse
+    {
+        throw new RuntimeException('');
     }
 }

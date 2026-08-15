@@ -144,7 +144,7 @@
             </section>
 
             <section class="rounded-3xl border border-sky-200 bg-sky-50 p-6 sm:p-8">
-                <h2 class="text-xl font-semibold text-sky-950">Async workflow task</h2>
+                <h2 class="text-xl font-semibold text-sky-950">Async workflow task (has to be tested)</h2>
                 <p class="mt-2 text-sm leading-6 text-sky-900">
                     Queue an accepted task to exercise CRM reads, warehouse AI, note creation, and callback completion.
                 </p>
@@ -244,158 +244,12 @@
             </section>
         </div>
     @elseif ($activeTab === 'warehouse')
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <h2 class="text-xl font-semibold text-slate-900">Warehouse decision test</h2>
-                        <p class="mt-2 text-sm text-slate-600">
-                            The model must choose one warehouse that can fulfil the complete quantity.
-                        </p>
-                    </div>
-                    <span class="rounded-full bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700">HubSpot MCP shape</span>
-                </div>
-
-                <div class="mt-6 space-y-5">
-                    <div>
-                        <label for="hubspot-sku" class="text-sm font-semibold text-slate-800">SKU</label>
-                        <input
-                            id="hubspot-sku"
-                            type="text"
-                            wire:model.live="sku"
-                            class="mt-2 block w-full rounded-2xl border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                        />
-                        @error('sku')
-                            <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="grid gap-5 sm:grid-cols-2">
-                        <div>
-                            <label for="hubspot-requested-quantity" class="text-sm font-semibold text-slate-800"
-                                >Requested quantity</label>
-                            <input
-                                id="hubspot-requested-quantity"
-                                type="number"
-                                min="1"
-                                wire:model.live="requestedQuantity"
-                                class="mt-2 block w-full rounded-2xl border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                            />
-                            @error('requestedQuantity')
-                                <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="hubspot-destination-postal-code" class="text-sm font-semibold text-slate-800"
-                                >Destination postal code</label>
-                            <input
-                                id="hubspot-destination-postal-code"
-                                type="text"
-                                wire:model.live="destinationPostalCode"
-                                class="mt-2 block w-full rounded-2xl border-slate-300 px-4 py-3 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
-                            />
-                            @error('destinationPostalCode')
-                                <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        wire:click="recommendWarehouse"
-                        wire:loading.attr="disabled"
-                        class="cursor-pointer rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        Ask AI to choose a warehouse
-                    </button>
-                </div>
-            </section>
-
-            <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
-                <div class="flex items-start justify-between gap-4">
-                    <div>
-                        <h2 class="text-xl font-semibold text-slate-900">Decision trace</h2>
-                        <p class="mt-2 text-sm text-slate-600">
-                            Candidates with insufficient stock cannot be selected.
-                        </p>
-                    </div>
-                    @if ($warehouseResult)
-                        <span class="rounded-full px-3 py-2 text-xs font-semibold {{ $warehouseResult['ai_generated'] ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
-                            {{ $warehouseResult['ai_generated'] ? 'AI selected' : 'AI error' }}
-                        </span>
-                    @endif
-                </div>
-
-                @if ($warehouseResult)
-                    <div class="mt-6 rounded-2xl border p-5 {{ $warehouseResult['ai_generated'] ? 'border-emerald-200 bg-emerald-50' : 'border-rose-200 bg-rose-50' }}">
-                        <p class="text-xs font-semibold tracking-[0.18em] uppercase {{ $warehouseResult['ai_generated'] ? 'text-emerald-700' : 'text-rose-700' }}">
-                            Selected warehouse
-                        </p>
-                        <p class="mt-2 text-2xl font-semibold {{ $warehouseResult['ai_generated'] ? 'text-emerald-950' : 'text-rose-950' }}">
-                            {{ $warehouseResult['selected_warehouse']['name'] ?? 'No warehouse selected' }}
-                        </p>
-                        @if ($warehouseResult['selected_warehouse'])
-                            <p class="mt-1 font-mono text-xs {{ $warehouseResult['ai_generated'] ? 'text-emerald-700' : 'text-rose-700' }}">
-                                {{ $warehouseResult['selected_warehouse']['id'] }}
-                            </p>
-                        @endif
-                        <p class="mt-3 whitespace-pre-line text-sm leading-6 {{ $warehouseResult['ai_generated'] ? 'text-emerald-950' : 'text-rose-950' }}">
-                            {{ $warehouseResult['reason'] }}
-                        </p>
-                    </div>
-
-                    <details class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4" open>
-                        <summary class="cursor-pointer text-sm font-semibold text-slate-700">
-                            Recommendation JSON
-                        </summary>
-                        <pre class="mt-3 max-h-72 overflow-auto text-xs leading-5 break-words whitespace-pre-wrap text-slate-600">{{ json_encode(['selected_warehouse' => $warehouseResult['selected_warehouse'], 'reason' => $warehouseResult['reason']], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
-                    </details>
-
-                    @if ($warehouseResult['raw_ai_output'] !== null)
-                        <details class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <summary class="cursor-pointer text-sm font-semibold text-slate-700">Raw AI output</summary>
-                            <pre class="mt-3 max-h-72 overflow-auto text-xs leading-5 break-words whitespace-pre-wrap text-slate-600">{{ $warehouseResult['raw_ai_output'] }}</pre>
-                        </details>
-                    @endif
-
-                    <div class="mt-6 overflow-x-auto">
-                        <table class="min-w-full text-left text-sm">
-                            <thead class="border-b border-slate-200 text-xs tracking-wide text-slate-500 uppercase">
-                                <tr>
-                                    <th class="px-2 py-3">Warehouse</th>
-                                    <th class="px-2 py-3">Stock</th>
-                                    <th class="px-2 py-3">Distance</th>
-                                    <th class="px-2 py-3">Reviews</th>
-                                    <th class="px-2 py-3">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                @foreach ($warehouseResult['candidates'] as $candidate)
-                                    <tr wire:key="warehouse-{{ $candidate['id'] }}">
-                                        <td class="px-2 py-3 font-medium text-slate-900">{{ $candidate['name'] }}</td>
-                                        <td class="px-2 py-3 text-slate-600">{{ $candidate['available_quantity'] }}</td>
-                                        <td class="px-2 py-3 text-slate-600">{{ $candidate['distance_km'] }} km</td>
-                                        <td class="px-2 py-3 text-slate-600">{{ $candidate['review_score'] }}</td>
-                                        <td class="px-2 py-3 {{ $candidate['available_quantity'] >= $warehouseResult['requested_quantity'] ? 'text-emerald-700' : 'text-slate-400' }}">
-                                            {{ $candidate['available_quantity'] >= $warehouseResult['requested_quantity'] ? 'Can fulfil request' : 'Insufficient stock' }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="mt-6 rounded-2xl bg-slate-50 p-5 text-sm leading-6 text-slate-600">
-                        Run the test to see why the model chooses the local warehouse or the higher-rated warehouse.
-                    </div>
-                @endif
-            </section>
-        </div>
+        @livewire(\App\Livewire\Admin\HubSpot\WarehouseWorkflow::class)
     @else
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
             <section class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
                 <p class="text-sm font-semibold tracking-[0.24em] text-slate-500 uppercase">
-                    Official HubSpot connection
+                    Official HubSpot connection (NOT YET IMPLEMENTED)
                 </p>
                 <h2 class="mt-3 text-2xl font-semibold text-slate-900">Remote CRM MCP</h2>
                 <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">

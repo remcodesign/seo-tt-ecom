@@ -25,6 +25,7 @@ class WarehouseRecommendationTaskFactory extends Factory
             'portal_id'                 => '12345',
             'tenant_id'                 => 'tenant-test',
             'deal_id'                   => (string) fake()->randomNumber(6),
+            'note_deal_id'              => null,
             'callback_id'               => (string) Str::ulid(),
             'workflow_id'               => 'workflow-001',
             'action_definition_id'      => '400004',

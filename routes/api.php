@@ -36,7 +36,7 @@ Route::prefix('hubspot')
     });
 
 Route::prefix('hubspot')
-    ->middleware(['hubspot.signature', 'hubspot.tenant'])
+    ->middleware(['hubspot.signature', 'hubspot.request_log', 'hubspot.tenant'])
     ->group(function (): void {
         Route::post('/warehouse-recommendation-v3', WarehouseRecommendationWorkflowController::class);
     });

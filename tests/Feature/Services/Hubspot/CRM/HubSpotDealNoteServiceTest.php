@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 beforeEach(function (): void {
     config([
         'hubspot.crm.base_url'       => 'https://api.hubapi.com',
-        'hubspot.crm.tenants'        => ['tenant-test' => 'pat-test-token'],
+        'hubspot.crm.service_keys'   => ['tenant-test' => 'service-key'],
         'hubspot.crm.retry.times'    => 0,
         'hubspot.crm.retry.sleep_ms' => 0,
     ]);

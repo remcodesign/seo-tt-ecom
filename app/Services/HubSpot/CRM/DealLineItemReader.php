@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\HubSpot\CRM;
 
 use App\Data\HubSpot\Data\NormalizedLineItemData;
+use App\Enums\HubSpot\DealLineItemReaderStage;
 
 /**
  * Orchestrates the deterministic two-stage CRM retrieval for a Deal:
@@ -26,16 +27,28 @@ final readonly class DealLineItemReader
     /**
      * @return list<NormalizedLineItemData>
      */
-    public function read(string $dealId): array
+    public function read(string $dealId, ?callable $onStage = null): array
     {
-        $hubSpotDealData = $this->hubSpotCrmClient->readDeal($dealId);
+        $hubSpotDealData = $this->hubSpotCrmClient->readDeal($dealId, ['hs_object_id', 'dealname']);
+        if ($onStage !== null) {
+            $onStage(DealLineItemReaderStage::DealRead, $hubSpotDealData);
+        }
 
         $lineItems = $this->hubSpotCrmClient->readLineItems(
             $hubSpotDealData->line_item_ids,
             $this->requestedProperties(),
         );
 
-        return $this->lineItemNormalizer->normalize($lineItems);
+        if ($onStage !== null) {
+            $onStage(DealLineItemReaderStage::LineItemsRead, $lineItems);
+        }
+
+        $normalizedLineItems = $this->lineItemNormalizer->normalize($lineItems);
+        if ($onStage !== null) {
+            $onStage(DealLineItemReaderStage::LineItemsNormalized, $normalizedLineItems);
+        }
+
+        return $normalizedLineItems;
     }
 
     /**

@@ -12,5 +12,6 @@ final class HubSpotDealData extends Data
         public string $deal_id,
         /** @var list<string> */
         public array $line_item_ids,
+        public ?string $deal_name = null,
     ) {}
 }

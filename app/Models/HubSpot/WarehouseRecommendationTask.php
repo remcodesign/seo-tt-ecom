@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $portal_id
  * @property string $tenant_id
  * @property string $deal_id
+ * @property string|null $note_deal_id
  * @property string $callback_id
  * @property string|null $workflow_id
  * @property string|null $action_definition_id
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $input_hash
  * @property WarehouseRecommendationTaskStatus $status
  * @property array<string, mixed>|null $result
+ * @property list<array<string, mixed>>|null $debug_trace
  * @property string|null $failure_code
  * @property int $attempts
  * @property CarbonImmutable|null $started_at
@@ -40,6 +42,7 @@ use Illuminate\Database\Eloquent\Model;
     'portal_id',
     'tenant_id',
     'deal_id',
+    'note_deal_id',
     'callback_id',
     'workflow_id',
     'action_definition_id',
@@ -48,6 +51,7 @@ use Illuminate\Database\Eloquent\Model;
     'input_hash',
     'status',
     'result',
+    'debug_trace',
     'failure_code',
     'attempts',
     'started_at',
@@ -73,6 +77,7 @@ class WarehouseRecommendationTask extends Model
         return [
             'status'           => WarehouseRecommendationTaskStatus::class,
             'result'           => 'array',
+            'debug_trace'      => 'array',
             'attempts'         => 'integer',
             'started_at'       => 'immutable_datetime',
             'completed_at'     => 'immutable_datetime',

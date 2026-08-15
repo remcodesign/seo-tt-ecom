@@ -6,6 +6,7 @@ use App\Enums\HubSpot\WarehouseRecommendationTaskStatus;
 use App\Jobs\HubSpot\ProcessWarehouseRecommendation;
 use App\Models\HubSpot\WarehouseRecommendationTask;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\TestResponse;
 
@@ -104,6 +105,31 @@ it('rejects a signed request with a malformed callback id', function (): void {
         ->assertStatus(422);
 
     expect(WarehouseRecommendationTask::query()->count())->toBe(0);
+});
+
+it('captures the signed raw payload before DTO validation when enabled', function (): void {
+    config(['hubspot.request_logging.enabled' => true]);
+
+    $mock = Mockery::mock();
+    $capturedContext = null;
+    Log::shouldReceive('error')->zeroOrMoreTimes();
+    Log::shouldReceive('channel')->once()->with('hubspot')->andReturn($mock);
+    $mock->shouldReceive('info')
+        ->once()
+        ->with('HubSpot webhook request captured.', Mockery::on(function (array $context) use (&$capturedContext): bool {
+            $capturedContext = $context;
+
+            return true;
+        }));
+
+    signedWarehouseWorkflowRequest('12345', callbackId: '')
+        ->assertStatus(422);
+
+    assert(is_array($capturedContext));
+
+    expect($capturedContext['raw_body'])->toContain('500005')
+        ->and($capturedContext['payload']['object']['objectId'])->toBe('500005')
+        ->and($capturedContext['response_status'])->toBe(422);
 });
 
 it('rejects an invalid signature before reaching workflow intake', function (): void {

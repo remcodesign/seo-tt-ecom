@@ -32,6 +32,8 @@ export type CreateTokenData = {
     password: string;
     device_name: string;
 };
+export type DealLineItemReaderStage =
+    "deal_read" | "line_items_read" | "line_items_normalized";
 export type HubSpotWorkflowExecutionState = "SUCCESS" | "FAIL_CONTINUE";
 export type PaginatedResponseData<T> = {
     data: T[];

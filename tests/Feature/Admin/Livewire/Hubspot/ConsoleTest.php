@@ -18,6 +18,8 @@ describe('HubSpot console page', function (): void {
             ->test(Console::class)
             ->assertSee('Quote tools')
             ->assertSeeHtml('Inventory & warehouse AI')
+            ->set('activeTab', 'warehouse')
+            ->assertSee('Tenant / portal')
             ->set('activeTab', 'mcp')
             ->assertSee('Remote CRM MCP')
             ->assertSee('OAuth 2.1 + PKCE required');

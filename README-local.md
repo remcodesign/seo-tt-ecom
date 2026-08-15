@@ -193,6 +193,13 @@ ddev stop
 ddev poweroff   # stops all DDEV projects
 ```
 
+### Run Queue jobs
+
+```bash
+ddev artisan config:clear
+ddev artisan queue:work 
+```
+
 ### Run Artisan commands
 
 ```bash
@@ -349,6 +356,13 @@ Use the `Laravel Boost :: application-info` MCP tool to verify the current packa
 ### 3. Activate relevant skills
 
 This project has domain-specific skills in `.github/skills/` (e.g., `laravel-best-practices`, `livewire-development`, `pest-testing`, `tailwindcss-development`). Activate the relevant skill(s) before working in that domain.
+
+For every Pest test task, always activate both of these skills:
+
+```txt
+.github/skills/pest-testing
+.github/skills/pest-testing-boundaries
+```
 
 ### 4. Follow existing code style
 

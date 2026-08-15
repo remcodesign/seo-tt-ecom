@@ -41,10 +41,12 @@ final readonly class HubSpotCrmClient
         $this->throwOnFailure($response, 'deal read');
 
         $lineItemIds = $this->readAssociatedLineItemIds($dealId);
+        $dealName = $response->json('properties.dealname');
 
         return new HubSpotDealData(
             deal_id: $dealId,
             line_item_ids: $lineItemIds,
+            deal_name: is_string($dealName) && $dealName !== '' ? $dealName : null,
         );
     }
 
@@ -127,11 +129,12 @@ final readonly class HubSpotCrmClient
     public function createDealNote(string $dealId, array $properties): string
     {
         $associationTypeId = config('hubspot.notes.association_type_id', 214);
+        $associationObjectId = ctype_digit($dealId) ? (int) $dealId : $dealId;
 
         $response = $this->request()->post('/crm/v3/objects/notes', [
             'properties'   => $properties,
             'associations' => [[
-                'to'    => ['id' => $dealId],
+                'to'    => ['id' => $associationObjectId],
                 'types' => [[
                     'associationCategory' => 'HUBSPOT_DEFINED',
                     'associationTypeId'   => is_int($associationTypeId) ? $associationTypeId : 214,
@@ -211,8 +214,8 @@ final readonly class HubSpotCrmClient
 
     private function tenantToken(): string
     {
-        $tenants = config('hubspot.crm.tenants', []);
-        $token = is_array($tenants) ? ($tenants[$this->tenantId] ?? null) : null;
+        $serviceKeys = config('hubspot.crm.service_keys', []);
+        $token = is_array($serviceKeys) ? ($serviceKeys[$this->tenantId] ?? null) : null;
 
         if (! is_string($token) || $token === '') {
             throw new HubSpotCrmNotConfiguredException(
@@ -255,8 +258,30 @@ final readonly class HubSpotCrmClient
             return;
         }
 
+        $providerMessage = $response->json('message');
+        $providerCategory = $response->json('category');
+        $correlationId = $response->json('correlationId');
+        $diagnostics = [];
+
+        if (is_string($providerCategory) && $providerCategory !== '') {
+            $diagnostics[] = 'category='.$providerCategory;
+        }
+
+        if (is_string($providerMessage) && $providerMessage !== '') {
+            $diagnostics[] = 'message='.mb_substr($providerMessage, 0, 240);
+        }
+
+        if (is_string($correlationId) && $correlationId !== '') {
+            $diagnostics[] = 'correlation_id='.$correlationId;
+        }
+
         throw new HubSpotCrmReadException(
-            sprintf('HubSpot CRM %s failed with status %d.', $operation, $response->status()),
+            sprintf(
+                'HubSpot CRM %s failed with status %d%s.',
+                $operation,
+                $response->status(),
+                $diagnostics === [] ? '' : ' ('.implode('; ', $diagnostics).')',
+            ),
         );
     }
 }

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 beforeEach(function (): void {
     config([
         'hubspot.crm.base_url'            => 'https://api.hubapi.com',
-        'hubspot.crm.tenants'             => ['tenant-test' => 'pat-test-token'],
+        'hubspot.crm.service_keys'        => ['tenant-test' => 'service-key'],
         'hubspot.crm.properties.sku'      => 'hs_sku',
         'hubspot.crm.properties.quantity' => 'quantity',
         'hubspot.crm.retry.times'         => 0,
@@ -58,7 +58,7 @@ it('reads a deal, its associated line items, and normalizes them', function (): 
         ->and($normalized[1]->quantity)->toBe(1);
 
     Http::assertSent(fn ($request): bool => str_contains((string) $request->url(), '/crm/v3/objects/deals/500005')
-        && $request->hasHeader('Authorization', 'Bearer pat-test-token'));
+        && $request->hasHeader('Authorization', 'Bearer service-key'));
 });
 
 it('requests only the configured sku and quantity properties in the batch read', function (): void {
@@ -187,7 +187,7 @@ it('throws a stable failure when the crm read fails', function (): void {
 });
 
 it('throws a stable failure when the tenant has no crm token', function (): void {
-    config(['hubspot.crm.tenants' => []]);
+    config(['hubspot.crm.service_keys' => []]);
 
     $reader = new DealLineItemReader(
         new HubSpotCrmClient('tenant-test'),

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 beforeEach(function (): void {
     config([
         'hubspot.crm.base_url'       => 'https://api.hubapi.com',
-        'hubspot.crm.tenants'        => ['tenant-test' => 'pat-test-token'],
+        'hubspot.crm.service_keys'   => ['tenant-test' => 'service-key'],
         'hubspot.crm.retry.times'    => 0,
         'hubspot.crm.retry.sleep_ms' => 0,
     ]);
@@ -115,6 +115,18 @@ it('throws when note creation returns no note id', function (): void {
     Http::assertSentCount(1);
 });
 
+it('sends numeric Deal IDs as numeric note association object IDs', function (): void {
+    Http::fake([
+        'api.hubapi.com/crm/v3/objects/notes' => Http::response(['id' => 'note-001'], 201),
+    ]);
+
+    (new HubSpotCrmClient('tenant-test'))->createDealNote('516377721078', [
+        'hs_note_body' => 'Warehouse recommendation result.',
+    ]);
+
+    Http::assertSent(fn ($request): bool => $request->data()['associations'][0]['to']['id'] === 516377721078);
+});
+
 it('retries a server error (5xx) and then throws a stable failure', function (): void {
     config(['hubspot.crm.retry.times' => 3]);
 
@@ -160,6 +172,24 @@ it('does not retry a client error (4xx)', function (): void {
 
     // 4xx is not retried, so only the original request is sent.
     Http::assertSentCount(1);
+});
+
+it('includes provider diagnostics in a CRM failure', function (): void {
+    Http::fake([
+        'api.hubapi.com/crm/v3/objects/deals/500005?properties=*' => Http::response([
+            'category'      => 'VALIDATION_ERROR',
+            'message'       => 'The requested Deal is invalid.',
+            'correlationId' => 'correlation-001',
+        ], 400),
+    ]);
+
+    $client = new HubSpotCrmClient('tenant-test');
+
+    expect(fn (): HubSpotDealData => $client->readDeal('500005'))
+        ->toThrow(
+            HubSpotCrmReadException::class,
+            'HubSpot CRM deal read failed with status 400 (category=VALIDATION_ERROR; message=The requested Deal is invalid.; correlation_id=correlation-001).',
+        );
 });
 
 it('retries a network connection exception and then throws a stable failure', function (): void {

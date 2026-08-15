@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\LogHubSpotWebhookRequest;
 use App\Http\Middleware\ResolveHubSpotTenant;
 use App\Http\Middleware\VerifyHubSpotRequestSignature;
 use Illuminate\Auth\AuthenticationException;
@@ -20,8 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
 
         $middleware->alias([
-            'hubspot.signature' => VerifyHubSpotRequestSignature::class,
-            'hubspot.tenant'    => ResolveHubSpotTenant::class,
+            'hubspot.signature'   => VerifyHubSpotRequestSignature::class,
+            'hubspot.request_log' => LogHubSpotWebhookRequest::class,
+            'hubspot.tenant'      => ResolveHubSpotTenant::class,
         ]);
 
         // Disable redirecting unauthenticated API requests to the login page

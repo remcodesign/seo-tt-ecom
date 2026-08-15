@@ -20,6 +20,10 @@ Every external boundary test must cover the successful contract and relevant fai
 
 Prefer focused tests that distinguish a meaningful regression over broad tests that duplicate lower-level assertions. Feature tests should exercise the complete application path relevant to the feature; unit tests should isolate pure deterministic logic. Do not duplicate a test merely because a fixture has a particular value: add coverage only when it verifies a distinct behavior, contract, state transition, or failure mode.
 
+### Avoid Declaration-Only Tests
+
+Do not create tests that only assert a static implementation declaration, such as comparing a form's `rules()` array, a model's configuration array, or a service's constant map to a hard-coded copy. These tests verify where configuration is written, not whether the application honors it, and they become noise when valid implementation details change. Replace them with a behavior test through the owning production boundary. For validation, submit invalid and valid data through the real request, Livewire action, or controller and assert validation errors, accepted state, persistence, or side effects. Keep a declaration-level test only when the declaration itself is the public contract and no meaningful production behavior exercises it.
+
 ## Laravel Test Coverage
 
 ### Model Tests
