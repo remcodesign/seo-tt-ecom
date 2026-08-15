@@ -82,6 +82,13 @@
                 <p class="mt-2 text-sm text-slate-600">Enter test data and run customer or pitch checks.</p>
             </a>
             <a
+                href="{{ route('admin.hubspot.logs.warehouse') }}"
+                class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center shadow transition hover:border-slate-300 hover:bg-slate-100"
+            >
+                <p class="text-sm font-semibold text-slate-900">Warehouse workflow logs</p>
+                <p class="mt-2 text-sm text-slate-600">Browse task history and inspect AI traces.</p>
+            </a>
+            <a
                 href="{{ route('admin.hubspot.logs') }}"
                 class="rounded-3xl border border-slate-200 bg-slate-50 px-6 py-5 text-center shadow transition hover:border-slate-300 hover:bg-slate-100"
             >

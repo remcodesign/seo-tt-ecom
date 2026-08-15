@@ -8,6 +8,7 @@ use App\Livewire\Admin\Blog\Posts\Index as LivewirePostsIndex;
 use App\Livewire\Admin\Dashboard as LivewireDashboard;
 use App\Livewire\Admin\HubSpot\Console as LivewireHubSpotConsole;
 use App\Livewire\Admin\HubSpot\Logs as LivewireHubSpotLogs;
+use App\Livewire\Admin\HubSpot\WarehouseLogs as LivewireHubSpotWarehouseLogs;
 use App\Livewire\Admin\Login as LivewireLogin;
 use App\Livewire\Admin\Users\Form as LivewireUserForm;
 use App\Livewire\Admin\Users\Index as LivewireUsersIndex;
@@ -32,6 +33,7 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::prefix('hubspot')->name('hubspot.')->group(function (): void {
             Route::livewire('/', LivewireHubSpotConsole::class)->name('console');
             Route::livewire('/logs', LivewireHubSpotLogs::class)->name('logs');
+            Route::livewire('/logs/warehouse', LivewireHubSpotWarehouseLogs::class)->name('logs.warehouse');
         });
 
         // general
