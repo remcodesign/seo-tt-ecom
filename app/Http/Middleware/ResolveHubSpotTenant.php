@@ -15,7 +15,13 @@ final class ResolveHubSpotTenant
         $portalId = $request->input('origin.portalId');
         $portalTenants = config('hubspot.portal_tenants', []);
 
-        if (! is_string($portalId) || $portalId === '' || ! is_array($portalTenants)) {
+        if ((! is_string($portalId) && ! is_int($portalId)) || ! is_array($portalTenants)) {
+            abort(403, 'Unknown HubSpot portal.');
+        }
+
+        $portalId = (string) $portalId;
+
+        if ($portalId === '') {
             abort(403, 'Unknown HubSpot portal.');
         }
 
@@ -28,6 +34,11 @@ final class ResolveHubSpotTenant
             abort(403, 'Unknown HubSpot portal.');
         }
 
+        $request->merge([
+            'origin' => collect((array) $request->input('origin'))
+                ->put('portalId', $portalId)
+                ->all(),
+        ]);
         $request->attributes->set('hubspot_portal_id', $portalId);
         $request->attributes->set('hubspot_tenant_id', $portalConfig['tenant_id']);
 

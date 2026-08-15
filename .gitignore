@@ -40,4 +40,5 @@ tests/Browser/Screenshots
 
 
 
-hubspot-smart-quote-BAK/
+# custom test files
+test.json

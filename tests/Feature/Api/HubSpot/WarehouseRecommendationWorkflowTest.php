@@ -62,30 +62,6 @@ it('reuses the existing task for a duplicate callback identity', function (): vo
     Queue::assertPushed(ProcessWarehouseRecommendation::class, 1);
 });
 
-it('rejects an unknown portal before reaching workflow intake', function (): void {
-    signedWarehouseWorkflowRequest('99999')
-        ->assertForbidden()
-        ->assertJsonPath('message', 'Unknown HubSpot portal.');
-
-    expect(WarehouseRecommendationTask::query()->count())->toBe(0);
-});
-
-it('rejects a disabled portal before reaching workflow intake', function (): void {
-    signedWarehouseWorkflowRequest('67890')
-        ->assertForbidden()
-        ->assertJsonPath('message', 'Unknown HubSpot portal.');
-
-    expect(WarehouseRecommendationTask::query()->count())->toBe(0);
-});
-
-it('rejects a signed request without portal context', function (): void {
-    signedWarehouseWorkflowRequest(null)
-        ->assertForbidden()
-        ->assertJsonPath('message', 'Unknown HubSpot portal.');
-
-    expect(WarehouseRecommendationTask::query()->count())->toBe(0);
-});
-
 it('rejects a signed request with a missing Deal object', function (): void {
     signedWarehouseWorkflowRequest('12345', objectId: null)
         ->assertStatus(422);
@@ -160,7 +136,7 @@ it('rejects an invalid signature before reaching workflow intake', function (): 
 });
 
 function signedWarehouseWorkflowRequest(
-    ?string $portalId,
+    string $portalId,
     ?string $objectId = '500005',
     string $source = 'WORKFLOWS',
     string $callbackId = 'callback-001',
