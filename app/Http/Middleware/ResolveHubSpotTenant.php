@@ -35,13 +35,40 @@ final class ResolveHubSpotTenant
         }
 
         $request->merge([
-            'origin' => collect((array) $request->input('origin'))
-                ->put('portalId', $portalId)
-                ->all(),
+            'origin' => $this->normalizeNumericIds(
+                collect((array) $request->input('origin'))
+                    ->put('portalId', $portalId)
+                    ->all(),
+                ['actionDefinitionId', 'actionDefinitionVersion'],
+            ),
+            'context' => $this->normalizeNumericIds(
+                (array) $request->input('context'),
+                ['workflowId'],
+            ),
+            'object' => $this->normalizeNumericIds(
+                (array) $request->input('object'),
+                ['objectId'],
+            ),
         ]);
         $request->attributes->set('hubspot_portal_id', $portalId);
         $request->attributes->set('hubspot_tenant_id', $portalConfig['tenant_id']);
 
         return $next($request);
+    }
+
+    /**
+     * @param  array<int|string, mixed>  $values
+     * @param  list<string>  $keys
+     * @return array<int|string, mixed>
+     */
+    private function normalizeNumericIds(array $values, array $keys): array
+    {
+        return collect($values)
+            ->map(function (mixed $value, int|string $key) use ($keys): mixed {
+                return in_array($key, $keys, true) && is_int($value)
+                    ? (string) $value
+                    : $value;
+            })
+            ->all();
     }
 }

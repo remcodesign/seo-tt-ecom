@@ -45,6 +45,20 @@ it('accepts a valid signed execution and returns a bounded BLOCK response', func
     Queue::assertPushed(ProcessWarehouseRecommendation::class, fn (ProcessWarehouseRecommendation $processWarehouseRecommendation): bool => $processWarehouseRecommendation->taskId === $task->id);
 });
 
+it('accepts numeric workflow IDs from HubSpot JSON', function (): void {
+    Queue::fake();
+
+    signedWarehouseWorkflowRequest(
+        12345,
+        objectId: 516930743536,
+        actionDefinitionId: 270666375,
+        actionDefinitionVersion: 2,
+        workflowId: 4720693460,
+    )
+        ->assertOk()
+        ->assertJsonPath('outputFields.status', 'accepted');
+});
+
 it('reuses the existing task for a duplicate callback identity', function (): void {
     Queue::fake();
 
@@ -136,19 +150,22 @@ it('rejects an invalid signature before reaching workflow intake', function (): 
 });
 
 function signedWarehouseWorkflowRequest(
-    string $portalId,
-    ?string $objectId = '500005',
+    string|int $portalId,
+    string|int|null $objectId = '500005',
     string $source = 'WORKFLOWS',
     string $callbackId = 'callback-001',
+    string|int $actionDefinitionId = '400004',
+    string|int $actionDefinitionVersion = '3',
+    string|int $workflowId = 'workflow-001',
 ): TestResponse {
     $payload = [
         'origin' => array_filter([
             'portalId'                => $portalId,
-            'actionDefinitionId'      => '400004',
-            'actionDefinitionVersion' => '3',
+            'actionDefinitionId'      => $actionDefinitionId,
+            'actionDefinitionVersion' => $actionDefinitionVersion,
         ]),
         'context' => array_filter([
-            'workflowId' => 'workflow-001',
+            'workflowId' => $workflowId,
             'source'     => $source,
         ]),
         'callbackId' => $callbackId,

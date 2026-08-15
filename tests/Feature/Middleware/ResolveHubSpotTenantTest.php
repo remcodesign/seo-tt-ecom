@@ -30,6 +30,27 @@ it('resolves a numeric portal ID and normalizes it for downstream consumers', fu
     expect($response->getStatusCode())->toBe(204);
 });
 
+it('normalizes numeric workflow IDs for DTO validation', function (): void {
+    $request = Request::create('/api/hubspot/warehouse-recommendation-v3', 'POST', [
+        'origin' => [
+            'portalId'                => 12345,
+            'actionDefinitionId'      => 270666375,
+            'actionDefinitionVersion' => 2,
+        ],
+        'context' => ['workflowId' => 4720693460],
+        'object'  => ['objectId' => 516930743536],
+    ]);
+
+    app(ResolveHubSpotTenant::class)->handle($request, function (Request $request): Response {
+        expect($request->input('origin.actionDefinitionId'))->toBe('270666375')
+            ->and($request->input('origin.actionDefinitionVersion'))->toBe('2')
+            ->and($request->input('context.workflowId'))->toBe('4720693460')
+            ->and($request->input('object.objectId'))->toBe('516930743536');
+
+        return response()->noContent();
+    });
+});
+
 it('rejects an empty portal ID', function (): void {
     expect(fn (): Response => app(ResolveHubSpotTenant::class)->handle(
         portalRequest(''),
