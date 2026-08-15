@@ -73,7 +73,7 @@ class WarehouseLogs extends Component
     public function statuses(): array
     {
         return ['all' => 'All statuses'] + collect(WarehouseRecommendationTaskStatus::cases())
-            ->mapWithKeys(fn (WarehouseRecommendationTaskStatus $status): array => [$status->value => str($status->value)->headline()->toString()])
+            ->mapWithKeys(fn (WarehouseRecommendationTaskStatus $warehouseRecommendationTaskStatus): array => [$warehouseRecommendationTaskStatus->value => str($warehouseRecommendationTaskStatus->value)->headline()->toString()])
             ->all();
     }
 
@@ -86,7 +86,8 @@ class WarehouseLogs extends Component
             ->orderBy('source')
             ->pluck('source', 'source')
             ->mapWithKeys(function (mixed $source): array {
-                $str = is_string($source) ? $source : "";
+                $str = is_string($source) ? $source : '';
+
                 return [$str => $str];
             })
             ->all();
@@ -116,10 +117,10 @@ class WarehouseLogs extends Component
     private function filteredTasks(): Builder
     {
         return WarehouseRecommendationTask::query()
-            ->when($this->form->search !== '', function (Builder $query): void {
+            ->when($this->form->search !== '', function (Builder $builder): void {
                 $search = '%'.$this->form->search.'%';
-                $query->where(function (Builder $query) use ($search): void {
-                    $query->where('id', 'like', $search)
+                $builder->where(function (Builder $builder) use ($search): void {
+                    $builder->where('id', 'like', $search)
                         ->orWhere('portal_id', 'like', $search)
                         ->orWhere('tenant_id', 'like', $search)
                         ->orWhere('deal_id', 'like', $search)
@@ -128,9 +129,9 @@ class WarehouseLogs extends Component
                         ->orWhere('failure_code', 'like', $search);
                 });
             })
-            ->when($this->form->status !== 'all', fn (Builder $query): Builder => $query->where('status', $this->form->status))
-            ->when($this->form->source !== 'all', fn (Builder $query): Builder => $query->where('source', $this->form->source))
-            ->when($this->form->date_filter !== 'all', fn (Builder $query): Builder => $query->where('created_at', '>=', $this->dateFilterStart()))
+            ->when($this->form->status !== 'all', fn (Builder $builder): Builder => $builder->where('status', $this->form->status))
+            ->when($this->form->source !== 'all', fn (Builder $builder): Builder => $builder->where('source', $this->form->source))
+            ->when($this->form->date_filter !== 'all', fn (Builder $builder): Builder => $builder->where('created_at', '>=', $this->dateFilterStart()))
             ->latest();
     }
 
@@ -158,13 +159,17 @@ class WarehouseLogs extends Component
             ->groupBy('status')
             ->pluck('aggregate', 'status')
             ->map(fn (mixed $count): int => match (true) {
-                is_int($count)                          => $count,
-                is_string($count) && is_numeric($count) => (int) $count,
-                default                                 => 0,
+                is_numeric($count) => (int) $count,
+                default            => 0,
             });
+        $total = 0;
+
+        foreach ($counts as $count) {
+            $total += $count;
+        }
 
         return [
-            'total'      => (int) $counts->sum(),
+            'total'      => $total,
             'accepted'   => $counts->get(WarehouseRecommendationTaskStatus::accepted->value, 0),
             'processing' => $counts->get(WarehouseRecommendationTaskStatus::processing->value, 0),
             'succeeded'  => $counts->get(WarehouseRecommendationTaskStatus::succeeded->value, 0),

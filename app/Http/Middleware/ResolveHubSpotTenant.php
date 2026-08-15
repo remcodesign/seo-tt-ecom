@@ -64,11 +64,9 @@ final class ResolveHubSpotTenant
     private function normalizeNumericIds(array $values, array $keys): array
     {
         return collect($values)
-            ->map(function (mixed $value, int|string $key) use ($keys): mixed {
-                return in_array($key, $keys, true) && is_int($value)
-                    ? (string) $value
-                    : $value;
-            })
+            ->map(fn (mixed $value, int|string $key): mixed => in_array($key, $keys, true) && is_int($value)
+                ? (string) $value
+                : $value)
             ->all();
     }
 }

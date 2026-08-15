@@ -7,6 +7,7 @@ use App\Enums\RoleLabel;
 use App\Livewire\Admin\HubSpot\WarehouseLogs;
 use App\Models\HubSpot\WarehouseRecommendationTask;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -42,6 +43,8 @@ it('lists filtered tasks and opens the complete task details', function (): void
     Livewire::actingAs($admin)
         ->test(WarehouseLogs::class)
         ->set('form.status', 'failed')
+        ->assertSee('Failed')
+        ->assertSee('1 matching tasks')
         ->assertSee('516930743536')
         ->assertDontSee('other-deal')
         ->call('selectTask', $failedTask->id)
@@ -67,4 +70,82 @@ it('resets filters and closes task details', function (): void {
         ->assertSet('form.date_filter', 'all')
         ->call('clearSelection')
         ->assertSet('selectedTaskId', null);
+});
+
+it('filters tasks by source and every supported date range', function (): void {
+    $admin = User::factory()->create(['role_label' => RoleLabel::admin]);
+    $now = CarbonImmutable::now();
+
+    WarehouseRecommendationTask::factory()->create([
+        'deal_id'    => 'today-deal',
+        'source'     => 'WORKFLOWS',
+        'created_at' => $now->subHour(),
+    ]);
+    WarehouseRecommendationTask::factory()->create([
+        'deal_id'    => 'yesterday-deal',
+        'source'     => 'WORKFLOWS',
+        'created_at' => $now->subDay()->startOfDay()->addHour(),
+    ]);
+    WarehouseRecommendationTask::factory()->create([
+        'deal_id'    => 'week-deal',
+        'source'     => 'WORKFLOWS',
+        'created_at' => $now->startOfWeek()->addHour(),
+    ]);
+    WarehouseRecommendationTask::factory()->create([
+        'deal_id'    => 'month-deal',
+        'source'     => 'WORKFLOWS',
+        'created_at' => $now->startOfMonth()->addHour(),
+    ]);
+    WarehouseRecommendationTask::factory()->create([
+        'deal_id'    => 'seven-day-deal',
+        'source'     => 'WORKFLOWS',
+        'created_at' => $now->subDays(6),
+    ]);
+    WarehouseRecommendationTask::factory()->create([
+        'deal_id'    => 'thirty-day-deal',
+        'source'     => 'WORKFLOWS',
+        'created_at' => $now->subDays(29),
+    ]);
+    WarehouseRecommendationTask::factory()->create([
+        'deal_id'    => 'old-deal',
+        'source'     => 'ADMIN_CONSOLE_TEST',
+        'created_at' => $now->subDays(31),
+    ]);
+
+    $testable = Livewire::actingAs($admin)->test(WarehouseLogs::class);
+
+    $testable
+        ->set('form.source', 'WORKFLOWS')
+        ->assertSee('today-deal')
+        ->assertDontSee('old-deal');
+
+    $testable
+        ->set('form.date_filter', 'today')
+        ->assertSee('today-deal')
+        ->assertDontSee('yesterday-deal');
+
+    $testable
+        ->set('form.date_filter', 'yesterday')
+        ->assertSee('yesterday-deal')
+        ->assertSee('today-deal');
+
+    $testable
+        ->set('form.date_filter', 'this_week')
+        ->assertSee('week-deal')
+        ->assertDontSee('old-deal');
+
+    $testable
+        ->set('form.date_filter', 'this_month')
+        ->assertSee('month-deal')
+        ->assertDontSee('old-deal');
+
+    $testable
+        ->set('form.date_filter', 'last_7_days')
+        ->assertSee('seven-day-deal')
+        ->assertDontSee('old-deal');
+
+    $testable
+        ->set('form.date_filter', 'last_30_days')
+        ->assertSee('thirty-day-deal')
+        ->assertDontSee('old-deal');
 });

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 beforeEach(function (): void {
     config([
         'hubspot.callback.base_url' => 'https://api.hubapi.com',
-        'hubspot.callback.tokens'   => ['tenant-test' => 'callback-token'],
+        'hubspot.crm.service_keys'  => ['tenant-test' => 'service-key'],
         'hubspot.callback.timeout'  => 10,
     ]);
 });
@@ -28,7 +28,7 @@ it('completes a workflow callback with the tenant token and output fields', func
 
     Http::assertSent(fn ($request): bool => $request->method() === 'POST'
         && $request->url() === 'https://api.hubapi.com/callbacks/callback-001/complete'
-        && $request->hasHeader('Authorization', 'Bearer callback-token')
+        && $request->hasHeader('Authorization', 'Bearer service-key')
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::Success->value
         && $request['outputFields']['taskId'] === 'task-001');
 });
@@ -48,15 +48,15 @@ it('throws a stable failure when callback completion returns a client error', fu
     Http::assertSentCount(1);
 });
 
-it('throws a stable failure when no callback token is configured', function (): void {
-    config(['hubspot.callback.tokens' => []]);
+it('throws a stable failure when no tenant Service Key is configured', function (): void {
+    config(['hubspot.crm.service_keys' => []]);
     Http::fake();
 
     expect(fn () => (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [
         'hs_execution_state' => HubSpotWorkflowExecutionState::Success->value,
     ]))->toThrow(
         HubSpotCrmReadException::class,
-        'No HubSpot workflow callback token is configured.',
+        'No HubSpot Service Key is configured for workflow callbacks.',
     );
 
     Http::assertNothingSent();
