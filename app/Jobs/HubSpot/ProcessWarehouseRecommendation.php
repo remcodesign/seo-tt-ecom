@@ -315,7 +315,11 @@ class ProcessWarehouseRecommendation implements ShouldQueue
     ): void {
         if ($warehouseRecommendationTask->source !== 'ADMIN_CONSOLE_TEST') {
             $hubSpotWorkflowCallbackClient = new HubSpotWorkflowCallbackClient($warehouseRecommendationTask->tenant_id);
-            $hubSpotWorkflowCallbackClient->complete($warehouseRecommendationTask->callback_id, $this->successFields($warehouseRecommendationTask, $warehouseRecommendationResultData));
+            $hubSpotWorkflowCallbackClient->complete(
+                $warehouseRecommendationTask->callback_id,
+                $this->successFields($warehouseRecommendationTask, $warehouseRecommendationResultData),
+                $this->callbackRequestContext($warehouseRecommendationTask),
+            );
 
             $this->trace($warehouseRecommendationTask, 'callback_completed', 'HubSpot workflow callback completed.', []);
         } else {
@@ -454,9 +458,25 @@ class ProcessWarehouseRecommendation implements ShouldQueue
                 'status'             => 'failed',
                 'summary'            => 'Warehouse recommendation could not be completed.',
                 'errorCode'          => $failureCode,
-            ]);
+            ], $this->callbackRequestContext($warehouseRecommendationTask));
         } catch (Throwable) {
             // Ignore callback failures because the task has already been marked as failed and logged. The callback failure is not actionable for the worker.
         }
+    }
+
+    /** @return array<string, int|string> */
+    private function callbackRequestContext(WarehouseRecommendationTask $warehouseRecommendationTask): array
+    {
+        $context = ['source' => $warehouseRecommendationTask->source];
+
+        if (is_numeric($warehouseRecommendationTask->workflow_id)) {
+            $context['workflowId'] = (int) $warehouseRecommendationTask->workflow_id;
+        }
+
+        if (is_numeric($warehouseRecommendationTask->action_definition_id)) {
+            $context['actionId'] = (int) $warehouseRecommendationTask->action_definition_id;
+        }
+
+        return $context;
     }
 }

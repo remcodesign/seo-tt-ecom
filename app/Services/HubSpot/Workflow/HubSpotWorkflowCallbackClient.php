@@ -14,18 +14,36 @@ final readonly class HubSpotWorkflowCallbackClient
 {
     public function __construct(private string $tenantId) {}
 
-    /** @param  array<string, string>  $outputFields */
-    public function complete(string $callbackId, array $outputFields): void
+    /**
+     * @param  array<string, string>  $outputFields
+     * @param  array<string, int|string>  $requestContext
+     */
+    public function complete(string $callbackId, array $outputFields, array $requestContext = []): void
     {
-        $response = $this->request()->post('/callbacks/'.rawurlencode($callbackId).'/complete', [
+        $payload = [
             'outputFields' => $outputFields,
-        ]);
+            'typedOutputs' => [],
+        ];
+
+        if ($requestContext !== []) {
+            $payload['requestContext'] = $requestContext;
+        }
+
+        $response = $this->request()->post($this->callbackPath($callbackId), $payload);
 
         if (! $response->successful()) {
             throw new HubSpotCrmReadException(
                 sprintf('HubSpot workflow callback failed with status %d.', $response->status()),
             );
         }
+    }
+
+    private function callbackPath(string $callbackId): string
+    {
+        $configuredApiVersion = config('hubspot.callback.api_version', '2026-03');
+        $apiVersion = is_string($configuredApiVersion) ? $configuredApiVersion : '2026-03';
+
+        return '/automation/actions/callbacks/'.rawurlencode($apiVersion).'/'.rawurlencode($callbackId).'/complete';
     }
 
     private function request(): PendingRequest

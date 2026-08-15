@@ -8,6 +8,19 @@ use App\Services\HubSpot\Workflow\HubSpotWorkflowCallbackClient;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
+function workflowClientCallbackPath(string $callbackId): string
+{
+    $apiVersion = config('hubspot.callback.api_version');
+    assert(is_string($apiVersion));
+
+    return '/automation/actions/callbacks/'.$apiVersion.'/'.$callbackId.'/complete';
+}
+
+function workflowClientCallbackPattern(string $callbackId = '*'): string
+{
+    return 'api.hubapi.com'.workflowClientCallbackPath($callbackId);
+}
+
 beforeEach(function (): void {
     config([
         'hubspot.callback.base_url' => 'https://api.hubapi.com',
@@ -18,7 +31,7 @@ beforeEach(function (): void {
 
 it('completes a workflow callback with the tenant token and output fields', function (): void {
     Http::fake([
-        'api.hubapi.com/callbacks/callback-001/complete' => Http::response([]),
+        workflowClientCallbackPattern('callback-001') => Http::response([], 204),
     ]);
 
     (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [
@@ -27,15 +40,16 @@ it('completes a workflow callback with the tenant token and output fields', func
     ]);
 
     Http::assertSent(fn ($request): bool => $request->method() === 'POST'
-        && $request->url() === 'https://api.hubapi.com/callbacks/callback-001/complete'
+        && $request->url() === config('hubspot.callback.base_url').workflowClientCallbackPath('callback-001')
         && $request->hasHeader('Authorization', 'Bearer service-key')
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::Success->value
-        && $request['outputFields']['taskId'] === 'task-001');
+        && $request['outputFields']['taskId'] === 'task-001'
+        && $request['typedOutputs'] === []);
 });
 
 it('throws a stable failure when callback completion returns a client error', function (): void {
     Http::fake([
-        'api.hubapi.com/callbacks/callback-001/complete' => Http::response([], 400),
+        workflowClientCallbackPattern('callback-001') => Http::response([], 400),
     ]);
 
     expect(fn () => (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [
@@ -66,7 +80,7 @@ it('retries a network failure and then rethrows the connection exception', funct
     $attempts = 0;
 
     Http::fake([
-        'api.hubapi.com/callbacks/callback-001/complete' => function () use (&$attempts): never {
+        workflowClientCallbackPattern('callback-001') => function () use (&$attempts): never {
             $attempts++;
 
             throw new ConnectionException('Connection refused');
@@ -82,7 +96,7 @@ it('retries a network failure and then rethrows the connection exception', funct
 
 it('retries server errors and rate limits before throwing the callback failure', function (int $status): void {
     Http::fake([
-        'api.hubapi.com/callbacks/callback-001/complete' => Http::response([], $status),
+        workflowClientCallbackPattern('callback-001') => Http::response([], $status),
     ]);
 
     expect(fn () => (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [
@@ -97,7 +111,7 @@ it('retries server errors and rate limits before throwing the callback failure',
 
 it('does not retry an unexpected client error', function (): void {
     Http::fake([
-        'api.hubapi.com/callbacks/callback-001/complete' => Http::response([], 404),
+        workflowClientCallbackPattern('callback-001') => Http::response([], 404),
     ]);
 
     expect(fn () => (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [

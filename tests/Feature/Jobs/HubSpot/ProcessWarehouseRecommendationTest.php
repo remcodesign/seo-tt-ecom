@@ -22,6 +22,19 @@ function traceData(WarehouseRecommendationTask $warehouseRecommendationTask, str
     return data_get($trace, 'data.'.$path);
 }
 
+function hubspotCallbackPath(string $callbackId): string
+{
+    $apiVersion = config('hubspot.callback.api_version');
+    assert(is_string($apiVersion));
+
+    return '/automation/actions/callbacks/'.$apiVersion.'/'.$callbackId.'/complete';
+}
+
+function hubspotCallbackPattern(string $callbackId = '*'): string
+{
+    return 'api.hubapi.com'.hubspotCallbackPath($callbackId);
+}
+
 it('processes all line items, writes one note, and completes the callback', function (): void {
     config([
         'ai.providers.openrouter.key'                 => 'test-key',
@@ -48,16 +61,18 @@ it('processes all line items, writes one note, and completes the callback', func
                 ['id' => 'li-1002', 'properties' => ['hs_sku' => 'TV-002', 'quantity' => '1']],
             ],
         ]),
-        'api.hubapi.com/crm/v3/objects/notes/search'     => Http::response(['results' => []]),
-        'api.hubapi.com/crm/v3/objects/notes'            => Http::response(['id' => 'note-001'], 201),
-        'api.hubapi.com/callbacks/callback-001/complete' => Http::response([]),
+        'api.hubapi.com/crm/v3/objects/notes/search' => Http::response(['results' => []]),
+        'api.hubapi.com/crm/v3/objects/notes'        => Http::response(['id' => 'note-001'], 201),
+        hubspotCallbackPattern('callback-001')       => Http::response([], 204),
     ]);
 
     $task = WarehouseRecommendationTask::factory()->create([
-        'status'      => WarehouseRecommendationTaskStatus::accepted,
-        'started_at'  => null,
-        'callback_id' => 'callback-001',
-        'deal_id'     => '500005',
+        'status'               => WarehouseRecommendationTaskStatus::accepted,
+        'started_at'           => null,
+        'callback_id'          => 'callback-001',
+        'deal_id'              => '500005',
+        'workflow_id'          => '4720693460',
+        'action_definition_id' => '400004',
     ]);
 
     (new ProcessWarehouseRecommendation($task->id))->handle();
@@ -90,9 +105,15 @@ it('processes all line items, writes one note, and completes the callback', func
             'callback_completed',
         );
 
-    Http::assertSent(fn ($request): bool => str_contains((string) $request->url(), '/callbacks/callback-001/complete')
+    Http::assertSent(fn ($request): bool => str_contains((string) $request->url(), hubspotCallbackPath('callback-001'))
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::Success->value
-        && $request['outputFields']['recommendedWarehouse'] === 'Local City Warehouse');
+        && $request['outputFields']['recommendedWarehouse'] === 'Local City Warehouse'
+        && $request['typedOutputs'] === []
+        && $request['requestContext'] === [
+            'source'     => 'WORKFLOWS',
+            'workflowId' => 4720693460,
+            'actionId'   => 400004,
+        ]);
 });
 
 it('does nothing when the task does not exist', function (): void {
@@ -201,7 +222,7 @@ it('maps CRM failures to a stable code and continues when failure callback deliv
 
     Http::fake([
         'api.hubapi.com/crm/v3/objects/deals/500005?properties=*' => Http::response([], 500),
-        'api.hubapi.com/callbacks/callback-crm-failure/complete'  => Http::response([], 500),
+        hubspotCallbackPattern('callback-crm-failure')            => Http::response([], 500),
     ]);
 
     $task = WarehouseRecommendationTask::factory()->create([
@@ -228,7 +249,7 @@ it('does not send a failure callback for an admin console task', function (): vo
 
     Http::fake([
         'api.hubapi.com/crm/v3/objects/deals/500005?properties=*' => Http::response([], 500),
-        'api.hubapi.com/callbacks/*/complete'                     => Http::response([]),
+        hubspotCallbackPattern()                                  => Http::response([], 204),
     ]);
 
     $task = WarehouseRecommendationTask::factory()->create([
@@ -266,7 +287,7 @@ it('maps invalid normalized line item data to a stable code', function (): void 
                 ['id' => 'li-1002', 'properties' => ['hs_sku' => 'TV-001', 'quantity' => '1']],
             ],
         ]),
-        'api.hubapi.com/callbacks/callback-invalid-line-item/complete' => Http::response([]),
+        hubspotCallbackPattern('callback-invalid-line-item') => Http::response([], 204),
     ]);
 
     $task = WarehouseRecommendationTask::factory()->create([
@@ -321,13 +342,13 @@ function fakeRecommendationContext(): void
                 ['id' => 'li-1001', 'properties' => ['hs_sku' => 'TV-001', 'quantity' => '2']],
             ],
         ]),
-        'api.hubapi.com/callbacks/*/complete' => Http::response([]),
+        hubspotCallbackPattern() => Http::response([], 204),
     ]);
 }
 
 function assertFailureCallback(string $callbackId, string $failureCode): void
 {
-    Http::assertSent(fn ($request): bool => str_contains((string) $request->url(), '/callbacks/'.$callbackId.'/complete')
+    Http::assertSent(fn ($request): bool => str_contains((string) $request->url(), hubspotCallbackPath($callbackId))
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::FailContinue->value
         && $request['outputFields']['errorCode'] === $failureCode);
 }
