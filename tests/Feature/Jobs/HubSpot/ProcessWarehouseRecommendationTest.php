@@ -40,7 +40,7 @@ it('processes all line items, writes one note, and completes the callback', func
         'ai.providers.openrouter.key'                 => 'test-key',
         'ai.providers.openrouter.models.text.default' => 'test/model',
         'hubspot.crm.service_keys'                    => ['tenant-test' => 'service-key'],
-        'hubspot.callback.tokens'                     => ['tenant-test' => 'callback-token'],
+        'hubspot.callback.access_tokens'              => ['tenant-test' => 'oauth-access-token'],
         'hubspot.crm.retry.times'                     => 0,
         'hubspot.crm.retry.sleep_ms'                  => 0,
     ]);
@@ -158,9 +158,9 @@ it('expires an accepted task without performing workflow work', function (): voi
 
 it('fails the task when the AI response has no valid selection', function (): void {
     config([
-        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
-        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times'  => 0,
+        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
+        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.crm.retry.times'        => 0,
     ]);
 
     WarehouseRecommendationAgent::fake([
@@ -188,9 +188,9 @@ it('fails the task when the AI response has no valid selection', function (): vo
 
 it('fails the task when the AI selects an unknown candidate', function (): void {
     config([
-        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
-        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times'  => 0,
+        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
+        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.crm.retry.times'        => 0,
     ]);
 
     fakeRecommendationContext();
@@ -215,9 +215,9 @@ it('fails the task when the AI selects an unknown candidate', function (): void 
 
 it('maps CRM failures to a stable code and continues when failure callback delivery fails', function (): void {
     config([
-        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
-        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times'  => 0,
+        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
+        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.crm.retry.times'        => 0,
     ]);
 
     Http::fake([
@@ -242,9 +242,9 @@ it('maps CRM failures to a stable code and continues when failure callback deliv
 
 it('does not send a failure callback for an admin console task', function (): void {
     config([
-        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
-        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times'  => 0,
+        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
+        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.crm.retry.times'        => 0,
     ]);
 
     Http::fake([
@@ -271,9 +271,9 @@ it('does not send a failure callback for an admin console task', function (): vo
 
 it('maps invalid normalized line item data to a stable code', function (): void {
     config([
-        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
-        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times'  => 0,
+        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
+        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.crm.retry.times'        => 0,
     ]);
 
     Http::fake([
@@ -309,9 +309,9 @@ it('maps invalid normalized line item data to a stable code', function (): void 
 
 it('records a safe placeholder when a failure has no exception message', function (): void {
     config([
-        'hubspot.crm.service_keys' => ['tenant-test' => 'service-key'],
-        'hubspot.callback.tokens'  => ['tenant-test' => 'callback-token'],
-        'hubspot.crm.retry.times'  => 0,
+        'hubspot.crm.service_keys'       => ['tenant-test' => 'service-key'],
+        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.crm.retry.times'        => 0,
     ]);
 
     fakeRecommendationContext();

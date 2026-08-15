@@ -23,9 +23,9 @@ function workflowClientCallbackPattern(string $callbackId = '*'): string
 
 beforeEach(function (): void {
     config([
-        'hubspot.callback.base_url' => 'https://api.hubapi.com',
-        'hubspot.crm.service_keys'  => ['tenant-test' => 'service-key'],
-        'hubspot.callback.timeout'  => 10,
+        'hubspot.callback.base_url'      => 'https://api.hubapi.com',
+        'hubspot.callback.access_tokens' => ['tenant-test' => 'oauth-access-token'],
+        'hubspot.callback.timeout'       => 10,
     ]);
 });
 
@@ -41,7 +41,7 @@ it('completes a workflow callback with the tenant token and output fields', func
 
     Http::assertSent(fn ($request): bool => $request->method() === 'POST'
         && $request->url() === config('hubspot.callback.base_url').workflowClientCallbackPath('callback-001')
-        && $request->hasHeader('Authorization', 'Bearer service-key')
+        && $request->hasHeader('Authorization', 'Bearer oauth-access-token')
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::Success->value
         && $request['outputFields']['taskId'] === 'task-001'
         && $request['typedOutputs'] === []);
@@ -62,15 +62,15 @@ it('throws a stable failure when callback completion returns a client error', fu
     Http::assertSentCount(1);
 });
 
-it('throws a stable failure when no tenant Service Key is configured', function (): void {
-    config(['hubspot.crm.service_keys' => []]);
+it('throws a stable failure when no tenant OAuth access token is configured', function (): void {
+    config(['hubspot.callback.access_tokens' => []]);
     Http::fake();
 
     expect(fn () => (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [
         'hs_execution_state' => HubSpotWorkflowExecutionState::Success->value,
     ]))->toThrow(
         HubSpotCrmReadException::class,
-        'No HubSpot Service Key is configured for workflow callbacks.',
+        'No HubSpot OAuth access token with the automation scope is configured for workflow callbacks.',
     );
 
     Http::assertNothingSent();

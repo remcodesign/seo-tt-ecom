@@ -48,17 +48,17 @@ final readonly class HubSpotWorkflowCallbackClient
 
     private function request(): PendingRequest
     {
-        $serviceKeys = config('hubspot.crm.service_keys', []);
-        $serviceKey = is_array($serviceKeys) ? ($serviceKeys[$this->tenantId] ?? null) : null;
+        $accessTokens = config('hubspot.callback.access_tokens', []);
+        $accessToken = is_array($accessTokens) ? ($accessTokens[$this->tenantId] ?? null) : null;
         $baseUrl = config('hubspot.callback.base_url', 'https://api.hubapi.com');
         $timeout = config('hubspot.callback.timeout', 10);
 
-        if (! is_string($serviceKey) || $serviceKey === '') {
-            throw new HubSpotCrmReadException('No HubSpot Service Key is configured for workflow callbacks.');
+        if (! is_string($accessToken) || $accessToken === '') {
+            throw new HubSpotCrmReadException('No HubSpot OAuth access token with the automation scope is configured for workflow callbacks.');
         }
 
         return Http::baseUrl(is_string($baseUrl) ? $baseUrl : 'https://api.hubapi.com')
-            ->withToken($serviceKey)
+            ->withToken($accessToken)
             ->acceptJson()
             ->asJson()
             ->timeout(is_int($timeout) ? $timeout : 10)
