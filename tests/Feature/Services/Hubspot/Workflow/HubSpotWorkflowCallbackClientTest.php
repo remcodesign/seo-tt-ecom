@@ -47,22 +47,27 @@ it('completes a workflow callback with the tenant token and output fields', func
         && $request['typedOutputs'] === []);
 });
 
-it('throws a stable failure when callback completion returns a client error', function (): void {
+it('includes HubSpot response details when callback completion is rejected', function (): void {
     Http::fake([
-        workflowClientCallbackPattern('callback-001') => Http::response([], 400),
+        workflowClientCallbackPattern('callback-001') => Http::response([
+            'message'       => 'The access token is not authorized for this app.',
+            'correlationId' => 'correlation-001',
+        ], 403, [
+            'X-HubSpot-Correlation-Id' => 'correlation-001',
+        ]),
     ]);
 
     expect(fn () => (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [
         'hs_execution_state' => HubSpotWorkflowExecutionState::Success->value,
     ]))->toThrow(
         HubSpotCrmReadException::class,
-        'HubSpot workflow callback failed with status 400.',
+        'HubSpot workflow callback failed with status 403. Details: {"response":{"message":"The access token is not authorized for this app.","correlationId":"correlation-001"},"x-hubspot-correlation-id":"correlation-001"}',
     );
 
     Http::assertSentCount(1);
 });
 
-it('throws a stable failure when no tenant OAuth access token is configured', function (): void {
+it('throws a stable failure when no tenant static access token is configured', function (): void {
     config(['hubspot.callback.access_tokens' => []]);
     Http::fake();
 
@@ -70,7 +75,7 @@ it('throws a stable failure when no tenant OAuth access token is configured', fu
         'hs_execution_state' => HubSpotWorkflowExecutionState::Success->value,
     ]))->toThrow(
         HubSpotCrmReadException::class,
-        'No HubSpot OAuth access token with the automation scope is configured for workflow callbacks.',
+        'No HubSpot static access token with the automation scope is configured for workflow callbacks.',
     );
 
     Http::assertNothingSent();
