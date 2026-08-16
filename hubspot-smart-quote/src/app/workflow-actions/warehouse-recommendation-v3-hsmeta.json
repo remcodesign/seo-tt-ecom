@@ -3,7 +3,7 @@
   "type": "workflow-action",
   "config": {
     "actionUrl": "https://seo-tt-ecom-production-0oxgks.laravel.cloud/api/hubspot/warehouse-recommendation-v3",
-    "isPublished": false,
+    "isPublished": true,
     "objectTypes": [
       "0-3"
     ],

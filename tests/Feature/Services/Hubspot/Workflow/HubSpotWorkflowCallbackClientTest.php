@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\HubSpot\HubSpotWorkflowExecutionState;
+use App\Exceptions\HubSpot\HubSpotCrmNotConfiguredException;
 use App\Exceptions\HubSpot\HubSpotCrmReadException;
 use App\Services\HubSpot\Workflow\HubSpotWorkflowCallbackClient;
 use Illuminate\Http\Client\ConnectionException;
@@ -34,6 +35,7 @@ beforeEach(function (): void {
         'hubspot.client_id'               => 'client-id',
         'hubspot.client_secret'           => 'client-secret',
         'hubspot.oauth.redirect_uri'      => 'https://example.com/oauth/callback',
+        'hubspot.crm.service_keys'        => [],
     ]);
 });
 
@@ -88,8 +90,8 @@ it('throws a stable failure when no tenant OAuth refresh token is configured', f
     expect(fn () => (new HubSpotWorkflowCallbackClient('tenant-test'))->complete('callback-001', [
         'hs_execution_state' => HubSpotWorkflowExecutionState::Success->value,
     ]))->toThrow(
-        HubSpotCrmReadException::class,
-        'No HubSpot OAuth refresh token is configured for workflow callbacks.',
+        HubSpotCrmNotConfiguredException::class,
+        'No HubSpot OAuth connection is configured for tenant [tenant-test].',
     );
 
     Http::assertNothingSent();

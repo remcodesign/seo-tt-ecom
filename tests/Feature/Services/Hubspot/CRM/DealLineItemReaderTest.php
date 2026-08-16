@@ -187,7 +187,10 @@ it('throws a stable failure when the crm read fails', function (): void {
 });
 
 it('throws a stable failure when the tenant has no crm token', function (): void {
-    config(['hubspot.crm.service_keys' => []]);
+    config([
+        'hubspot.crm.service_keys'        => [],
+        'hubspot.callback.refresh_tokens' => [],
+    ]);
 
     $reader = new DealLineItemReader(
         new HubSpotCrmClient('tenant-test'),
@@ -195,7 +198,7 @@ it('throws a stable failure when the tenant has no crm token', function (): void
     );
 
     expect(fn (): array => $reader->read('500005'))
-        ->toThrow(HubSpotCrmNotConfiguredException::class, 'No HubSpot CRM connection');
+        ->toThrow(HubSpotCrmNotConfiguredException::class, 'No HubSpot OAuth connection');
 });
 
 it('returns an empty normalized list when a deal has no line items', function (): void {

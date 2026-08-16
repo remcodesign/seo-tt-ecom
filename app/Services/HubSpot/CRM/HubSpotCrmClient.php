@@ -6,8 +6,8 @@ namespace App\Services\HubSpot\CRM;
 
 use App\Data\HubSpot\Data\HubSpotDealData;
 use App\Data\HubSpot\Data\HubSpotLineItemData;
-use App\Exceptions\HubSpot\HubSpotCrmNotConfiguredException;
 use App\Exceptions\HubSpot\HubSpotCrmReadException;
+use App\Services\HubSpot\OAuth\HubSpotOAuthTokenProvider;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
@@ -214,16 +214,7 @@ final readonly class HubSpotCrmClient
 
     private function tenantToken(): string
     {
-        $serviceKeys = config('hubspot.crm.service_keys', []);
-        $token = is_array($serviceKeys) ? ($serviceKeys[$this->tenantId] ?? null) : null;
-
-        if (! is_string($token) || $token === '') {
-            throw new HubSpotCrmNotConfiguredException(
-                sprintf('No HubSpot CRM connection is configured for tenant [%s].', $this->tenantId),
-            );
-        }
-
-        return $token;
+        return (new HubSpotOAuthTokenProvider)->accessToken($this->tenantId);
     }
 
     private function shouldRetry(Throwable|Response $throwable): bool
