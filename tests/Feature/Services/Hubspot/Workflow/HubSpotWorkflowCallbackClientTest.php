@@ -57,7 +57,7 @@ it('completes a workflow callback with the tenant token and output fields', func
         && $request->hasHeader('Authorization', 'Bearer oauth-access-token')
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::Success->value
         && $request['outputFields']['taskId'] === 'task-001'
-        && $request['typedOutputs'] === []);
+        && json_decode((string) $request->body(), true)['typedOutputs'] === []);
 });
 
 it('includes HubSpot response details when callback completion is rejected', function (): void {

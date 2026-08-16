@@ -24,7 +24,7 @@ final readonly class HubSpotWorkflowCallbackClient
     {
         $payload = [
             'outputFields' => $outputFields,
-            'typedOutputs' => [],
+            'typedOutputs' => new \stdClass,
         ];
 
         if ($requestContext !== []) {

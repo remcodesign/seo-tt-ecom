@@ -125,7 +125,7 @@ it('processes all line items, writes one note, and completes the callback', func
     Http::assertSent(fn ($request): bool => str_contains((string) $request->url(), hubspotCallbackPath('callback-001'))
         && $request['outputFields']['hs_execution_state'] === HubSpotWorkflowExecutionState::Success->value
         && $request['outputFields']['recommendedWarehouse'] === 'Local City Warehouse'
-        && $request['typedOutputs'] === []
+        && json_decode((string) $request->body(), true)['typedOutputs'] === []
         && $request['requestContext'] === [
             'source'     => 'WORKFLOWS',
             'workflowId' => 4720693460,
