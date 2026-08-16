@@ -135,7 +135,7 @@ class ProcessWarehouseRecommendation implements ShouldQueue
         } catch (Throwable $throwable) {
             $this->trace($task, 'failed', 'The worker stopped with a bounded error.', [
                 'exception' => $throwable::class,
-                'message'   => $this->safeText($throwable->getMessage()),
+                'message'   => $this->safeText($throwable->getMessage(), 600),
             ]);
 
             $this->fail($task, $throwable);
@@ -380,7 +380,7 @@ class ProcessWarehouseRecommendation implements ShouldQueue
         return $tracedItems;
     }
 
-    private function safeText(?string $value): string
+    private function safeText(?string $value, int $length = 120): string
     {
         if ($value === null || $value === '') {
             return '[not provided]';
@@ -388,17 +388,17 @@ class ProcessWarehouseRecommendation implements ShouldQueue
 
         $redacted = preg_replace('/\b\d{5,}\b/', '[redacted-id]', $value) ?? $value;
 
-        return mb_substr($redacted, 0, 120);
+        return mb_substr($redacted, 0, $length);
     }
 
-    private function maskText(?string $value): string
+    private function maskText(?string $value, int $length = 120): string
     {
-        return $value === null || $value === '' ? '[not provided]' : mb_substr($value, 0, 120);
+        return $value === null || $value === '' ? '[not provided]' : mb_substr($value, 0, $length);
     }
 
     private function noteBody(WarehouseRecommendationResultData $warehouseRecommendationResultData): string
     {
-        return $warehouseRecommendationResultData->summary.'\n'.json_encode($warehouseRecommendationResultData->items, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+        return $warehouseRecommendationResultData->summary."\n".json_encode($warehouseRecommendationResultData->items, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
     }
 
     /** @return array<string, string> */

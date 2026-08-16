@@ -12,7 +12,9 @@
       ],
       "requiredScopes": [
         "crm.objects.deals.read",
+        "crm.objects.line_items.read",
         "crm.objects.contacts.read",
+        "crm.objects.contacts.write",
         "automation"
       ],
       "optionalScopes": [],
